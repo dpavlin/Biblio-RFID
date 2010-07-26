@@ -78,6 +78,8 @@ Formatting functions are exported
 
 =head2 hex2bytes
 
+  my $bytes = hex2bytes($hex);
+
 =cut
 
 sub hex2bytes {
@@ -91,6 +93,12 @@ sub hex2bytes {
 	warn "## str2bytes( $str ) => $b => ",as_hex($bytes) if $debug;
 	return $bytes;
 }
+
+=head2 as_hex
+
+  print as_hex( $bytes );
+
+=cut
 
 sub as_hex {
 	my @out;
