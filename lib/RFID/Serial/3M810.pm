@@ -5,6 +5,7 @@ use RFID::Serial;
 
 use Carp qw(confess);
 use Time::HiRes;
+use Digest::CRC;
 
 sub serial_settings {{
 	device    => "/dev/ttyUSB1", # FIXME comment out before shipping
@@ -29,6 +30,16 @@ sub init {
 
 }
 
+sub checksum {
+	my $bytes = shift;
+	my $crc = Digest::CRC->new(
+		# midified CCITT to xor with 0xffff instead of 0x0000
+		width => 16, init => 0xffff, xorout => 0xffff, refout => 0, poly => 0x1021, refin => 0,
+	) or die $!;
+	$crc->add( $bytes );
+	pack('n', $crc->digest);
+}
+
 sub wait_device {
 	Time::HiRes::sleep 0.015;
 }
@@ -37,10 +48,10 @@ sub cmd {
 	my ( $hex, $description, $coderef ) = @_;
 	my $bytes = hex2bytes($hex);
 	if ( substr($bytes,0,1) !~ /(\xD5|\xD6)/ ) {
-		my $len = pack( 'c', length( $bytes ) + 3 );
+		my $len = pack( 'n', length( $bytes ) + 2 );
 		$bytes = $len . $bytes;
 		my $checksum = checksum($bytes);
-		$bytes = "\xD6\x00" . $bytes . $checksum;
+		$bytes = "\xD6" . $bytes . $checksum;
 	}
 
 	warn ">> ", as_hex( $bytes ), "\t\t[$description]\n";
@@ -85,10 +96,9 @@ cmd(
 });
 
 cmd(
-'D6 00  0C   13  04  01 00  02 00  03 00  04 00   AAF2','FIXME: stats?', sub { assert(shift,
-'            13  00  02 01 01 03 02 02 03  00     E778'
+'13  04 01 00 02 00 03 00 04 00','FIXME: stats? rf-on?', sub { assert(shift,
+'13  00 02 01 01 03 02 02 03 00'
 )});
-
 }
 
 1
