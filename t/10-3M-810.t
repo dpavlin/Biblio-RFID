@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use Test::More tests => 16;
+use Test::More tests => 2;
 use Data::Dump qw(dump);
 
 use lib 'lib';
