@@ -4,6 +4,7 @@ use base 'RFID::Serial';
 use RFID::Serial;
 
 use Time::HiRes;
+use Data::Dump qw(dump);
 
 sub serial_settings {{
 	device    => "/dev/ttyUSB0",
