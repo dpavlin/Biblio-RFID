@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use Test::More tests => 2;
+use Test::More tests => 3;
 use Data::Dump qw(dump);
 
 use lib 'lib';
@@ -11,4 +11,5 @@ BEGIN {
 
 ok( my $o = RFID::Serial::3M810->new( device => '/dev/ttyUSB0' ), 'new' );
 
+ok( my $inventory = $o->inventory, 'inventory' );
 

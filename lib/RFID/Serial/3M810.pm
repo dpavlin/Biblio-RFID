@@ -66,6 +66,8 @@ sub cmd {
 		$r_len = $port->read(3);
 	}
 
+	wait_device;
+
 	my $len = ord( substr($r_len,2,1) );
 	$data = $port->read( $len );
 	warn "<< ", as_hex($r_len,$data)," $len\n";
@@ -83,6 +85,8 @@ sub assert {
 
 	confess "got ", as_hex($got), " expected ", as_hex($expected)
 	unless substr($got,0,$len) eq substr($expected,0,$len);
+
+	return substr($got,$len);
 }
 
 sub setup {
@@ -90,8 +94,8 @@ sub setup {
 cmd(
 'D5 00  05   04 00 11   8C66', 'hw version', sub {
 	my $data = shift;
-	assert $data => '04 00 11';
-	my $hw_ver = join('.', unpack('CCCC', substr($data,3)));
+	my $rest = assert $data => '04 00 11';
+	my $hw_ver = join('.', unpack('CCCC', $rest));
 	print "hardware version $hw_ver\n";
 });
 
@@ -99,6 +103,33 @@ cmd(
 '13  04 01 00 02 00 03 00 04 00','FIXME: stats? rf-on?', sub { assert(shift,
 '13  00 02 01 01 03 02 02 03 00'
 )});
+}
+
+sub inventory {
+
+	my $inventory;
+
+cmd( 'FE  00 05', 'scan for tags', sub {
+	my $data = shift;
+	my $rest = assert $data => 'FE 00 00 05';
+	my $nr = ord( substr( $rest, 0, 1 ) );
+
+	if ( ! $nr ) {
+		warn "# no tags in range\n";
+	} else {
+		my $tags = substr( $rest, 1 );
+		my $tl = length( $tags );
+		die "wrong length $tl for $nr tags: ",dump( $tags ) if $tl =! $nr * 8;
+
+		foreach ( 0 .. $nr - 1 ) {
+			my $tag = uc(unpack('H16', substr($tags, $_ * 8, 8)));
+			$invetory->{$tag}++;
+		}
+	}
+
+});
+
+	return $invetory;
 }
 
 1
