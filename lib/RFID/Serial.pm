@@ -51,6 +51,12 @@ sub new {
 	return $self;
 }
 
+=head2 port
+
+  my $serial_obj = $self->port;
+
+=cut
+
 sub port {
 	my $self = shift;
 
@@ -68,9 +74,29 @@ sub port {
 
 }
 
-sub init {
-	warn "no init";
-}
+=head1 MANDATORY IMPLEMENTATIONS
+
+Each reader must implement following hooks as sub-classes.
+
+=head2 init
+
+  $self->init;
+
+=head2 inventory
+
+  my @tags = $self->invetory;
+
+=head2 read_blocks
+
+  my $hash = $self->read_blocks $tag;
+
+All blocks are under key which is tag UID
+
+  $hash = { 'E000000123456789' => [ undef, 'block1', 'block2', ... ] };
+
+L<RFID::Serial::3M810> sends tag UID with data payload, so we might expect
+to receive response from other tags from protocol specification, 
+
 
 =head1 EXPORT
 
@@ -113,7 +139,7 @@ sub as_hex {
 
 =head2 hex_tag
 
-  print hex_tag $bytes;
+  print hex_tag $8bytes;
 
 =cut
 
