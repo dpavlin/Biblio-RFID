@@ -3,6 +3,7 @@ package RFID::Serial::3M810;
 use base 'RFID::Serial';
 use RFID::Serial;
 
+use Data::Dump qw(dump);
 use Carp qw(confess);
 use Time::HiRes;
 use Digest::CRC;
@@ -105,6 +106,8 @@ cmd(
 )});
 }
 
+sub tag_hex { uc(unpack('H16', shift)) }
+
 sub inventory {
 
 	my $inventory;
@@ -122,14 +125,61 @@ cmd( 'FE  00 05', 'scan for tags', sub {
 		die "wrong length $tl for $nr tags: ",dump( $tags ) if $tl =! $nr * 8;
 
 		foreach ( 0 .. $nr - 1 ) {
-			my $tag = uc(unpack('H16', substr($tags, $_ * 8, 8)));
-			$invetory->{$tag}++;
+			my $tag = tag_hex substr($tags, $_ * 8, 8);
+			$invetory->{$tag} ||= read_tag($tag);
 		}
 	}
 
 });
 
 	return $invetory;
+}
+
+
+# 3M defaults: 8,4
+# cards 16, stickers: 8
+my $max_rfid_block = 8;
+my $blocks = 8;
+
+sub _matched {
+	my ( $data, $hex ) = @_;
+	my $b = hex2bytes $hex;
+	my $l = length($b);
+	if ( substr($data,0,$l) eq $b ) {
+		warn "_matched $hex [$l] in ",as_hex($data);
+		return substr($data,$l);
+	}
+}
+
+sub read_tag {
+	my $tag = shift || confess "no tag?";
+	warn "# read $tag\n";
+
+	my $tag_blocks;
+	my $start = 0;
+	cmd(
+		 sprintf( "02 $tag %02x %02x", $start, $blocks ) => "read $tag $start/$blocks", sub {
+			my $data = shift;
+			if ( my $rest = _matched $data => '02 00' ) {
+
+				my $tag = tag_hex substr($rest,0,8);
+				my $blocks = ord(substr($rest,8,1));
+				warn "# response from $tag $blocks blocks ",as_hex substr($rest,9);
+				foreach ( 1 .. $blocks ) {
+					my $pos = ( $_ - 1 ) * 6 + 9;
+					my $nr = unpack('v', substr($rest,$pos,2));
+					my $payload = substr($rest,$pos+2,4);
+					warn "## pos $pos block $nr ",as_hex($payload), $/;
+					$tag_blocks->{$tag}->[$nr] = $payload;
+				}
+			} elsif ( my $rest = _matched $data => 'FE 00 00 05 01' ) {
+				warn "FIXME ready? ",as_hex $test;
+			} elsif ( my $rest = _matched $data => '02 06' ) {
+				warn "ERROR ",as_hex($rest);
+			}
+	});
+
+	warn "# tag_blocks ",dump($tag_blocks);
 }
 
 1
