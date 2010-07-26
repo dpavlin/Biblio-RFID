@@ -15,3 +15,6 @@ ok( my @tags = $o->inventory, 'inventory' );
 
 ok( my $blocks = $o->read_blocks( $_ ), "read_blocks $_" ) foreach @tags;
 
+ok( my $visible = $o->scan, 'scan' );
+diag dump $visible;
+

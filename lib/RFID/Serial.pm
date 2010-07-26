@@ -32,6 +32,7 @@ Perhaps a little code snippet.
     my $rfid = RFID::Serial->new(
 		device => '/dev/ttyUSB0', # with fallback to RFID_DEVICE
 	);
+	my $visible = $rfid->scan;
 
 =head1 SUBROUTINES/METHODS
 
@@ -73,6 +74,28 @@ sub port {
 	foreach ( qw/handshake baudrate databits parity stopbits/ );
 
 }
+
+=head2 scan
+
+  my $visible = $rfid->scan;
+
+Returns hash with keys which match tag UID and values with blocks
+
+=cut
+
+sub scan {
+	my $self = shift;
+
+	warn "# scan tags in reader range\n";
+	my @tags = $self->inventory;
+
+	my $visible;
+	# FIXME this is naive implementation which just discards other tags
+	$visible->{$_} = $self->read_blocks( $_ )->{$_} foreach @tags;
+
+	return $visible;
+}
+
 
 =head1 MANDATORY IMPLEMENTATIONS
 
