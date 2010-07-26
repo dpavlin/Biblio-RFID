@@ -3,50 +3,106 @@ package RFID::Serial;
 use warnings;
 use strict;
 
+use Device::SerialPort qw(:STAT);
+use Data::Dump qw(dump);
+
 =head1 NAME
 
-RFID::Serial - The great new RFID::Serial!
-
-=head1 VERSION
-
-Version 0.01
+RFID::Serial - support serial RFID devices
 
 =cut
 
 our $VERSION = '0.01';
 
+my $debug = 0;
+
+use base 'Exporter';
+our @EXPORT = qw( hex2bytes as_hex );
+
 
 =head1 SYNOPSIS
 
-Quick summary of what the module does.
+This module tries to support USB serial RFID readers wsing simple API
+which is sutable for direct mapping to REST JSONP service.
 
 Perhaps a little code snippet.
 
     use RFID::Serial;
 
-    my $foo = RFID::Serial->new();
-    ...
-
-=head1 EXPORT
-
-A list of functions that can be exported.  You can delete this section
-if you don't export anything, such as for a purely object-oriented module.
+    my $rfid = RFID::Serial->new(
+		device => '/dev/ttyUSB0', # with fallback to RFID_DEVICE
+	);
 
 =head1 SUBROUTINES/METHODS
 
-=head2 function1
+=head2 new
 
 =cut
 
-sub function1 {
+sub new {
+	my $class = shift;
+	my $self = {@_};
+	bless $self, $class;
+
+	$self->port;
+
+	$self->init;
+
+	return $self;
 }
 
-=head2 function2
+sub port {
+	my $self = shift;
+
+	return $self->{port} if defined $self->{port};
+
+	my $settings = $self->serial_settings;
+	$settings->{device} ||= $ENV{RFID_DEVICE};
+	warn "# settings ",dump $settings;
+
+	$self->{port} = Device::SerialPort->new( $settings->{device} )
+	|| die "can't open serial port: $!\n";
+
+	$self->{port}->$_( $settings->{$_} )
+	foreach ( qw/handshake baudrate databits parity stopbits/ );
+
+}
+
+sub init {
+	warn "no init";
+}
+
+=head1 EXPORT
+
+Formatting functions are exported
+
+=head2 hex2bytes
 
 =cut
 
-sub function2 {
+sub hex2bytes {
+	my $str = shift || die "no str?";
+	my $b = $str;
+	$b =~ s/\s+//g;
+	$b =~ s/(..)/\\x$1/g;
+	$b = "\"$b\"";
+	my $bytes = eval $b;
+	die $@ if $@;
+	warn "## str2bytes( $str ) => $b => ",as_hex($bytes) if $debug;
+	return $bytes;
 }
+
+sub as_hex {
+	my @out;
+	foreach my $str ( @_ ) {
+		my $hex = uc unpack( 'H*', $str );
+		$hex =~ s/(..)/$1 /g if length( $str ) > 2;
+		$hex =~ s/\s+$//;
+		push @out, $hex;
+	}
+	return join(' | ', @out);
+}
+
 
 =head1 AUTHOR
 
