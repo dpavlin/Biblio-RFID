@@ -106,11 +106,15 @@ cmd(
 )});
 }
 
-sub tag_hex { uc(unpack('H16', shift)) }
+=head2 inventory
+
+  my @tags = inventory;
+
+=cut
 
 sub inventory {
 
-	my $inventory;
+	my @tags;
 
 cmd( 'FE  00 05', 'scan for tags', sub {
 	my $data = shift;
@@ -125,14 +129,14 @@ cmd( 'FE  00 05', 'scan for tags', sub {
 		die "wrong length $tl for $nr tags: ",dump( $tags ) if $tl =! $nr * 8;
 
 		foreach ( 0 .. $nr - 1 ) {
-			my $tag = tag_hex substr($tags, $_ * 8, 8);
-			$invetory->{$tag} ||= read_tag($tag);
+			push @tags, tag_hex substr($tags, $_ * 8, 8);
 		}
 	}
 
 });
 
-	return $invetory;
+	warn "# tags ",dump @tags;
+	return @tags;
 }
 
 
@@ -151,18 +155,18 @@ sub _matched {
 	}
 }
 
-sub read_tag {
+sub read_blocks {
 	my $tag = shift || confess "no tag?";
-	warn "# read $tag\n";
+	$tag = shift if ref($tag);
 
 	my $tag_blocks;
 	my $start = 0;
 	cmd(
-		 sprintf( "02 $tag %02x %02x", $start, $blocks ) => "read $tag $start/$blocks", sub {
+		 sprintf( "02 $tag %02x %02x", $start, $blocks ) => "read_blocks $tag $start/$blocks", sub {
 			my $data = shift;
 			if ( my $rest = _matched $data => '02 00' ) {
 
-				my $tag = tag_hex substr($rest,0,8);
+				my $tag = hex_tag substr($rest,0,8);
 				my $blocks = ord(substr($rest,8,1));
 				warn "# response from $tag $blocks blocks ",as_hex substr($rest,9);
 				foreach ( 1 .. $blocks ) {
@@ -176,6 +180,8 @@ sub read_tag {
 				warn "FIXME ready? ",as_hex $test;
 			} elsif ( my $rest = _matched $data => '02 06' ) {
 				warn "ERROR ",as_hex($rest);
+			} else {
+				die "FIXME unsuported ",as_hex($rest);
 			}
 	});
 

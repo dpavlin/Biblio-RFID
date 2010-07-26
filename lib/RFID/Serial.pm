@@ -3,6 +3,9 @@ package RFID::Serial;
 use warnings;
 use strict;
 
+use base 'Exporter';
+our @EXPORT = qw( hex2bytes as_hex hex_tag );
+
 use Device::SerialPort qw(:STAT);
 use Data::Dump qw(dump);
 
@@ -15,9 +18,6 @@ RFID::Serial - support serial RFID devices
 our $VERSION = '0.01';
 
 my $debug = 0;
-
-use base 'Exporter';
-our @EXPORT = qw( hex2bytes as_hex );
 
 
 =head1 SYNOPSIS
@@ -110,6 +110,14 @@ sub as_hex {
 	}
 	return join(' | ', @out);
 }
+
+=head2 hex_tag
+
+  print hex_tag $bytes;
+
+=cut
+
+sub hex_tag { uc(unpack('H16', shift)) }
 
 
 =head1 AUTHOR

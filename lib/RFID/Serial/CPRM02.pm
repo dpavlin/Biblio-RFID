@@ -6,7 +6,7 @@ use RFID::Serial;
 use Time::HiRes;
 use Data::Dump qw(dump);
 
-my $debug = 0;
+my $debug = 1;
 
 sub serial_settings {{
 	device    => "/dev/ttyUSB0",
@@ -99,13 +99,13 @@ cpr( 'FF  69',		'RF Reset' );
 
 }
 
-sub cpr_read {
-	my $uid = shift;
-	my $hex_uid = as_hex($uid);
+sub read_blocks {
+	my $tag = shift;
+	$tag = shift if ref $tag;
 
 	my $max_block;
 
-	cpr( "FF  B0 2B  01  $hex_uid", "Get System Information $hex_uid", sub {
+	cpr( "FF  B0 2B  01  $tag", "Get System Information $tag", sub {
 		my $data = shift;
 
 		warn "# data ",as_hex($data);
@@ -122,11 +122,11 @@ sub cpr_read {
 		$max_block = ord($SIZE);
 	});
 
-	my $transponder_data;
+	my $tag_blocks;
 
 	my $block = 0;
 	while ( $block < $max_block ) {
-		cpr( sprintf("FF  B0 23  01  $hex_uid %02x 04", $block), "Read Multiple Blocks $block", sub {
+		cpr( sprintf("FF  B0 23  01  $tag %02x 04", $block), "Read Multiple Blocks $block", sub {
 			my $data = shift;
 
 			my $DB_N    = ord substr($data,5-2,1);
@@ -134,26 +134,26 @@ sub cpr_read {
 
 			$data = substr($data,7-2,-2);
 #			warn "# DB N: $DB_N SIZE: $DB_SIZE ", as_hex( $data ), " transponder_data: [$transponder_data] ",length($transponder_data),"\n";
-			foreach ( 1 .. $DB_N ) {
-				my $sec = substr($data,0,1);
+			foreach my $n ( 1 .. $DB_N ) {
+				my $sec = ord(substr($data,0,1));
 				my $db  = substr($data,1,$DB_SIZE);
-				warn "## block $_ ",dump( $sec, $db ) if $debug;
-				$transponder_data .= reverse split(//,$db);
+				warn "## block $n ",dump( $sec, $db ) if $debug;
+				$tag_blocks->{$tag}->[$block+$n] = reverse split(//,$db);
 				$data = substr($data, $DB_SIZE + 1);
 			}
 		});
 		$block += 4;
 	}
 
-	warn "# DATA $hex_uid ", dump($transponder_data);
-	return $transponder_data;
+	warn "# tag_blocks ",dump($tag_blocks),$/;
+	return $tag_blocks;
 }
 
 
 
 sub inventory {
 
-my $inventory;
+	my @tags;
 
 cpr( 'FF  B0  01 00', 'ISO - Inventory', sub {
 	my $data = shift;
@@ -161,6 +161,7 @@ cpr( 'FF  B0  01 00', 'ISO - Inventory', sub {
 		warn "# no tags in range\n";
 		return;
 	}
+
 	my $data_sets = ord(substr($data,3,1));
 	$data = substr($data,4);
 	foreach ( 1 .. $data_sets ) {
@@ -170,14 +171,13 @@ cpr( 'FF  B0  01 00', 'ISO - Inventory', sub {
 		my $uid     = substr($data,2,8);
 		$data = substr($data,10);
 		warn "# TAG $_ ",as_hex( $tr_type, $dsfid, $uid ),$/;
-
-		$inventory->{$uid} ||= cpr_read( $uid );
+		push @tags, hex_tag $uid;
 		
 	}
-	warn "# inventory: ",dump($inventory);
 });
 
-	return $inventory;
+	warn "# tags ",dump(@tags),$/;
+	return @tags;
 }
 
 1

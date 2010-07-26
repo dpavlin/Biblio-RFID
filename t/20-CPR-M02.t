@@ -11,6 +11,7 @@ BEGIN {
 
 ok( my $o = RFID::Serial::CPRM02->new( device => '/dev/ttyUSB0' ), 'new' );
 
-ok( $o->inventory, 'inventory' );
+ok( my @tags = $o->inventory, 'inventory' );
 
+ok( my $blocks = $o->read_blocks( $_ ), "read_blocks $_" ) foreach @tags;
 
