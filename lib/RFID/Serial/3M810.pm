@@ -129,7 +129,7 @@ cmd( 'FE  00 05', 'scan for tags', sub {
 		die "wrong length $tl for $nr tags: ",dump( $tags ) if $tl =! $nr * 8;
 
 		foreach ( 0 .. $nr - 1 ) {
-			push @tags, tag_hex substr($tags, $_ * 8, 8);
+			push @tags, hex_tag substr($tags, $_ * 8, 8);
 		}
 	}
 
