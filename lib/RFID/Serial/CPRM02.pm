@@ -6,6 +6,8 @@ use RFID::Serial;
 use Time::HiRes;
 use Data::Dump qw(dump);
 
+my $debug = 0;
+
 sub serial_settings {{
 	device    => "/dev/ttyUSB0",
 	baudrate  => "38400",
@@ -37,9 +39,8 @@ sub cpr_m02_checksum {
 	return pack('v', $crc);
 }
 
-sub cpr_psst_wait {
-	# Protocol Start Synchronization Time (PSST): 5ms < data timeout 12 ms
-	Time::HiRes::sleep 0.005;
+sub wait_device {
+	Time::HiRes::sleep 0.010;
 }
 
 our $port;
@@ -52,24 +53,30 @@ sub cpr {
 	my $checksum = cpr_m02_checksum($send);
 	$send .= $checksum;
 
-	warn ">> ", as_hex( $send ), "\t\t[$description]\n";
+	warn "##>> ", as_hex( $send ), "\t\t[$description]\n";
 	$port->write( $send );
 
-	cpr_psst_wait;
+	wait_device;
 
 	my $r_len = $port->read(1);
 
+	my $count = 100;
 	while ( ! $r_len ) {
-		warn "# wait for response length 5ms\n";
-		cpr_psst_wait;
+		if ( $count-- == 0 ) {
+			warn "no response from device";
+			return;
+		}
+		wait_device;
 		$r_len = $port->read(1);
 	}
 
+	wait_device;
+
 	my $data_len = ord($r_len) - 1;
 	my $data = $port->read( $data_len );
-	warn "<< ", as_hex( $r_len . $data ),"\n";
+	warn "##<< ", as_hex( $r_len . $data ),"\n";
 
-	cpr_psst_wait;
+	wait_device;
 
 	$coderef->( $data ) if $coderef;
 
@@ -126,11 +133,11 @@ sub cpr_read {
 			my $DB_SIZE = ord substr($data,6-2,1);
 
 			$data = substr($data,7-2,-2);
-			warn "# DB N: $DB_N SIZE: $DB_SIZE ", as_hex( $data ), " transponder_data: [$transponder_data] ",length($transponder_data),"\n";
+#			warn "# DB N: $DB_N SIZE: $DB_SIZE ", as_hex( $data ), " transponder_data: [$transponder_data] ",length($transponder_data),"\n";
 			foreach ( 1 .. $DB_N ) {
 				my $sec = substr($data,0,1);
 				my $db  = substr($data,1,$DB_SIZE);
-				warn "block $_ ",dump( $sec, $db );
+				warn "## block $_ ",dump( $sec, $db ) if $debug;
 				$transponder_data .= reverse split(//,$db);
 				$data = substr($data, $DB_SIZE + 1);
 			}
@@ -138,14 +145,15 @@ sub cpr_read {
 		$block += 4;
 	}
 
-	warn "DATA $hex_uid ", dump($transponder_data);
-	exit;
+	warn "# DATA $hex_uid ", dump($transponder_data);
+	return $transponder_data;
 }
 
 
-my $inventory;
 
 sub inventory {
+
+my $inventory;
 
 cpr( 'FF  B0  01 00', 'ISO - Inventory', sub {
 	my $data = shift;
@@ -160,15 +168,16 @@ cpr( 'FF  B0  01 00', 'ISO - Inventory', sub {
 		die "FIXME only TR-TYPE=3 ISO 15693 supported" unless $tr_type eq "\x03";
 		my $dsfid   = substr($data,1,1);
 		my $uid     = substr($data,2,8);
-		$inventory->{$uid}++;
 		$data = substr($data,10);
 		warn "# TAG $_ ",as_hex( $tr_type, $dsfid, $uid ),$/;
 
-		cpr_read( $uid );
+		$inventory->{$uid} ||= cpr_read( $uid );
+		
 	}
-	warn "inventory: ",dump($inventory);
+	warn "# inventory: ",dump($inventory);
 });
 
+	return $inventory;
 }
 
 1
