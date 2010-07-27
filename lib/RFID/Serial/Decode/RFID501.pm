@@ -42,6 +42,8 @@ my $item_type = {
 sub to_hash {
 	my ( $self, $data ) = @_;
 
+	return unless $data;
+
 	my ( $u1, $set_item, $u2, $type, $content, $br_lib, $custom ) = unpack('C4Z16Nl>',$data);
 	my $hash = {
 		u1 => $u1,	# FIXME
