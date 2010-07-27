@@ -15,7 +15,7 @@ use warnings;
 
 use Data::Dump qw/dump/;
 
-use JSON;
+use JSON::XS;
 use IO::Socket::INET;
 
 my $debug = 1;
@@ -25,6 +25,7 @@ my $server_url  = "http://localhost:$listen_port";
 
 
 use lib 'lib';
+use RFID::Serial::Decode::RFID501;
 use RFID::Serial::3M810;
 my $rfid = RFID::Serial::3M810->new;
 
@@ -70,12 +71,15 @@ sub http_server {
 				print $client "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n$index_html";
 			} elsif ( $method =~ m{/scan} ) {
 				my $tags = $rfid->scan;
-				my $json = {
-					time => time(),
-					tags => $tags,
+				my $json = { time => time() };
+				foreach my $tag ( keys %$tags ) {
+					my $hash = RFID::Serial::Decode::RFID501->to_hash( $tags->{$tag} );
+					$hash->{sid}  = $tag;
+					push @{ $json->{tags} }, $hash;
 				};
+				warn "#### ", encode_json($json);
 				print $client "HTTP/1.0 200 OK\r\nContent-Type: application/json\r\n\r\n",
-					$param->{callback}, "(", to_json($json), ")\r\n";
+					$param->{callback}, "(", encode_json($json), ")\r\n";
 			} elsif ( $method =~ m{/program} ) {
 
 				my $status = 501; # Not implementd
