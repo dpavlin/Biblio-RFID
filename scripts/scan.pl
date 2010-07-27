@@ -15,20 +15,29 @@ GetOptions(
 ) || die $!;
 
 my @readers = ( '3M810', 'CPRM02' );
+my @rfid;
+
+foreach my $reader ( @readers ) {
+	next if $only && $only ne $reader;
+	my $module = "RFID::Serial::$reader";
+	eval "use $module";
+	die $@ if $@;
+	if ( my $rfid = $module->new( device => '/dev/ttyUSB0' ) ) {
+		push @rfid, $rfid;
+		warn "# added $module\n";
+	} else {
+		warn "# ignored $module\n";
+	}
+}
 
 use lib 'lib';
 
 do {
-	foreach my $reader ( '3M810', 'CPRM02' ) {
-		next if $only && $only ne $reader;
-		my $module = "RFID::Serial::$reader";
-		eval "use $module";
-		die $@ if $@;
-		my $rfid = $module->new( device => '/dev/ttyUSB0' );
+	foreach my $rfid ( @rfid ) {
 		my $visible = $rfid->scan;
 		foreach my $tag ( keys %$visible ) {
 		warn "XXX $tag";
-			print "$reader\t$tag\t", join('', @{ $visible->{$tag} }), $/;
+			print ref($rfid),"\t$tag\t", join('', @{ $visible->{$tag} }), $/;
 		}
 	}
 
