@@ -62,9 +62,9 @@ sub cmd {
 
 	my $r_len = $port->read(3);
 
-	while ( ! $r_len ) {
+	while ( length($r_len) < 3 ) {
 		wait_device;
-		$r_len = $port->read(3);
+		$r_len = $port->read( 3 - length($r_len) );
 	}
 
 	wait_device;
