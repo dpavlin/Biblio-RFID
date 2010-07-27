@@ -181,7 +181,7 @@ sub read_blocks {
 			} elsif ( my $rest = _matched $data => '02 06' ) {
 				warn "ERROR ",as_hex($rest);
 			} else {
-				die "FIXME unsuported ",as_hex($rest);
+				warn "FIXME unsuported ",as_hex($rest);
 			}
 	});
 
