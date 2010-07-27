@@ -97,7 +97,7 @@ cmd(
 	my $data = shift;
 	my $rest = assert $data => '04 00 11';
 	my $hw_ver = join('.', unpack('CCCC', $rest));
-	print "hardware version $hw_ver\n";
+	warn "# 3M 810 hardware version $hw_ver\n";
 });
 
 cmd(
