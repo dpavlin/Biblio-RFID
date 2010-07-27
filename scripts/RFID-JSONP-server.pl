@@ -204,7 +204,7 @@ function got_visible_tags(data,textStatus) {
 function scan_tags() {
 	console.info('scan_tags');
 	if ( $('input#pull-reader').attr('checked') )
-		$.getJSON("http://localhost:9000/scan?callback=?", got_visible_tags);
+		$.getJSON("/scan?callback=?", got_visible_tags);
 }
 
 $(document).ready(function() {
