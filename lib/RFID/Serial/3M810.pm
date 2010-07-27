@@ -67,23 +67,22 @@ sub cmd {
 		$r_len = $port->read(3);
 	}
 
-	# FIXME sometimes, reader returns left-over junk
-	if ( ! ord(substr($r_len,0,1)) && 0xD0 ) {
-		warn "INVALID reponse ",as_hex($r_len);
-		my $c;
-		while ( $c ne "\xD6" ) {
-			$c = $port->read(1) || return;
-			warn "# c ",as_hex($c);
-		}
-		$r_len = $c . $port->read(2);
-		warn "FIXED ",as_hex($r_len);
-	}
-
 	wait_device;
 
 	my $len = ord( substr($r_len,2,1) );
 	$data = $port->read( $len );
-	warn "<< ", as_hex($r_len,$data)," $len\n";
+
+	while ( length($data) < $len ) {
+		warn "# short read ", length($data), " < $len\n";
+		wait_device;
+		$data .= $port->read( $len - length($data) );
+	}
+
+	warn "<< ", as_hex($r_len,$data),
+		' | ',
+		substr($data,-2,2) eq checksum(substr($r_len,1).substr($data,0,-2)) ? 'OK' : 'ERROR',
+		" $len bytes\n";
+
 
 	$coderef->( $data ) if $coderef;
 
