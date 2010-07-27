@@ -12,6 +12,20 @@ BEGIN {
 ok( my $hash = RFID::Serial::Decode::RFID501->to_hash( "\x04\x11\x00\x00200912310123\x00\x00\x00\x00" ), 'decode_tag' );
 diag dump $hash;
 
-ok( my $hash = RFID::Serial::Decode::RFID501->to_hash( "\x04\x11\x00\x011301234567\x00\x00\x00\x00\x00\x00" ), 'decode_tag' );
+ok( $hash = RFID::Serial::Decode::RFID501->to_hash( "\x04\x11\x00\x011301234567\x00\x00\x00\x00\x00\x00" ), 'decode_tag' );
+diag dump $hash;
+
+my $tag = [
+	"\4\21\0\0",
+	2009,
+	"0101",
+	"0123",
+	"\0\0\0\0",
+	"\xFF\xFF\xFF\xFF",
+	"\x7F\xFF\xFF\xFF",
+	"\0\0\0\0",
+];
+
+ok( $hash = RFID::Serial::Decode::RFID501->to_hash( $tag ), 'decode_tag' );
 diag dump $hash;
 

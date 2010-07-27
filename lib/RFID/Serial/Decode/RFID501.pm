@@ -22,6 +22,8 @@ was done to be compliant with 3M implementation
 
   my $hash = RFID::Serial::Decode::RFID501->to_hash( $bytes );
 
+  my $hash = RFID::Serial::Decode::RFID501->to_hash( [ 'blk1', 'blk2', ... , 'blk7' ] );
+
 =cut
 
 my $item_type = {
@@ -43,6 +45,10 @@ sub to_hash {
 	my ( $self, $data ) = @_;
 
 	return unless $data;
+
+	$data = join('', @$data) if ref $data eq 'ARRAY';
+
+	warn "## to_hash $data\n";
 
 	my ( $u1, $set_item, $u2, $type, $content, $br_lib, $custom ) = unpack('C4Z16Nl>',$data);
 	my $hash = {
