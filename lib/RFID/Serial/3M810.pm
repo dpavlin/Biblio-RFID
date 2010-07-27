@@ -200,4 +200,28 @@ sub read_blocks {
 	return $tag_blocks;
 }
 
+sub read_afi {
+	my $tag = shift;
+	$tag = shift if ref $tag;
+
+	cmd(
+		"0A $tag", "read_afi $tag", sub {
+		my $data = shift;
+
+		if ( my $rest = _matched $data => '0A 00' ) {
+
+			my $tag = hex_tag substr($rest,0,8);
+			my $afi = substr($rest,8,1);
+
+			warn "# SECURITY ", hex_tag($tag), " AFI: ", as_hex($afi);
+
+			return $afi;
+		} elsif ( my $rest = _matched $data => '0A 06' ) {
+			warn "ERROR reading security from $tag ", as_hex($data);
+		} else {
+			warn "IGNORED ",as_hex($data);
+		}
+	});
+}
+
 1
