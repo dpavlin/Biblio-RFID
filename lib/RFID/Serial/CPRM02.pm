@@ -138,7 +138,7 @@ sub read_blocks {
 				my $sec = ord(substr($data,0,1));
 				my $db  = substr($data,1,$DB_SIZE);
 				warn "## block $n ",dump( $sec, $db ) if $debug;
-				$tag_blocks->{$tag}->[$block+$n] = reverse split(//,$db);
+				$tag_blocks->{$tag}->[$block+$n-1] = reverse split(//,$db);
 				$data = substr($data, $DB_SIZE + 1);
 			}
 		});
