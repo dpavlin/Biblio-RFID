@@ -186,6 +186,7 @@ sub read_blocks {
 	});
 
 	warn "# tag_blocks ",dump($tag_blocks);
+	return $tag_blocks;
 }
 
 1
