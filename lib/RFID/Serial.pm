@@ -91,7 +91,15 @@ sub scan {
 
 	my $visible;
 	# FIXME this is naive implementation which just discards other tags
-	$visible->{$_} = $self->read_blocks( $_ )->{$_} foreach @tags;
+	foreach my $tag ( @tags ) {
+		my $blocks = $self->read_blocks( $tag );
+		if ( ! $blocks ) {
+			warn "ERROR: can't read tag $tag\n";
+			delete $visible->{$tag};
+		} else {
+			$visible->{$tag} = $blocks->{$tag};
+		}
+	}
 
 	return $visible;
 }
