@@ -28,6 +28,12 @@ use lib 'lib';
 use RFID::Serial::3M810;
 my $rfid = RFID::Serial::3M810->new;
 
+my $index_html;
+{
+	local $/ = undef;
+	$index_html = <DATA>;
+}
+
 sub http_server {
 
 	my $server = IO::Socket::INET->new(
@@ -41,24 +47,12 @@ sub http_server {
 
 	print "Server $0 ready at $server_url\n";
 
-	sub static {
-		my ($client,$path) = @_;
-
-		return unless $path eq '/';
-
-		print $client "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n";
-		while(<DATA>) {
-			print $client $_;
-		}
-
-		return $path;
-	}
-
 	while (my $client = $server->accept()) {
 		$client->autoflush(1);
 		my $request = <$client>;
 
 		warn "WEB << $request\n" if $debug;
+		my $path;
 
 		if ($request =~ m{^GET (/.*) HTTP/1.[01]}) {
 			my $method = $1;
@@ -70,8 +64,10 @@ sub http_server {
 				}
 				warn "WEB << param: ",dump( $param ) if $debug;
 			}
-			if ( my $path = static( $client,$1 ) ) {
-				warn "WEB >> $path" if $debug;
+			$path = $method;
+
+			if ( $path eq '/' ) {
+				print $client "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n$index_html";
 			} elsif ( $method =~ m{/scan} ) {
 				my $tags = $rfid->scan;
 				my $json = {
@@ -138,7 +134,7 @@ http_server;
 __DATA__
 <html>
 <head>
-<title>3M RFID</title>
+<title>RFID JSONP</title>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 <style type="text/css">
 .status {
