@@ -24,6 +24,21 @@ was done to be compliant with 3M implementation
 
 =cut
 
+my $item_type = {
+	1 => 'Book',
+	6 => 'CD/CD ROM',
+	2 => 'Magazine',
+	13 => 'Book with Audio Tape',
+	9 => 'Book with CD/CD ROM',
+	0 => 'Other',
+
+	5 => 'Video',
+	4 => 'Audio Tape',
+	3 => 'Bound Journal',
+	8 => 'Book with Diskette',
+	7 => 'Diskette',
+};
+
 sub to_hash {
 	my ( $self, $data ) = @_;
 
@@ -35,6 +50,7 @@ sub to_hash {
 		total => ( $set_item & 0x0f ),
 
 		type => $type,
+		type_label => $item_type->{$type},
 		content => $content,
 
 		branch => $br_lib >> 20,
