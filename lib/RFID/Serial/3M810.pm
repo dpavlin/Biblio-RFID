@@ -223,7 +223,38 @@ sub read_afi {
 			warn "IGNORED ",as_hex($data);
 		}
 	});
-	return as_hex $afi;
+	warn "## read_afi ",dump($tag, $afi);
+	return $afi;
+}
+
+sub write_afi {
+	my $tag = shift;
+	$tag = shift if ref $tag;
+	my $afi = shift || die "no afi?";
+
+	$afi = as_hex $afi;
+
+	cmd(
+		"09 $tag $afi", "write_afi $tag $afi", sub {
+		my $data = shift;
+
+		if ( my $rest = _matched $data => '09 00' ) {
+
+			my $tag = substr($rest,0,8);
+			   $afi = substr($rest,8,1);
+
+			warn "# SECURITY ", hex_tag($tag), " AFI: ", as_hex($afi);
+
+		} elsif ( my $rest = _matched $data => '0A 06' ) {
+			warn "ERROR writing AFI to $tag ", as_hex($data);
+			undef $afi;
+		} else {
+			warn "IGNORED ",as_hex($data);
+			undef $afi;
+		}
+	});
+	warn "## write_afi ", dump( $tag, $afi );
+	return $afi;
 }
 
 1
