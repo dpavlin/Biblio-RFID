@@ -164,6 +164,15 @@ label[for=pull-reader] {
 </style>
 <script type="text/javascript">
 
+// mock console
+if(!window.console) {
+	window.console = new function() {
+		this.info = function(str) {};
+		this.debug = function(str) {};
+	};
+}
+
+
 function got_visible_tags(data,textStatus) {
 	var html = 'No tags in range';
 	if ( data.tags ) {
