@@ -75,7 +75,7 @@ sub http_server {
 				foreach my $tag ( keys %$tags ) {
 					my $hash = RFID::Serial::Decode::RFID501->to_hash( $tags->{$tag} );
 					$hash->{sid}  = $tag;
-					$hash->{security} = $rfid->read_afi( $tag );
+					$hash->{security} = uc unpack 'H*', $rfid->read_afi( $tag );
 					push @{ $json->{tags} }, $hash;
 				};
 				warn "#### ", encode_json($json);
