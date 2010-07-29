@@ -55,9 +55,6 @@ sub _grep_tool {
 
 }
 
-sub _cleanup_sid {
-}
-
 sub inventory {
 
 	my @tags; 
