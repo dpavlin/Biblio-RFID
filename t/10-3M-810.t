@@ -22,6 +22,8 @@ foreach my $tag ( @tags ) {
 
 	ok( my $afi = $o->read_afi( $tag ), "read_afi $tag" );
 
+	ok( $o->write_blocks( $tag, $blocks ), "write_blocks $tag" );
+
 	my $new_afi = "\x42";
 
 	ok( $o->write_afi( $tag, $new_afi ), sprintf( "write_afi %s %x", $tag, $new_afi ) );

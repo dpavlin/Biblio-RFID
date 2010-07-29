@@ -200,6 +200,38 @@ sub read_blocks {
 	return $tag_blocks;
 }
 
+sub write_blocks {
+	my $tag = shift;
+	$tag = shift if ref $tag;
+	my $data = join('', @_);
+
+	warn "## write_blocks ",dump($tag,$data);
+
+	if ( length($data) % 4 ) {
+		$data .= '\x00' x ( 4 - length($data) % 4 );
+		warn "# padded data to ",dump($data);
+	}
+
+	my $hex_data = as_hex $data;
+	my $blocks   = sprintf('%02x', length($data) / 4 );
+
+	cmd(
+		"04 $tag 00 $blocks 00 $hex_data", "write_blocks $tag [$blocks] $hex_data", sub {
+			my $data = shift;
+			if ( my $rest = _matched $data => '04 00' ) {
+				my $tag = substr($rest,0,8);
+				my $blocks = substr($rest,8,1);
+				warn "# WRITE ",as_hex($tag), " [$blocks]\n";
+			} elsif ( my $rest = _matched $data => '04 06' ) {
+				warn "ERROR ",as_hex($rest);
+			} else {
+				die "UNSUPPORTED";
+			}
+		}
+	);
+
+}
+
 sub read_afi {
 	my $tag = shift;
 	$tag = shift if ref $tag;
