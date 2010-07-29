@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use Test::More tests => 7;
+use Test::More tests => 8;
 use Data::Dump qw(dump);
 
 use lib 'lib';
@@ -42,4 +42,7 @@ foreach my $tag ( @$tags ) {
 	diag dump( $orig, $bytes );
 
 }
+
+ok( my $bytes = RFID::Biblio::RFID501->blank, 'blank' );
+diag dump $bytes;
 

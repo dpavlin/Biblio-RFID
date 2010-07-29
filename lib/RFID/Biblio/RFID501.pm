@@ -118,8 +118,7 @@ sub to_hash {
 }
 
 sub from_hash {
-	my $self = shift;
-	my $hash = {@_};
+	my ( $self, $hash ) = @_;
 
 	warn "## from_hash ",dump($hash);
 
@@ -136,6 +135,12 @@ sub from_hash {
 		$hash->{custom},
 		0x00,
 	);
+}
+
+sub blank {
+
+	return ( "\x55" x ( 5 * 4 ) ) . ( "\x00" x 4 );
+
 }
 
 1;
