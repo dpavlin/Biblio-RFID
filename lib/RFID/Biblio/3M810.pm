@@ -1,7 +1,7 @@
-package RFID::Serial::3M810;
+package RFID::Biblio::3M810;
 
-use base 'RFID::Serial';
-use RFID::Serial;
+use base 'RFID::Biblio';
+use RFID::Biblio;
 
 use Data::Dump qw(dump);
 use Carp qw(confess);

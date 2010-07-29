@@ -1,7 +1,7 @@
-package RFID::Serial::CPRM02;
+package RFID::Biblio::CPRM02;
 
-use base 'RFID::Serial';
-use RFID::Serial;
+use base 'RFID::Biblio';
+use RFID::Biblio;
 
 use Time::HiRes;
 use Data::Dump qw(dump);

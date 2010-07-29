@@ -3,8 +3,8 @@
 use Test::More tests => 1;
 
 BEGIN {
-    use_ok( 'RFID::Serial' ) || print "Bail out!
+    use_ok( 'RFID::Biblio' ) || print "Bail out!
 ";
 }
 
-diag( "Testing RFID::Serial $RFID::Serial::VERSION, Perl $], $^X" );
+diag( "Testing RFID::Biblio $RFID::Biblio::VERSION, Perl $], $^X" );

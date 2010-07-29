@@ -1,4 +1,4 @@
-RFID-Serial
+RFID-Biblio
 
 The README is used to introduce the module and provide instructions on
 how to install the module, any machine dependencies it may have (for
@@ -26,21 +26,21 @@ SUPPORT AND DOCUMENTATION
 After installing, you can find documentation for this module with the
 perldoc command.
 
-    perldoc RFID::Serial
+    perldoc RFID::Biblio
 
 You can also look for information at:
 
     RT, CPAN's request tracker
-        http://rt.cpan.org/NoAuth/Bugs.html?Dist=RFID-Serial
+        http://rt.cpan.org/NoAuth/Bugs.html?Dist=RFID-Biblio
 
     AnnoCPAN, Annotated CPAN documentation
-        http://annocpan.org/dist/RFID-Serial
+        http://annocpan.org/dist/RFID-Biblio
 
     CPAN Ratings
-        http://cpanratings.perl.org/d/RFID-Serial
+        http://cpanratings.perl.org/d/RFID-Biblio
 
     Search CPAN
-        http://search.cpan.org/dist/RFID-Serial/
+        http://search.cpan.org/dist/RFID-Biblio/
 
 
 LICENSE AND COPYRIGHT

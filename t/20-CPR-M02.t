@@ -6,10 +6,10 @@ use Data::Dump qw(dump);
 use lib 'lib';
 
 BEGIN {
-	use_ok( 'RFID::Serial::CPRM02' );
+	use_ok( 'RFID::Biblio::CPRM02' );
 }
 
-ok( my $o = RFID::Serial::CPRM02->new( device => '/dev/ttyUSB0' ), 'new' );
+ok( my $o = RFID::Biblio::CPRM02->new( device => '/dev/ttyUSB0' ), 'new' );
 
 ok( my @tags = $o->inventory, 'inventory' );
 

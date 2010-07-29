@@ -19,7 +19,7 @@ my @rfid;
 
 foreach my $reader ( @readers ) {
 	next if $only && $only ne $reader;
-	my $module = "RFID::Serial::$reader";
+	my $module = "RFID::Biblio::$reader";
 	eval "use $module";
 	die $@ if $@;
 	if ( my $rfid = $module->new( device => '/dev/ttyUSB0' ) ) {

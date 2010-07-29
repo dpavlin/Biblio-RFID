@@ -1,4 +1,4 @@
-package RFID::Serial::Decode::RFID501;
+package RFID::Biblio::Decode::RFID501;
 
 use warnings;
 use strict;
@@ -20,9 +20,9 @@ was done to be compliant with 3M implementation
 
 =head2 decode_tag
 
-  my $hash = RFID::Serial::Decode::RFID501->to_hash( $bytes );
+  my $hash = RFID::Biblio::Decode::RFID501->to_hash( $bytes );
 
-  my $hash = RFID::Serial::Decode::RFID501->to_hash( [ 'blk1', 'blk2', ... , 'blk7' ] );
+  my $hash = RFID::Biblio::Decode::RFID501->to_hash( [ 'blk1', 'blk2', ... , 'blk7' ] );
 
 =cut
 

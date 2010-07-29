@@ -1,4 +1,4 @@
-package RFID::Serial;
+package RFID::Biblio;
 
 use warnings;
 use strict;
@@ -11,7 +11,7 @@ use Data::Dump qw(dump);
 
 =head1 NAME
 
-RFID::Serial - support serial RFID devices
+RFID::Biblio - support serial RFID devices
 
 =cut
 
@@ -27,9 +27,9 @@ which is sutable for direct mapping to REST JSONP service.
 
 Perhaps a little code snippet.
 
-    use RFID::Serial;
+    use RFID::Biblio;
 
-    my $rfid = RFID::Serial->new(
+    my $rfid = RFID::Biblio->new(
 		device => '/dev/ttyUSB0', # with fallback to RFID_DEVICE
 	);
 	my $visible = $rfid->scan;
@@ -125,7 +125,7 @@ All blocks are under key which is tag UID
 
   $hash = { 'E000000123456789' => [ undef, 'block1', 'block2', ... ] };
 
-L<RFID::Serial::3M810> sends tag UID with data payload, so we might expect
+L<RFID::Biblio::3M810> sends tag UID with data payload, so we might expect
 to receive response from other tags from protocol specification, 
 
 
@@ -184,7 +184,7 @@ Dobrica Pavlinusic, C<< <dpavlin at rot13.org> >>
 =head1 BUGS
 
 Please report any bugs or feature requests to C<bug-rfid-serial at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=RFID-Serial>.  I will be notified, and then you'll
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=RFID-Biblio>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
 
 
@@ -194,7 +194,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc RFID::Serial
+    perldoc RFID::Biblio
 
 
 You can also look for information at:
@@ -203,19 +203,19 @@ You can also look for information at:
 
 =item * RT: CPAN's request tracker
 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=RFID-Serial>
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=RFID-Biblio>
 
 =item * AnnoCPAN: Annotated CPAN documentation
 
-L<http://annocpan.org/dist/RFID-Serial>
+L<http://annocpan.org/dist/RFID-Biblio>
 
 =item * CPAN Ratings
 
-L<http://cpanratings.perl.org/d/RFID-Serial>
+L<http://cpanratings.perl.org/d/RFID-Biblio>
 
 =item * Search CPAN
 
-L<http://search.cpan.org/dist/RFID-Serial/>
+L<http://search.cpan.org/dist/RFID-Biblio/>
 
 =back
 
@@ -244,4 +244,4 @@ if not, write to the Free Software Foundation, Inc.,
 
 =cut
 
-1; # End of RFID::Serial
+1; # End of RFID::Biblio
