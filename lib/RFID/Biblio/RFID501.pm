@@ -3,6 +3,8 @@ package RFID::Biblio::RFID501;
 use warnings;
 use strict;
 
+use Data::Dump qw(dump);
+
 =head1 NAME
 
 RFID::Biblio::RFID501 - RFID Standard for Libraries
@@ -87,18 +89,19 @@ sub to_hash {
 
 	$data = join('', @$data) if ref $data eq 'ARRAY';
 
-	warn "## to_hash $data\n";
+	warn "## to_hash ",dump($data);
 
-	my ( $u1, $set_item, $u2, $type, $content, $br_lib, $custom ) = unpack('C4Z16Nl>',$data);
+	my ( $u1, $set_item, $u2, $type, $content, $br_lib, $custom, $zero ) = unpack('C4Z16Nl>l',$data);
 	my $hash = {
-		u1 => $u1,	# FIXME
+		u1 => $u1,	# FIXME 0x04
 		set => ( $set_item & 0xf0 ) >> 4,
 		total => ( $set_item & 0x0f ),
 
-		u2 => $u2,	# FIXME
+		u2 => $u2,	# FIXME 0x00
 
 		type => $type,
 		type_label => $item_type->{$type},
+
 		content => $content,
 
 		branch => $br_lib >> 20,
@@ -107,7 +110,29 @@ sub to_hash {
 		custom => $custom,
 	};
 
+	warn "expected first byte to be 0x04, not $u1\n"   if $u1 != 4;
+	warn "expected third byte to be 0x00, not $u2\n"   if $u2 != 0;
+	warn "expected last block to be zero, not $zero\n" if $zero != 0;
+
 	return $hash;
+}
+
+sub from_hash {
+	my ( $self, $hash ) = @_;
+
+	return pack('C4Z16Nl>l',
+		0x04,
+		( $hash->{set} << 4 ) | ( $hash->{total} & 0x0f ),
+		0x00,
+		$hash->{type},
+
+		$hash->{content},
+
+		( $hash->{branch} << 20 ) | ( $hash->{library} & 0x000fffff ),
+
+		$hash->{custom},
+		0x00,
+	);
 }
 
 1;

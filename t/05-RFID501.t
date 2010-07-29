@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use Test::More tests => 4;
+use Test::More tests => 7;
 use Data::Dump qw(dump);
 
 use lib 'lib';
@@ -9,13 +9,8 @@ BEGIN {
 	use_ok( 'RFID::Biblio::RFID501' );
 }
 
-ok( my $hash = RFID::Biblio::RFID501->to_hash( "\x04\x11\x00\x00200912310123\x00\x00\x00\x00" ), 'decode_tag' );
-diag dump $hash;
-
-ok( $hash = RFID::Biblio::RFID501->to_hash( "\x04\x11\x00\x011301234567\x00\x00\x00\x00\x00\x00" ), 'decode_tag' );
-diag dump $hash;
-
-my $tag = [
+my $tags =
+[ [
 	"\4\21\0\0",
 	2009,
 	"0101",
@@ -24,8 +19,27 @@ my $tag = [
 	"\xFF\xFF\xFF\xFF",
 	"\x7F\xFF\xFF\xFF",
 	"\0\0\0\0",
-];
+],[
+	"\4\21\0\1",
+	1302,
+	"0037",
+	"67\0\0",
+	"\0\0\0\0",
+	"\0\0\0\0",
+	"\0\0\0\0",
+	"\0\0\0\0",
+] ];
 
-ok( $hash = RFID::Biblio::RFID501->to_hash( $tag ), 'decode_tag' );
-diag dump $hash;
+foreach my $tag ( @$tags ) {
+
+	ok( $hash = RFID::Biblio::RFID501->to_hash( $tag ), 'to_hash' );
+	diag dump $hash;
+
+	ok( $bytes = RFID::Biblio::RFID501->from_hash( $hash ), 'from_hash' );
+	my $orig = join('', @$tag);
+	cmp_ok( $bytes, 'eq', $orig, 'roundtrip' );
+
+	diag dump( $orig, $bytes );
+
+}
 
