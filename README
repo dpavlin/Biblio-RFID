@@ -1,15 +1,25 @@
 RFID-Biblio
 
-The README is used to introduce the module and provide instructions on
-how to install the module, any machine dependencies it may have (for
-example C compilers and installed libraries) and any other information
-that should be provided before the module is installed.
+This is set of tools to use different RFID readers for library use.
 
-A README file is required for CPAN modules since CPAN extracts the README
-file from a module distribution so that people browsing the archive
-can use it to get an idea of the module's uses. It is usually a good idea
-to provide version information here so that people can decide whether
-fixes for the module are worth downloading.
+Main idea is to develop simple API to reader, and than provide useful
+abstractions on top of it to quickly write applications to respond on
+tags which come in range of RFID reader.
+
+scripts/RFID-JSONP-server.pl is example of such application. It's local
+interface to RFID reader and JSONP REST server.
+
+examples/koha-rfid.js is jQuery based JavaScript code which can be inserted
+in Koha Library System to provide overlay with tags in range and check-in/check-out
+form-fill functionality.
+
+Currently supported readers:
+
+ * 3M 810  - RFID::Biblio::3M810
+ * CPR-M02 - RFID::Biblio::CPRM02
+ * OpenPCD, The Omnikey CardMan 5121 and 5321 - RFID::Biblio::librfid
+
+For status of each implementation see pod documentation inside them.
 
 
 INSTALLATION
