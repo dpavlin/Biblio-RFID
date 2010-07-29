@@ -42,5 +42,9 @@ sub inventory {
 	return @tags;
 }
 
+sub read_blocks {}
+sub write_blocks {}
+sub read_afi {}
+sub write_afi {}
 
 1
