@@ -18,7 +18,7 @@ my @readers = ( '3M810', 'CPRM02' );
 my @rfid;
 
 foreach my $reader ( @readers ) {
-	next if $only && $only ne $reader;
+	next if $reader !~ /$only/i && $only ne $reader;
 	my $module = "RFID::Biblio::$reader";
 	eval "use $module";
 	die $@ if $@;
