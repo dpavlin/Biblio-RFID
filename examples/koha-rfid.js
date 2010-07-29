@@ -9,6 +9,21 @@
  *
  * to provide overlay for tags in range and emulate form fill for Koha Library System
  * which allows check-in and checkout-operations without touching html interface
+ *
+ * You will have to inject remote javascript in Koha intranetuserjs using:
+
+
+<!-- this is basically remote script injection, doesn't work in Chrome with SSL -->
+//]]></script>
+
+<!-- invoke local RFID javascript -->
+<script type="text/javascript"
+src="http://localhost:9000/examples/koha-rfid.js" 
+>
+
+<script type="text/javascript">
+//<![CDATA[
+
  */
 
 function barcode_on_screen(barcode) {
