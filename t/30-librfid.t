@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use Test::More tests => 3;
+use Test::More;
 use Data::Dump qw(dump);
 
 use lib 'lib';
@@ -13,8 +13,6 @@ ok( my $o = RFID::Biblio::librfid->new( tool => '/rest/cvs/librfid/utils/librfid
 
 ok( my @tags = $o->inventory, 'inventory' );
 diag dump @tags;
-
-__END__
 
 my $old_afi;
 
@@ -39,3 +37,4 @@ foreach my $tag ( @tags ) {
 ok( my $visible = $o->scan, 'scan' );
 diag dump $visible;
 
+done_testing;
