@@ -23,11 +23,12 @@ my $debug = 1;
 my $listen_port = 9000;                  # pick something not in use
 my $server_url  = "http://localhost:$listen_port";
 
+my $reader = shift @ARGV;
 
 use lib 'lib';
 use RFID::Biblio::RFID501;
-use RFID::Biblio::3M810;
-my $rfid = RFID::Biblio::3M810->new;
+use RFID::Biblio::Readers;
+my $rfid = (RFID::Biblio::Readers->available( $reader ))[0]; # FIXME
 
 my $index_html;
 {
