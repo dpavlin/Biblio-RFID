@@ -118,7 +118,10 @@ sub to_hash {
 }
 
 sub from_hash {
-	my ( $self, $hash ) = @_;
+	my $self = shift;
+	my $hash = {@_};
+
+	warn "## from_hash ",dump($hash);
 
 	return pack('C4Z16Nl>l',
 		0x04,
