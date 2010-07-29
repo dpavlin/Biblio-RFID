@@ -5,7 +5,7 @@ use strict;
 
 use lib 'lib';
 
-my @readers = ( '3M810', 'CPRM02' );
+my @readers = ( '3M810', 'CPRM02', 'librfid' );
 
 sub available {
 	my ( $self, $filter ) = @_;
@@ -24,6 +24,8 @@ sub available {
 			warn "# ignored $module\n";
 		}
 	}
+
+	die "no readers found" unless @rfid;
 
 	return @rfid;
 }
