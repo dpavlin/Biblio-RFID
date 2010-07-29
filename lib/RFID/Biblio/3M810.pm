@@ -1,5 +1,8 @@
 package RFID::Biblio::3M810;
 
+use warnings;
+use strict;
+
 use base 'RFID::Biblio';
 use RFID::Biblio;
 
@@ -70,7 +73,7 @@ sub cmd {
 	wait_device;
 
 	my $len = ord( substr($r_len,2,1) );
-	$data = $port->read( $len );
+	my $data = $port->read( $len );
 
 	while ( length($data) < $len ) {
 		warn "# short read ", length($data), " < $len\n";
@@ -187,9 +190,9 @@ sub read_blocks {
 					warn "## pos $pos block $nr ",as_hex($payload), $/;
 					$tag_blocks->{$tag}->[$nr] = $payload;
 				}
-			} elsif ( my $rest = _matched $data => 'FE 00 00 05 01' ) {
-				warn "FIXME ready? ",as_hex $test;
-			} elsif ( my $rest = _matched $data => '02 06' ) {
+			} elsif ( $rest = _matched $data => 'FE 00 00 05 01' ) {
+				warn "FIXME ready? ",as_hex $rest;
+			} elsif ( $rest = _matched $data => '02 06' ) {
 				warn "ERROR ",as_hex($rest);
 			} else {
 				warn "FIXME unsuported ",as_hex($rest);
@@ -222,7 +225,7 @@ sub write_blocks {
 				my $tag = substr($rest,0,8);
 				my $blocks = substr($rest,8,1);
 				warn "# WRITE ",as_hex($tag), " [$blocks]\n";
-			} elsif ( my $rest = _matched $data => '04 06' ) {
+			} elsif ( $rest = _matched $data => '04 06' ) {
 				warn "ERROR ",as_hex($rest);
 			} else {
 				die "UNSUPPORTED";
@@ -249,7 +252,7 @@ sub read_afi {
 
 			warn "# SECURITY ", hex_tag($tag), " AFI: ", as_hex($afi);
 
-		} elsif ( my $rest = _matched $data => '0A 06' ) {
+		} elsif ( $rest = _matched $data => '0A 06' ) {
 			warn "ERROR reading security from $tag ", as_hex($data);
 		} else {
 			warn "IGNORED ",as_hex($data);
@@ -277,7 +280,7 @@ sub write_afi {
 
 			warn "# SECURITY ", hex_tag($tag), " AFI: ", as_hex($afi);
 
-		} elsif ( my $rest = _matched $data => '0A 06' ) {
+		} elsif ( $rest = _matched $data => '0A 06' ) {
 			warn "ERROR writing AFI to $tag ", as_hex($data);
 			undef $afi;
 		} else {
