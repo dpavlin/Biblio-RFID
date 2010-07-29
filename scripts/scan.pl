@@ -5,6 +5,8 @@ use strict;
 
 use Data::Dump qw(dump);
 use Getopt::Long;
+use lib 'lib';
+use RFID::Biblio::Readers;
 
 my $loop = 0;
 my $only;
@@ -14,23 +16,7 @@ GetOptions(
 	'only=s', => \$only,
 ) || die $!;
 
-my @readers = ( '3M810', 'CPRM02' );
-my @rfid;
-
-foreach my $reader ( @readers ) {
-	next if $reader !~ /$only/i && $only ne $reader;
-	my $module = "RFID::Biblio::$reader";
-	eval "use $module";
-	die $@ if $@;
-	if ( my $rfid = $module->new( device => '/dev/ttyUSB0' ) ) {
-		push @rfid, $rfid;
-		warn "# added $module\n";
-	} else {
-		warn "# ignored $module\n";
-	}
-}
-
-use lib 'lib';
+my @rfid = RFID::Biblio::Readers->available( $only );
 
 do {
 	foreach my $rfid ( @rfid ) {
