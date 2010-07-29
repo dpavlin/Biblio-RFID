@@ -1,11 +1,11 @@
-package RFID::Biblio::Decode::RFID501;
+package RFID::Biblio::RFID501;
 
 use warnings;
 use strict;
 
 =head1 NAME
 
-RFID::501 - RFID Standard for Libraries
+RFID::Biblio::RFID501 - RFID Standard for Libraries
 
 =head1 DESCRIPTION
 

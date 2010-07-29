@@ -25,7 +25,7 @@ my $server_url  = "http://localhost:$listen_port";
 
 
 use lib 'lib';
-use RFID::Biblio::Decode::RFID501;
+use RFID::Biblio::RFID501;
 use RFID::Biblio::3M810;
 my $rfid = RFID::Biblio::3M810->new;
 
@@ -73,7 +73,7 @@ sub http_server {
 				my $tags = $rfid->scan;
 				my $json = { time => time() };
 				foreach my $tag ( keys %$tags ) {
-					my $hash = RFID::Biblio::Decode::RFID501->to_hash( $tags->{$tag} );
+					my $hash = RFID::Biblio::RFID501->to_hash( $tags->{$tag} );
 					$hash->{sid}  = $tag;
 					$hash->{security} = uc unpack 'H*', $rfid->read_afi( $tag );
 					push @{ $json->{tags} }, $hash;
