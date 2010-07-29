@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use Test::More tests => 3;
+use Test::More; # tests => 3;
 use Data::Dump qw(dump);
 
 use lib 'lib';
@@ -37,3 +37,4 @@ foreach my $tag ( @tags ) {
 ok( my $visible = $o->scan, 'scan' );
 diag dump $visible;
 
+done_testing();
