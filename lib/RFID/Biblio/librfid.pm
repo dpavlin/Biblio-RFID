@@ -41,19 +41,29 @@ sub _grep_tool {
 	while(<$s>) {
 		chomp;
 		warn "## $_\n";
-		$coderef->( $_ );
+
+		my $sid;
+		if ( m/success.+:\s+(.+)/ ) {
+			$sid = $1;
+			$sid =~ s/\s*'\s*//g;
+			$sid = uc join('', reverse split(/\s+/, $sid));
+		}
+
+		$coderef->( $sid );
 	}
 
 
+}
+
+sub _cleanup_sid {
 }
 
 sub inventory {
 
 	my @tags; 
 	_grep_tool '--scan' => sub {
-		if ( m/success.+:\s+(.+)/ ) {
-			push @tags, $1;
-		}
+		my $sid = shift;
+		push @tags, $sid if $sid;
 	};
 	warn "# invetory ",dump(@tags);
 	return @tags;
@@ -61,10 +71,13 @@ sub inventory {
 
 sub read_blocks {
 
+	my $sid;
 	my $blocks;
 	_grep_tool '--read -1' => sub {
-		$blocks->[$1] = hex2bytes($2)
+		$sid ||= shift;
+		$blocks->{$sid}->[$1] = hex2bytes($2)
 		if m/block\[\s*(\d+):.+data.+:\s*(.+)/;
+
 	};
 	warn "# read_blocks ",dump($blocks);
 	return $blocks;
