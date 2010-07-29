@@ -70,6 +70,21 @@ sub http_server {
 
 			if ( $path eq '/' ) {
 				print $client "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n$index_html";
+			} elsif ( $path =~ m{^/(examples/.+)} ) {
+				$path = $1; # FIXME prefix with dir for installation
+				my $size = -s $path;
+				warn "static $path $size bytes\n";
+				my $content_type = 'text/plain';
+				$content_type = 'application/javascript' if $path =~ /\.js/;
+				print $client "HTTP/1.0 200 OK\r\nContent-Type: $content_type\r\nContent-Length: $size\r\n\r\n";
+				{
+					local $/ = undef;
+					open(my $fh, '<', $path) || die "can't open $path: $!";
+					while(<$fh>) {
+						print $client $_;
+					}
+					close($fh);
+				}
 			} elsif ( $method =~ m{/scan} ) {
 				my $tags = $rfid->scan;
 				my $json = { time => time() };
