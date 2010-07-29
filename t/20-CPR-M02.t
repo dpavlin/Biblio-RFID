@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use Test::More tests => 3;
+use Test::More;
 use Data::Dump qw(dump);
 
 use lib 'lib';
@@ -18,3 +18,4 @@ ok( my $blocks = $o->read_blocks( $_ ), "read_blocks $_" ) foreach @tags;
 ok( my $visible = $o->scan, 'scan' );
 diag dump $visible;
 
+done_testing;
