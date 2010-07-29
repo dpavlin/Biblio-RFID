@@ -64,8 +64,13 @@ sub port {
 	return $self->{port} if defined $self->{port};
 
 	my $settings = $self->serial_settings;
-	$settings->{device} ||= $ENV{RFID_DEVICE};
+	my $device   = $settings->{device} ||= $ENV{RFID_DEVICE};
 	warn "# settings ",dump $settings;
+
+	if ( ! $device ) {
+		warn "# no device, serial port not opened\n";
+		return;
+	}
 
 	$self->{port} = Device::SerialPort->new( $settings->{device} )
 	|| die "can't open serial port: $!\n";
