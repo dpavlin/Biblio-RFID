@@ -197,6 +197,22 @@ sub as_hex {
 sub hex_tag { uc(unpack('H16', shift)) }
 
 
+=head1 SUPPORTED READERS
+
+Support for different RFID readers is implemented in subclasses:
+
+=head2 3M 810
+
+L<RFID::Biblio::3M810>
+
+=head2 CPR-M02
+
+L<RFID::Biblio::CPRM02>
+
+=head2 librfid
+
+L<RFID::Biblio::librfid>
+
 =head1 AUTHOR
 
 Dobrica Pavlinusic, C<< <dpavlin at rot13.org> >>
