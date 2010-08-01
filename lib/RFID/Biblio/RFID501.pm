@@ -59,11 +59,19 @@ L<http://saturn.ffzg.hr/rot13/index.cgi?hitchhikers_guide_to_rfid>
 
 =head1 METHODS
 
-=head2 decode_tag
+=head2 to_hash
 
   my $hash = RFID::Biblio::Decode::RFID501->to_hash( $bytes );
 
   my $hash = RFID::Biblio::Decode::RFID501->to_hash( [ 'blk1', 'blk2', ... , 'blk7' ] );
+
+=head2 from_hash
+
+  my $blocks = RFID::Biblio::Decode::RFID->from_hash( $hash );
+
+=head2 blank
+
+  my $blocks = RFID::Biblio::Decode::RFID->blank;
 
 =cut
 
