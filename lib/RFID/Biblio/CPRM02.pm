@@ -1,5 +1,16 @@
 package RFID::Biblio::CPRM02;
 
+=head1 NAME
+
+RFID::Biblio::CPRM02 - support for CPR-M02 RFID reader
+
+=head1 DESCRIPTION
+
+This module implements serial protocol over usb/serial adapter with CPR-M02
+reader as described in document C<H20800-16e-ID-B.pdf>
+
+=cut
+
 use warnings;
 use strict;
 
