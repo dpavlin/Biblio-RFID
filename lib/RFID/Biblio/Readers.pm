@@ -1,5 +1,19 @@
 package RFID::Biblio::Readers;
 
+=head1 NAME
+
+RFID::Biblio::Readers - autodetect supported readers
+
+=head1 FUNCTIONS
+
+=head2 available
+
+Probe each RFID reader supported and returns succefull ones
+
+  my @rfid = RFID::Biblio::Readers->available( $regex_filter );
+
+=cut
+
 use warnings;
 use strict;
 
