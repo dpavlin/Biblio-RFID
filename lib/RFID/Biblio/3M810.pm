@@ -1,5 +1,26 @@
 package RFID::Biblio::3M810;
 
+=head1 NAME
+
+RFID::Biblio::3M810 - support for 3M 810 RFID reader
+
+=head1 DESCRIPTION
+
+This module implement serial protocol (over USB/serial adapter) with 3M 810 RFID
+reader, often used in library applications.
+
+This is most complete implementation which supports full API defined
+in L<RFID::Biblio>. This include scanning for all tags in reader
+range, reading and writing of data, and AFI security manipulation.
+
+This implementation is developed using Portmon on Windows to capture serial traffic
+L<http://technet.microsoft.com/en-us/sysinternals/bb896644.aspx>
+
+Checksum for this reader is developed using help from C<selwyn>
+L<http://stackoverflow.com/questions/149617/how-could-i-guess-a-checksum-algorithm>
+
+=cut
+
 use warnings;
 use strict;
 
