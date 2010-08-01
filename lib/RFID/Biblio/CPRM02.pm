@@ -1,5 +1,8 @@
 package RFID::Biblio::CPRM02;
 
+use warnings;
+use strict;
+
 use base 'RFID::Biblio';
 use RFID::Biblio;
 
