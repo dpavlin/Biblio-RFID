@@ -104,13 +104,13 @@ sub http_server {
 				foreach my $p ( keys %$param ) {
 					next unless $p =~ m/^(E[0-9A-F]{15})$/;
 					my $tag = $1;
-					my $content = "\x04\x11\x00\x01" . $param->{$p};
-					$content = "\x00" if $param->{$p} eq 'blank';
+					my $content = RFID::Biblio::RFID501->from_hash({ content => $param->{$p} });
+					$content    = RFID::Biblio::RFID501->blank if $param->{$p} eq 'blank';
 					$status = 302;
 
 					warn "PROGRAM $tag $content\n";
-					write_tag( $tag, $content );
-					secure_tag_with( $tag, $param->{$p} =~ /^130/ ? 'DA' : 'D7' );
+					$rfid->write_blocks( $tag => $content );
+					$rfid->write_afi(    $tag => chr( $param->{$p} =~ /^130/ ? 0xDA : 0xD7 ) );
 				}
 
 				print $client "HTTP/1.0 $status $method\r\nLocation: $server_url\r\n\r\n";
