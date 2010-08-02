@@ -22,7 +22,7 @@ foreach my $tag ( @tags ) {
 
 	ok( my $afi = $o->read_afi( $tag ), "read_afi $tag" );
 
-	ok( $o->write_blocks( $tag, $blocks ), "write_blocks $tag" );
+	ok( $o->write_blocks( $tag, $blocks->{tag} ), "write_blocks $tag" );
 
 	my $new_afi = "\x42";
 

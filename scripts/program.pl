@@ -25,7 +25,7 @@ foreach my $rfid ( @rfid ) {
 	foreach my $tag ( keys %$visible ) {
 		next unless $tag eq $sid;
 		warn "PROGRAM $tag with $content\n";
-		$rfid->write_blocks( $tag, RFID::Biblio::RFID501->from_hash( content => $content ) );
+		$rfid->write_blocks( $tag, RFID::Biblio::RFID501->from_hash({ content => $content }) );
 	}
 }
 
