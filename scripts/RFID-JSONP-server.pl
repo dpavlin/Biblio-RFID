@@ -19,10 +19,16 @@ use JSON::XS;
 use IO::Socket::INET;
 
 my $debug = 1;
-
 my $listen = '127.0.0.1:9000';
+my $reader;
 
-my $reader = shift @ARGV;
+use Getopt::Long;
+
+GetOptions(
+	'debug!'    => \$debug,
+	'listen=s', => \$listen,
+	'reader=s', => \$reader,
+) || die $!;
 
 use lib 'lib';
 use RFID::Biblio::RFID501;
