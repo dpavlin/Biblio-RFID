@@ -18,9 +18,11 @@ This is wrapper around C<librfid-tool> from
 
 L<http://openmrtd.org/projects/librfid/>
 
-=head2 SYOPSYS
+Due to limitation of C<librfid-tool> only C<inventory> and
+C<read_blocks> is supported.
 
-
+However, this code might provide template for integration
+with any command-line utilities for different RFID readers.
 
 =cut
 
