@@ -10,14 +10,14 @@ use RFID::Biblio::Readers;
 use RFID::Biblio::RFID501;
 
 my $loop = 0;
-my $only;
+my $reader;
 
 GetOptions(
-	'loop!'   => \$loop,
-	'only=s', => \$only,
+	'loop!'     => \$loop,
+	'reader=s', => \$reader,
 ) || die $!;
 
-my @rfid = RFID::Biblio::Readers->available( $only );
+my @rfid = RFID::Biblio::Readers->available( $reader );
 
 do {
 	foreach my $rfid ( @rfid ) {
