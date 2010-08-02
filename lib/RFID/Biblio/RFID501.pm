@@ -67,7 +67,7 @@ L<http://saturn.ffzg.hr/rot13/index.cgi?hitchhikers_guide_to_rfid>
 
 =head2 from_hash
 
-  my $blocks = RFID::Biblio::Decode::RFID->from_hash( $hash );
+  my $blocks = RFID::Biblio::Decode::RFID->from_hash({ content => "1301234567" });
 
 =head2 blank
 
