@@ -20,8 +20,7 @@ use IO::Socket::INET;
 
 my $debug = 1;
 
-my $listen_port = 9000;                  # pick something not in use
-my $server_url  = "http://localhost:$listen_port";
+my $listen = '127.0.0.1:9000';
 
 my $reader = shift @ARGV;
 
@@ -29,6 +28,7 @@ use lib 'lib';
 use RFID::Biblio::RFID501;
 use RFID::Biblio::Readers;
 my $rfid = (RFID::Biblio::Readers->available( $reader ))[0]; # FIXME
+warn "using $rfid reader\n";
 
 my $index_html;
 {
@@ -36,17 +36,20 @@ my $index_html;
 	$index_html = <DATA>;
 }
 
+my $server_url;
+
 sub http_server {
 
 	my $server = IO::Socket::INET->new(
 		Proto     => 'tcp',
-		LocalPort => $listen_port,
+		LocalAddr => $listen,
 		Listen    => SOMAXCONN,
 		Reuse     => 1
 	);
 								  
 	die "can't setup server: $!" unless $server;
 
+	$server_url = 'http://' . $listen;
 	print "Server $0 ready at $server_url\n";
 
 	while (my $client = $server->accept()) {
