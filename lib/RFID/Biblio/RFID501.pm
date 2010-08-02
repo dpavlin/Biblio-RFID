@@ -69,6 +69,8 @@ L<http://saturn.ffzg.hr/rot13/index.cgi?hitchhikers_guide_to_rfid>
 
   my $blocks = RFID::Biblio::Decode::RFID->from_hash({ content => "1301234567" });
 
+=head2 blank_3m
+
 =head2 blank
 
   my $blocks = RFID::Biblio::Decode::RFID->blank;
@@ -145,10 +147,12 @@ sub from_hash {
 	);
 }
 
+sub blank_3m {
+	return ( "\x55" x ( 6 * 4 ) ) . ( "\x00" x 4 );
+}
+
 sub blank {
-
-	return ( "\x55" x ( 5 * 4 ) ) . ( "\x00" x 4 );
-
+	return "\x00" x ( 4 * 3 );
 }
 
 1;
