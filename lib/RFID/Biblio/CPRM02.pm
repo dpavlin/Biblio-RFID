@@ -114,6 +114,37 @@ cpr( 'FF  69',		'RF Reset' );
 	return 1;
 }
 
+
+sub inventory {
+
+	my @tags;
+
+cpr( 'FF  B0  01 00', 'ISO - Inventory', sub {
+	my $data = shift;
+	if (length($data) < 5 + 2 ) {
+		warn "# no tags in range\n";
+		return;
+	}
+
+	my $data_sets = ord(substr($data,3,1));
+	$data = substr($data,4);
+	foreach ( 1 .. $data_sets ) {
+		my $tr_type = substr($data,0,1);
+		die "FIXME only TR-TYPE=3 ISO 15693 supported" unless $tr_type eq "\x03";
+		my $dsfid   = substr($data,1,1);
+		my $uid     = substr($data,2,8);
+		$data = substr($data,10);
+		warn "# TAG $_ ",as_hex( $tr_type, $dsfid, $uid ),$/;
+		push @tags, hex_tag $uid;
+		
+	}
+});
+
+	warn "# tags ",dump(@tags),$/;
+	return @tags;
+}
+
+
 sub read_blocks {
 	my $tag = shift;
 	$tag = shift if ref $tag;
@@ -164,35 +195,5 @@ sub read_blocks {
 	return $tag_blocks;
 }
 
-
-
-sub inventory {
-
-	my @tags;
-
-cpr( 'FF  B0  01 00', 'ISO - Inventory', sub {
-	my $data = shift;
-	if (length($data) < 5 + 2 ) {
-		warn "# no tags in range\n";
-		return;
-	}
-
-	my $data_sets = ord(substr($data,3,1));
-	$data = substr($data,4);
-	foreach ( 1 .. $data_sets ) {
-		my $tr_type = substr($data,0,1);
-		die "FIXME only TR-TYPE=3 ISO 15693 supported" unless $tr_type eq "\x03";
-		my $dsfid   = substr($data,1,1);
-		my $uid     = substr($data,2,8);
-		$data = substr($data,10);
-		warn "# TAG $_ ",as_hex( $tr_type, $dsfid, $uid ),$/;
-		push @tags, hex_tag $uid;
-		
-	}
-});
-
-	warn "# tags ",dump(@tags),$/;
-	return @tags;
-}
 
 1
