@@ -111,6 +111,7 @@ cpr( 'FF  66 00',	'Get Reader Info - General hard and firware' );
 
 cpr( 'FF  69',		'RF Reset' );
 
+	return 1;
 }
 
 sub read_blocks {
