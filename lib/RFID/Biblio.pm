@@ -11,7 +11,7 @@ use Data::Dump qw(dump);
 
 =head1 NAME
 
-RFID::Biblio - support serial RFID devices
+RFID::Biblio - easy to use API for writing RFID enabled appliaction
 
 =cut
 
@@ -27,16 +27,20 @@ which is sutable for direct mapping to REST JSONP service.
 
 Perhaps a little code snippet.
 
-    use RFID::Biblio;
+	use RFID::Biblio;
 
-    my $rfid = RFID::Biblio->new(
+	my $rfid = RFID::Biblio->new(
 		device => '/dev/ttyUSB0', # with fallback to RFID_DEVICE
 	);
+
+	# invetory tags in reader range and read data from them
 	my $visible = $rfid->scan;
 
-=head1 SUBROUTINES/METHODS
+=head1 METHODS
 
 =head2 new
+
+Open serial port (if needed) and init reader
 
 =cut
 
@@ -110,7 +114,7 @@ sub scan {
 }
 
 
-=head1 MANDATORY IMPLEMENTATIONS
+=head1 READER IMPLEMENTATION
 
 Each reader must implement following hooks as sub-classes.
 
