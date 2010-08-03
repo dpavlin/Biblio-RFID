@@ -234,7 +234,9 @@ sub read_blocks {
 sub write_blocks {
 	my $tag = shift;
 	$tag = shift if ref $tag;
-	my $data = join('', @_);
+
+	my $data = shift;
+	$data = join('', @$data) if ref $data eq 'ARRAY';
 
 	warn "## write_blocks ",dump($tag,$data);
 
