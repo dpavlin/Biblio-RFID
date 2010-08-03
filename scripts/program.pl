@@ -10,9 +10,11 @@ use RFID::Biblio::Readers;
 use RFID::Biblio::RFID501;
 
 my $reader;
+my $afi;
 
 GetOptions(
 	'reader=s', => \$reader,
+	'afi=i',    => \$afi,
 ) || die $!;
 
 my ( $sid, $content ) =  @ARGV;
@@ -26,6 +28,7 @@ foreach my $rfid ( @rfid ) {
 		next unless $tag eq $sid;
 		warn "PROGRAM $tag with $content\n";
 		$rfid->write_blocks( $tag => RFID::Biblio::RFID501->from_hash({ content => $content }) );
+		$rfid->write_afi(    $tag => chr($afi) ) if $afi;
 	}
 }
 
