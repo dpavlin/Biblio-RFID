@@ -196,4 +196,29 @@ sub read_blocks {
 }
 
 
+sub write_blocks {
+	my $tag = shift;
+	$tag = shift if ref $tag;
+
+	my $data = shift;
+	$data = join('', @$data) if ref $data eq 'ARRAY';
+
+	my $DB_ADR  = 0; # start at first block
+	my $DB_SIZE = 4; # bytes in one block FIXME this should be read from transponder and not hard-coded
+	if ( my $padding = length($data) % $DB_SIZE ) {
+		warn "WARNING: data block not padded to $DB_SIZE bytes";
+		$data .= "\x00" x $padding;
+	}
+	my $DB_N    = length($data) / $DB_SIZE;
+
+	cpr( sprintf("FF  B0 24  01  $tag   %02x %02x %02x  %s", $DB_ADR, $DB_SIZE, $DB_N, as_hex($data)), "Write Multiple Blocks $tag", sub {
+		my $data = shift;
+		warn dump( $data );
+	});
+
+}
+
+sub read_afi {}
+sub write_afi {}
+
 1
