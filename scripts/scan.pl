@@ -23,8 +23,14 @@ do {
 	foreach my $rfid ( @rfid ) {
 		my $visible = $rfid->scan;
 		foreach my $tag ( keys %$visible ) {
-		warn "XXX $tag";
-			print ref($rfid),"\t$tag\t", dump( RFID::Biblio::RFID501->to_hash( join('', @{ $visible->{$tag} }) ) ), $/;
+			my $afi = $rfid->read_afi( $tag );
+			print ref($rfid)
+				, " $tag AFI: "
+				, uc unpack('H2', $afi)
+				, " "
+				, dump( RFID::Biblio::RFID501->to_hash( join('', @{ $visible->{$tag} }) ) )
+				, $/
+				;
 		}
 	}
 
