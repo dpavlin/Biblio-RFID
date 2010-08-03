@@ -57,6 +57,26 @@ L<http://saturn.ffzg.hr/rot13/index.cgi?hitchhikers_guide_to_rfid>
  1   00 00 00 00
  2   00 00 00 00
 
+=head1 Security
+
+AFI byte on RFID tag is used for security.
+
+In my case, we have RFID door which can only read AFI bytes from tag and issue
+alarm sound or ignore it depending on value of byte.
+
+=over 8 
+
+=item 0xD7 214
+
+secured item (door will beep)
+
+=item 0xDA 218
+
+unsecured (door will ignore it)
+
+=back
+
+
 =head1 METHODS
 
 =head2 to_hash
