@@ -51,9 +51,7 @@ sub new {
 
 	$self->port;
 
-	$self->init;
-
-	return $self;
+	$self->init && return $self;
 }
 
 =head2 port
