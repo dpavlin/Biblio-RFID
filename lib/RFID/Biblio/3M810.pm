@@ -302,12 +302,9 @@ sub write_afi {
 		my $data = shift;
 
 		if ( my $rest = _matched $data => '09 00' ) {
-
-			my $tag = substr($rest,0,8);
-			   $afi = substr($rest,8,1);
-
+			my $tag_back = hex_tag substr($rest,0,8);
+			die "write_afi got $tag_back expected $tag" if $tag_back ne $tag;
 			warn "# SECURITY ", hex_tag($tag), " AFI: ", as_hex($afi);
-
 		} elsif ( $rest = _matched $data => '0A 06' ) {
 			warn "ERROR writing AFI to $tag ", as_hex($data);
 			undef $afi;
