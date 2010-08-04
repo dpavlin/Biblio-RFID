@@ -243,6 +243,19 @@ sub read_afi {
 	return $info->{AFI} || die "no AFI for $tag in ",dump($info);
 
 }
-sub write_afi {}
+
+sub write_afi {
+	my $tag = shift;
+	$tag = shift if ref $tag;
+
+	my $afi = shift || die "no afi?";
+	$afi = as_hex $afi;
+
+	cpr( "FF  B0  27  01  $tag  $afi", "Write AFI $tag $afi", sub {
+		my $data = shift;
+		warn "## write_afi $tag got ",as_hex($data);
+	});
+
+}
 
 1
