@@ -145,28 +145,38 @@ cpr( 'FF  B0  01 00', 'ISO - Inventory', sub {
 }
 
 
-sub read_blocks {
+sub _get_system_info {
 	my $tag = shift;
-	$tag = shift if ref $tag;
 
-	my $max_block;
+	my $info;
 
 	cpr( "FF  B0 2B  01  $tag", "Get System Information $tag", sub {
 		my $data = shift;
 
 		warn "# data ",as_hex($data);
 
-		my $DSFID    = substr($data,5-2,1);
-		my $UID      = substr($data,6-2,8);
-		my $AFI      = substr($data,14-2,1);
-		my $MEM      = substr($data,15-2,1);
-		my $SIZE     = substr($data,16-2,1);
-		my $IC_REF   = substr($data,17-2,1);
+		$info = {
+			DSFID    => substr($data,5-2,1),
+			UID      => substr($data,6-2,8),
+			AFI      => substr($data,14-2,1),
+			MEM      => substr($data,15-2,1),
+			SIZE     => substr($data,16-2,1),
+			IC_REF   => substr($data,17-2,1),
+		};
 
-		warn "# split ",as_hex( $DSFID, $UID, $AFI, $MEM, $SIZE, $IC_REF );
-
-		$max_block = ord($SIZE);
 	});
+
+	return $info;
+}
+
+
+sub read_blocks {
+	my $tag = shift;
+	$tag = shift if ref $tag;
+
+	my $info = _get_system_info $tag;
+
+	my $max_block = ord($info->{SIZE}) || die "no SIZE in ",dump( $info );
 
 	my $tag_blocks;
 
