@@ -166,6 +166,8 @@ sub _get_system_info {
 
 	});
 
+	warn "# _get_system_info $tag ",dump( $info );
+
 	return $info;
 }
 
@@ -233,7 +235,14 @@ sub write_blocks {
 
 }
 
-sub read_afi {}
+sub read_afi {
+	my $tag = shift;
+	$tag = shift if ref $tag;
+
+	my $info = _get_system_info $tag;
+	return $info->{AFI} || die "no AFI for $tag in ",dump($info);
+
+}
 sub write_afi {}
 
 1
