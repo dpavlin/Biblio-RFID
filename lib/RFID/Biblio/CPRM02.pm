@@ -211,7 +211,12 @@ sub write_blocks {
 	}
 	my $DB_N    = length($data) / $DB_SIZE;
 
-	cpr( sprintf("FF  B0 24  01  $tag   %02x %02x %02x  %s", $DB_ADR, $DB_SIZE, $DB_N, as_hex($data)), "Write Multiple Blocks $tag", sub {
+	my $send_data;
+	foreach my $block ( 0 .. $DB_N ) {
+		$send_data .= reverse split(//, substr( $data, $block * $DB_SIZE, $DB_SIZE ) );
+	}
+
+	cpr( sprintf("FF  B0 24  01  $tag   %02x %02x %02x  %s", $DB_ADR, $DB_N, $DB_SIZE, as_hex($send_data)), "Write Multiple Blocks $tag", sub {
 		my $data = shift;
 		warn dump( $data );
 	});
