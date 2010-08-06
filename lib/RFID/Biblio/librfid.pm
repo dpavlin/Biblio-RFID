@@ -32,7 +32,13 @@ our $bin = '/rest/cvs/librfid/utils/librfid-tool';
 
 sub init {
 	my $self = shift;
-	warn "# no $bin found\n" if ! -e $bin;
+	if ( -e $bin ) {
+		warn "# using $bin";
+		return 1;
+	} else {
+		warn "# no $bin found\n";
+		return 0;
+	}
 }
 
 sub _grep_tool {
