@@ -33,8 +33,8 @@ GetOptions(
 use lib 'lib';
 use RFID::Biblio::RFID501;
 use RFID::Biblio::Readers;
-my $rfid = (RFID::Biblio::Readers->available( $reader ))[0]; # FIXME
-warn "using $rfid reader\n";
+my $rfid = RFID::Biblio::Readers->new( shift @ARGV );
+warn "using readers: ",dump( $rfid->_available );
 
 my $index_html;
 {
