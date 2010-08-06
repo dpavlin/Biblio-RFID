@@ -51,7 +51,7 @@ sub tags {
 
 		foreach my $tag ( @tags ) {
 
-			$self->{blocks}->{$tag} ||= $rfid->read_blocks( $tag );
+			$self->{blocks}->{$tag} ||= $rfid->read_blocks( $tag )->{$tag};
 			$self->{afi}->{$tag}    ||= $rfid->read_afi( $tag );
 
 			$triggers->{enter}->( $self, $tag ) if ! $self->{inventory}->{$tag} && $triggers->{enter};
