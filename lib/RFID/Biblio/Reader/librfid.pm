@@ -18,13 +18,18 @@ This is wrapper around C<librfid-tool> from
 
 L<http://openmrtd.org/projects/librfid/>
 
-Due to limitation of C<librfid-tool> only C<inventory> and
-C<read_blocks> is supported.
+Due to limitation of L<librfid-tool> only
+L<RFID::Biblio::Reader::API/inventory> and
+L<RFID::Biblio::Reader::API/read_blocks> is supported.
 
 However, this code might provide template for integration
 with any command-line utilities for different RFID readers.
 
-Currently tested with only with Omnikey CardMan 5321
+Currently tested with only with Omnikey CardMan 5321 which
+has problems. After a while it stops responding to commands
+by C<librfid-tool> so I provided small C program to reset it:
+
+C<examples/usbreset.c>
 
 =cut
 
