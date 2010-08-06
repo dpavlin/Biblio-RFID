@@ -12,7 +12,7 @@ use Data::Dump qw(dump);
 
 RFID::Biblio::Reader::librfid - execute librfid-tool
 
-=head2 DESCRIPTION
+=head1 DESCRIPTION
 
 This is wrapper around C<librfid-tool> from
 
@@ -23,6 +23,8 @@ C<read_blocks> is supported.
 
 However, this code might provide template for integration
 with any command-line utilities for different RFID readers.
+
+Currently tested with only with Omnikey CardMan 5321
 
 =cut
 

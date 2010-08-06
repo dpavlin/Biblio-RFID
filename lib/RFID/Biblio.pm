@@ -19,7 +19,7 @@ our $VERSION = '0.02';
 my $debug = 0;
 
 
-=head1 SYNOPSIS
+=head1 DESCRIPTION
 
 Main idea is to develop simple API to reader, and than provide useful
 abstractions on top of it to quickly write applications to respond on
@@ -55,6 +55,8 @@ interface to RFID reader and JSONP REST server.
 C<examples/koha-rfid.js> is jQuery based JavaScript code which can be inserted
 in Koha Library System to provide overlay with tags in range and
 check-in/check-out form-fill functionality.
+
+=for readme stop
 
 =head1 EXPORT
 
@@ -103,10 +105,9 @@ sub as_hex {
 
 sub hex_tag { uc(unpack('H16', shift)) }
 
+=for readme continue
 
-=head1 SUPPORTED READERS
-
-Support for different RFID readers is implemented in subclasses:
+=head1 HARDWARE SUPPORT
 
 =head2 3M 810
 
@@ -120,13 +121,14 @@ L<RFID::Biblio::Reader::CPRM02>
 
 L<RFID::Biblio::Reader::librfid>
 
+
 =head1 AUTHOR
 
 Dobrica Pavlinusic, C<< <dpavlin at rot13.org> >>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-rfid-serial at rt.cpan.org>, or through
+Please report any bugs or feature requests to C<bug-rfid-biblio at rt.cpan.org>, or through
 the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=RFID-Biblio>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
 
@@ -138,6 +140,8 @@ automatically be notified of progress on your bug as I make changes.
 You can find documentation for this module with the perldoc command.
 
     perldoc RFID::Biblio
+    perldoc RFID::Biblio::Reader
+    perldoc RFID::Biblio::Reader::API
 
 
 You can also look for information at:
