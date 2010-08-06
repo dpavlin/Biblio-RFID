@@ -15,6 +15,8 @@ build_requires 'Test::More';
 build_requires 'Module::Install::Repository';
 auto_set_repository;
 
+test_requires 'Pod::Readme';
+
 auto_install;
 
 WriteAll;
