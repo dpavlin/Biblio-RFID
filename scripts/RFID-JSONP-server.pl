@@ -95,7 +95,7 @@ sub http_server {
 					close($fh);
 				}
 			} elsif ( $method =~ m{/scan} ) {
-				my $tags = $rfid->scan;
+				my $tags = $rfid->scan || {};
 				my $json = { time => time() };
 				foreach my $tag ( keys %$tags ) {
 					my $hash = RFID::Biblio::RFID501->to_hash( $tags->{$tag} );
