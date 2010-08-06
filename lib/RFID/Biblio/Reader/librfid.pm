@@ -3,7 +3,7 @@ package RFID::Biblio::Reader::librfid;
 use warnings;
 use strict;
 
-use base 'RFID::Biblio';
+use base 'RFID::Biblio::Reader::API';
 use RFID::Biblio;
 
 use Data::Dump qw(dump);
