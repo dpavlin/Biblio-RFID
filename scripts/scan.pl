@@ -6,7 +6,7 @@ use strict;
 use Data::Dump qw(dump);
 use Getopt::Long;
 use lib 'lib';
-use RFID::Biblio::Readers;
+use RFID::Biblio::Reader;
 use RFID::Biblio::RFID501;
 
 my $loop = 0;
@@ -17,7 +17,7 @@ GetOptions(
 	'reader=s', => \$reader,
 ) || die $!;
 
-my $rfid = RFID::Biblio::Readers->new( $reader );
+my $rfid = RFID::Biblio::Reader->new( $reader );
 
 do {
 	my @visible = $rfid->tags;

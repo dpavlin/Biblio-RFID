@@ -1,4 +1,4 @@
-package RFID::Biblio::Readers;
+package RFID::Biblio::Reader;
 
 use warnings;
 use strict;
@@ -10,13 +10,13 @@ use RFID::Biblio;
 
 =head1 NAME
 
-RFID::Biblio::Readers - autodetect supported readers
+RFID::Biblio::Reader - autodetect supported readers
 
 =head1 FUNCTIONS
 
 =head2 new
 
-  my $rfid = RFID::Biblio::Readers->new( 'optional reader filter' );
+  my $rfid = RFID::Biblio::Reader->new( 'optional reader filter' );
 
 =cut
 
@@ -89,7 +89,7 @@ sub afi    { $_[0]->{ 'afi'    }->{$_[1]} || die "no afi for $_[1]"; };
 
 Probe each RFID reader supported and returns succefull ones
 
-  my $rfid_readers = RFID::Biblio::Readers->_available( $regex_filter );
+  my $rfid_readers = RFID::Biblio::Reader->_available( $regex_filter );
 
 =cut
 

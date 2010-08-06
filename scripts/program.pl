@@ -6,7 +6,7 @@ use strict;
 use Data::Dump qw(dump);
 use Getopt::Long;
 use lib 'lib';
-use RFID::Biblio::Readers;
+use RFID::Biblio::Reader;
 use RFID::Biblio::RFID501;
 
 my $reader;
@@ -20,7 +20,7 @@ GetOptions(
 my ( $sid, $content ) =  @ARGV;
 die "usage: $0 [--reader regex_filter] [--afi 214] E0_RFID_SID [barcode]\n" unless $sid && ( $content | $afi );
 
-my @rfid = RFID::Biblio::Readers->available( $reader );
+my @rfid = RFID::Biblio::Reader->available( $reader );
 
 foreach my $rfid ( @rfid ) {
 	my $visible = $rfid->scan;
