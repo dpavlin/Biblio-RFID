@@ -8,9 +8,7 @@ use Data::Dump qw(dump);
 
 =head1 NAME
 
-RFID::Biblio::Reader::Serial - helper to provide serial port
-
-=cut
+RFID::Biblio::Reader::Serial - base class for serial RFID readers
 
 =head1 METHODS
 
@@ -60,3 +58,13 @@ sub port {
 }
 
 1
+__END__
+
+=head1 SEE ALSO
+
+L<RFID::Biblio::Reader::3M810>
+
+L<RFID::Biblio::Reader::CPRM01>
+
+L<RFID::Biblio::Reader::API>
+
