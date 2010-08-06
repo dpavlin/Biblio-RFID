@@ -9,7 +9,7 @@ BEGIN {
 	use_ok( 'RFID::Biblio::Readers' );
 }
 
-ok( my $o = RFID::Biblio::Readers->new, 'new' );
+ok( my $o = RFID::Biblio::Readers->new( shift @ARGV ), 'new' );
 
 ok( my @tags = $o->inventory, 'inventory' );
 diag dump @tags;
