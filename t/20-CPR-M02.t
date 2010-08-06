@@ -27,7 +27,4 @@ foreach my $tag ( @tags ) {
 
 }
 
-ok( my $visible = $o->scan, 'scan' );
-diag dump $visible;
-
 done_testing;

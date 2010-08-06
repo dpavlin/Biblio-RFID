@@ -24,7 +24,7 @@ L<http://stackoverflow.com/questions/149617/how-could-i-guess-a-checksum-algorit
 use warnings;
 use strict;
 
-use base 'RFID::Biblio';
+use base 'RFID::Biblio::Reader::Serial';
 use RFID::Biblio;
 
 use Data::Dump qw(dump);

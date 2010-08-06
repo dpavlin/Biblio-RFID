@@ -6,7 +6,6 @@ use strict;
 use base 'Exporter';
 our @EXPORT = qw( hex2bytes as_hex hex_tag );
 
-use Device::SerialPort qw(:STAT);
 use Data::Dump qw(dump);
 
 =head1 NAME
@@ -25,92 +24,7 @@ my $debug = 0;
 This module tries to support USB serial RFID readers wsing simple API
 which is sutable for direct mapping to REST JSONP service.
 
-Perhaps a little code snippet.
-
-	use RFID::Biblio;
-
-	my $rfid = RFID::Biblio->new(
-		device => '/dev/ttyUSB0', # with fallback to RFID_DEVICE
-	);
-
-	# invetory tags in reader range and read data from them
-	my $visible = $rfid->scan;
-
-=head1 METHODS
-
-=head2 new
-
-Open serial port (if needed) and init reader
-
-=cut
-
-sub new {
-	my $class = shift;
-	my $self = {@_};
-	bless $self, $class;
-
-	$self->port;
-
-	$self->init && return $self;
-}
-
-=head2 port
-
-  my $serial_obj = $self->port;
-
-=cut
-
-sub port {
-	my $self = shift;
-
-	return $self->{port} if defined $self->{port};
-
-	my $settings = $self->serial_settings;
-	my $device   = $settings->{device} ||= $ENV{RFID_DEVICE};
-	warn "# settings ",dump $settings;
-
-	if ( ! $device ) {
-		warn "# no device, serial port not opened\n";
-		return;
-	}
-
-	$self->{port} = Device::SerialPort->new( $settings->{device} )
-	|| die "can't open serial port: $!\n";
-
-	$self->{port}->$_( $settings->{$_} )
-	foreach ( qw/handshake baudrate databits parity stopbits/ );
-
-}
-
-=head2 scan
-
-  my $visible = $rfid->scan;
-
-Returns hash with keys which match tag UID and values with blocks
-
-=cut
-
-sub scan {
-	my $self = shift;
-
-	warn "# scan tags in reader range\n";
-	my @tags = $self->inventory;
-
-	my $visible;
-	# FIXME this is naive implementation which just discards other tags
-	foreach my $tag ( @tags ) {
-		my $blocks = $self->read_blocks( $tag );
-		if ( ! $blocks ) {
-			warn "ERROR: can't read tag $tag\n";
-			delete $visible->{$tag};
-		} else {
-			$visible->{$tag} = $blocks->{$tag};
-		}
-	}
-
-	return $visible;
-}
-
+For implementing application take a look at L<RFID::Biblio::Reader>
 
 =head1 READER IMPLEMENTATION
 

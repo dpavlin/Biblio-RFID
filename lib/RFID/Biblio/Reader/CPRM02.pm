@@ -14,7 +14,7 @@ reader as described in document C<H20800-16e-ID-B.pdf>
 use warnings;
 use strict;
 
-use base 'RFID::Biblio';
+use base 'RFID::Biblio::Reader::Serial';
 use RFID::Biblio;
 
 use Time::HiRes;
