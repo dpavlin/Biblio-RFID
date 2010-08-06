@@ -6,11 +6,21 @@ RFID::Biblio::Readers - autodetect supported readers
 
 =head1 FUNCTIONS
 
-=head2 available
+=head2 _available
 
 Probe each RFID reader supported and returns succefull ones
 
-  my @rfid = RFID::Biblio::Readers->available( $regex_filter );
+  my $rfid_readers = RFID::Biblio::Readers->_available( $regex_filter );
+
+=head1 SEE ALSO
+
+=head2 RFID reader implementations
+
+L<RFID::Biblio::3M810>
+
+L<RFID::Biblio::CPRM02>
+
+L<RFID::Biblio::librfid>
 
 =head1 SEE ALSO
 
@@ -31,8 +41,12 @@ use lib 'lib';
 
 my @readers = ( '3M810', 'CPRM02', 'librfid' );
 
-sub available {
+sub _available {
 	my ( $self, $filter ) = @_;
+
+	$filter = 'all' unless defined $filter;
+
+	return $self->{_available}->{$filter} if defined $self->{_available}->{$filter};
 
 	my @rfid;
 
@@ -51,6 +65,28 @@ sub available {
 
 	die "no readers found" unless @rfid;
 
-	return @rfid;
+	$self->{_available}->{$filter} = [ @rfid ];
 }
 
+sub new {
+	my $class = shift;
+	my $self = {};
+	bless $self, $class;
+	return $self;
+}
+
+# we don't want DESTROY to fallback into AUTOLOAD
+sub DESTROY {}
+
+our $AUTOLOAD;
+sub AUTOLOAD {
+	my $self = shift;
+	my $command = $AUTOLOAD;
+	$command =~ s/.*://;
+
+	foreach my $r ( @{ $self->_available } ) {
+		$r->$command(@_);
+	}
+}
+
+1
