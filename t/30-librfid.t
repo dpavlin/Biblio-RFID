@@ -11,8 +11,8 @@ BEGIN {
 
 ok( my $o = RFID::Biblio::Reader::librfid->new( tool => '/rest/cvs/librfid/utils/librfid-tool' ), 'new' );
 
-ok( my @tags = $o->inventory, 'inventory' );
-diag dump @tags;
+my @tags = $o->inventory;
+diag 'inventory = ', dump @tags;
 
 my $old_afi;
 
@@ -33,8 +33,5 @@ foreach my $tag ( @tags ) {
 	ok( $o->write_afi( $tag, $afi ), sprintf( "write_afi %s %x", $tag, $afi ) );
 
 }
-
-ok( my $visible = $o->scan, 'scan' );
-diag dump $visible;
 
 done_testing;
