@@ -44,14 +44,14 @@ my @readers = ( '3M810', 'CPRM02', 'librfid' );
 sub _available {
 	my ( $self, $filter ) = @_;
 
-	$filter = 'all' unless defined $filter;
+	$filter = '' unless defined $filter;
 
 	return $self->{_available}->{$filter} if defined $self->{_available}->{$filter};
 
 	my @rfid;
 
 	foreach my $reader ( @readers ) {
-		next if $reader !~ /$filter/i;
+		next if $filter && $reader !~ /$filter/i;
 		my $module = "RFID::Biblio::$reader";
 		eval "use $module";
 		die $@ if $@;
