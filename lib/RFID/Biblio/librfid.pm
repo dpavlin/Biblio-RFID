@@ -89,7 +89,7 @@ sub read_blocks {
 }
 
 sub write_blocks {}
-sub read_afi {}
+sub read_afi { -1 }
 sub write_afi {}
 
 1
