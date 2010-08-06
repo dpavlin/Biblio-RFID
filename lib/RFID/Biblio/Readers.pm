@@ -12,6 +12,16 @@ Probe each RFID reader supported and returns succefull ones
 
   my @rfid = RFID::Biblio::Readers->available( $regex_filter );
 
+=head1 SEE ALSO
+
+=head2 RFID reader implementations
+
+L<RFID::Biblio::3M810>
+
+L<RFID::Biblio::CPRM02>
+
+L<RFID::Biblio::librfid>
+
 =cut
 
 use warnings;
