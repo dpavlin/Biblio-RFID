@@ -11,8 +11,8 @@ BEGIN {
 
 ok( my $o = RFID::Biblio::Reader->new( shift @ARGV ), 'new' );
 
-ok( my $tags = $o->tags, 'tags' );
-diag dump( $tags );
+ok( my $tags = [ $o->tags ], 'tags' );
+diag 'tags: ', dump( $tags );
 
 done_testing();
 
