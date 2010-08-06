@@ -126,6 +126,8 @@ L<RFID::Biblio::Reader::librfid>
 
 Dobrica Pavlinusic, C<< <dpavlin at rot13.org> >>
 
+L<http://blog.rot13.org/>
+
 =head1 BUGS
 
 Please report any bugs or feature requests to C<bug-rfid-biblio at rt.cpan.org>, or through
