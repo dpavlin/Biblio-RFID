@@ -3,7 +3,10 @@ package RFID::Biblio::Readers;
 use warnings;
 use strict;
 
+use Data::Dump qw(dump);
+use Time::HiRes;
 use lib 'lib';
+use RFID::Biblio;
 
 =head1 NAME
 
@@ -25,6 +28,60 @@ sub new {
 	return $self;
 }
 
+=head2 tags
+
+  my @visible = $rfid->tags(
+		enter => sub {},
+		leave => sub {},
+  );
+
+=cut
+
+sub tags {
+	my $self = shift;
+	my $triggers = {@_};
+
+	$self->{inventory} ||= {};
+	$self->{inventory}->{$_} = 0 foreach keys %{$self->{inventory}};
+	my $t = time;
+
+	foreach my $rfid ( @{ $self->{_readers} } ) {
+		warn "# inventory on $rfid";
+		my @tags = $rfid->inventory;
+
+		foreach my $tag ( @tags ) {
+
+			$self->{blocks}->{$tag} ||= $rfid->read_blocks( $tag );
+			$self->{afi}->{$tag}    ||= $rfid->read_afi( $tag );
+
+			$triggers->{enter}->( $self, $tag ) if ! $self->{inventory}->{$tag} && $triggers->{enter};
+			$self->{inventory}->{$tag} = $t;
+
+		}
+
+		foreach my $tag ( grep { $self->{inventory}->{$_} == 0 } keys %{ $self->{inventory} } ) {
+			$triggers->{leave}->( $self, $tag ) if $triggers->{leave};
+		}
+
+	}
+
+	warn "## tags ",dump($self);
+
+	return grep { $self->{inventory}->{$_} } keys %{ $self->{inventory} };
+}
+
+=head2 blocks
+
+  my $blocks_arrayref = $rfid->blocks( $tag );
+
+=head2 afi
+
+  my $afi = $rfid->afi( $tag );
+
+=cut
+
+sub blocks { $_[0]->{ 'blocks' }->{$_[1]} || die "no blocks for $_[1]"; };
+sub afi    { $_[0]->{ 'afi'    }->{$_[1]} || die "no afi for $_[1]"; };
 
 =head1 PRIVATE
 

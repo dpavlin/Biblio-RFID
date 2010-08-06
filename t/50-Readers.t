@@ -11,6 +11,13 @@ BEGIN {
 
 ok( my $o = RFID::Biblio::Readers->new( shift @ARGV ), 'new' );
 
+ok( my $tags = $o->tags, 'tags' );
+diag dump( $tags );
+
+done_testing();
+
+__END__
+
 ok( my @tags = $o->inventory, 'inventory' );
 diag dump @tags;
 

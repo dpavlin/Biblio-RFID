@@ -17,21 +17,17 @@ GetOptions(
 	'reader=s', => \$reader,
 ) || die $!;
 
-my @rfid = RFID::Biblio::Readers->available( $reader );
+my $rfid = RFID::Biblio::Readers->new( $reader );
 
 do {
-	foreach my $rfid ( @rfid ) {
-		my $visible = $rfid->scan;
-		foreach my $tag ( keys %$visible ) {
-			my $afi = $rfid->read_afi( $tag );
-			print ref($rfid)
-				, " $tag AFI: "
-				, uc unpack('H2', $afi)
-				, " "
-				, dump( RFID::Biblio::RFID501->to_hash( join('', @{ $visible->{$tag} }) ) )
-				, $/
-				;
-		}
+	my @visible = $rfid->tags;
+	foreach my $tag ( @visible ) {
+		print $tag
+			, " AFI: "
+			, uc unpack('H2', $rfid->afi($tag))
+			, " "
+			, dump( RFID::Biblio::RFID501->to_hash( $rfid->blocks($tag) ) )
+			, $/
+			;
 	}
-
 } while $loop;
