@@ -22,15 +22,7 @@ foreach my $tag ( @tags ) {
 
 	ok( my $afi = $o->read_afi( $tag ), "read_afi $tag" );
 
-	ok( $o->write_blocks( $tag, $blocks ), "write_blocks $tag" );
-
-	my $new_afi = "\x42";
-
-	ok( $o->write_afi( $tag, $new_afi ), sprintf( "write_afi %s %x", $tag, $new_afi ) );
-
-	cmp_ok( $o->read_afi( $tag ), 'eq', $new_afi, 'AFI check' );
-
-	ok( $o->write_afi( $tag, $afi ), sprintf( "write_afi %s %x", $tag, $afi ) );
+	cmp_ok( $afi, '==', -1, 'afi' );
 
 }
 
