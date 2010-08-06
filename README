@@ -1,6 +1,6 @@
 RFID-Biblio
 
-This is set of tools to use different RFID readers for library use.
+perl tools to use different RFID readers for library use
 
 Main idea is to develop simple API to reader, and than provide useful
 abstractions on top of it to quickly write applications to respond on

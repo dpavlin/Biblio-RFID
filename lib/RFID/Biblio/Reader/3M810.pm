@@ -6,11 +6,11 @@ RFID::Biblio::Reader::3M810 - support for 3M 810 RFID reader
 
 =head1 DESCRIPTION
 
-This module implement serial protocol (over USB/serial adapter) with 3M 810 RFID
-reader, often used in library applications.
+This module uses L<RFID::Biblio::Reader::Serial> over USB/serial adapter
+with 3M 810 RFID reader, often used in library applications.
 
-This is most complete implementation which supports full API defined
-in L<RFID::Biblio>. This include scanning for all tags in reader
+This is most mature implementation which supports full API defined
+in L<RFID::Biblio::Reader::API>. This include scanning for all tags in reader
 range, reading and writing of data, and AFI security manipulation.
 
 This implementation is developed using Portmon on Windows to capture serial traffic
@@ -18,6 +18,9 @@ L<http://technet.microsoft.com/en-us/sysinternals/bb896644.aspx>
 
 Checksum for this reader is developed using help from C<selwyn>
 L<http://stackoverflow.com/questions/149617/how-could-i-guess-a-checksum-algorithm>
+
+More inforation about process of reverse engeeniring protocol with
+this reader is available at L<http://blog.rot13.org/rfid/>
 
 =cut
 
@@ -147,12 +150,6 @@ cmd(
 '13  00 02 01 01 03 02 02 03 00'
 )});
 }
-
-=head2 inventory
-
-  my @tags = inventory;
-
-=cut
 
 sub inventory {
 
@@ -320,3 +317,9 @@ sub write_afi {
 }
 
 1
+
+__END__
+
+=head1 SEE ALSO
+
+L<RFID::Biblio::Reader::API>

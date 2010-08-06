@@ -10,7 +10,7 @@ use Data::Dump qw(dump);
 
 =head1 NAME
 
-RFID::Biblio - easy to use API for writing RFID enabled appliaction
+RFID::Biblio - perl tools to use different RFID readers for library use 
 
 =cut
 
@@ -21,49 +21,40 @@ my $debug = 0;
 
 =head1 SYNOPSIS
 
-This module tries to support USB serial RFID readers wsing simple API
-which is sutable for direct mapping to REST JSONP service.
+Main idea is to develop simple API to reader, and than provide useful
+abstractions on top of it to quickly write applications to respond on
+tags which come in range of RFID reader using L<RFID::Biblio::Reader>.
+
+Writing support for new RFID readers should be easy.
+L<RFID::Biblio::Reader::API> provides documentation on writing support
+for different readers.
+
+Currently, two serial RFID readers based on L<RFID::Biblio::Reader::Serial>
+are implemented:
+
+=over 4
+
+=item *
+
+L<RFID::Biblio::Reader::3M810>
+
+=item *
+
+L<RFID::Biblio::Reader::CPRM02>
+
+=back
+
+There is also simple read-only reader using shell commands in
+L<RFID::Biblio::Reader::librfid>.
 
 For implementing application take a look at L<RFID::Biblio::Reader>
 
-=head1 READER IMPLEMENTATION
+C<scripts/RFID-JSONP-server.pl> is example of such application. It's local
+interface to RFID reader and JSONP REST server.
 
-Each reader must implement following hooks as sub-classes.
-
-=head2 init
-
-  $self->init;
-
-=head2 inventory
-
-  my @tags = $self->invetory;
-
-=head2 read_blocks
-
-  my $hash = $self->read_blocks( $tag );
-
-All blocks are under key which is tag UID with array of blocks returned from reader
-
-  $hash = { 'E000000123456789' => [ 'blk1', 'blk2', ... ] };
-
-L<RFID::Biblio::Reader::3M810> sends tag UID with data payload, so we might expect
-to receive response from other tags from protocol specification, 
-
-=head2 write_blocks
-
-  $self->write_blocks( $tag => $bytes );
-
-  $self->write_blocks( $tag => [ 'blk1', 'blk2', ... ] );
-
-=head2 read_afi
-
-  my $afi = $self->read_afi( $tag );
-
-=head2 write_afi
-
-  $self->write_afi( $tag => $afi );
-
-
+C<examples/koha-rfid.js> is jQuery based JavaScript code which can be inserted
+in Koha Library System to provide overlay with tags in range and
+check-in/check-out form-fill functionality.
 
 =head1 EXPORT
 

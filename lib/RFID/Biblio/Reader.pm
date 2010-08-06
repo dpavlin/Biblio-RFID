@@ -10,7 +10,7 @@ use RFID::Biblio;
 
 =head1 NAME
 
-RFID::Biblio::Reader - autodetect supported readers
+RFID::Biblio::Reader - simple way to write RFID applications in perl
 
 =head1 FUNCTIONS
 
