@@ -12,6 +12,11 @@ use RFID::Biblio;
 
 RFID::Biblio::Reader - simple way to write RFID applications in perl
 
+=head1 DESCRIPTION
+
+This module will probe all available readers and use calls from
+L<RFID::Biblio::Reader::API> to invoke correct reader.
+
 =head1 FUNCTIONS
 
 =head2 new
@@ -85,6 +90,20 @@ sub afi    { $_[0]->{ 'afi'    }->{$_[1]} || die "no afi for $_[1]"; };
 
 =head1 PRIVATE
 
+=head2 _invalidate_tag
+
+  $rfid->_invalidate_tag( $tag );
+
+=cut
+
+sub _invalidate_tag {
+	my ( $self, $tag ) = @_;
+	delete $self->{'blocks'}->{$tag};
+	delete $self->{'afi'}->{$tag};
+	delete $self->{'inventory'}->{$tag};
+	warn "# _invalidate_tag $tag";
+}
+
 =head2 _available
 
 Probe each RFID reader supported and returns succefull ones
@@ -142,6 +161,8 @@ sub AUTOLOAD {
 	foreach my $r ( @{ $self->{_readers} } ) {
 		push @out, $r->$command(@_);
 	}
+
+	$self->_invalidate_tag( $_[0] ) if $command =~ m/write/;
 
 	return @out;
 }
