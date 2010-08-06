@@ -11,7 +11,8 @@ BEGIN {
 
 ok( my $o = RFID::Biblio::Reader::CPRM02->new( device => '/dev/ttyUSB0' ), 'new' );
 
-ok( my @tags = $o->inventory, 'inventory' );
+my @tags = $o->inventory;
+diag 'inventory ',dump(@tags);
 
 foreach my $tag ( @tags ) {
 
