@@ -12,6 +12,9 @@ requires 'Time::HiRes';
 
 build_requires 'Test::More';
 
+build_requires 'Module::Install::Repository';
+auto_set_repository;
+
 auto_install;
 
 WriteAll;
