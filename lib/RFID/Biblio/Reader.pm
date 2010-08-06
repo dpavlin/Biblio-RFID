@@ -106,7 +106,7 @@ sub _available {
 
 	foreach my $reader ( @readers ) {
 		next if $filter && $reader !~ /$filter/i;
-		my $module = "RFID::Biblio::$reader";
+		my $module = "RFID::Biblio::Reader::$reader";
 		eval "use $module";
 		die $@ if $@;
 		if ( my $rfid = $module->new( device => '/dev/ttyUSB0' ) ) {
