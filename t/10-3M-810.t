@@ -6,10 +6,10 @@ use Data::Dump qw(dump);
 use lib 'lib';
 
 BEGIN {
-	use_ok( 'RFID::Biblio::3M810' );
+	use_ok( 'RFID::Biblio::Reader::3M810' );
 }
 
-ok( my $o = RFID::Biblio::3M810->new( device => '/dev/ttyUSB0' ), 'new' );
+ok( my $o = RFID::Biblio::Reader::3M810->new( device => '/dev/ttyUSB0' ), 'new' );
 
 ok( my @tags = $o->inventory, 'inventory' );
 diag dump @tags;

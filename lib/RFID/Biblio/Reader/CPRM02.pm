@@ -1,8 +1,8 @@
-package RFID::Biblio::CPRM02;
+package RFID::Biblio::Reader::CPRM02;
 
 =head1 NAME
 
-RFID::Biblio::CPRM02 - support for CPR-M02 RFID reader
+RFID::Biblio::Reader::CPRM02 - support for CPR-M02 RFID reader
 
 =head1 DESCRIPTION
 

@@ -15,7 +15,7 @@ RFID::Biblio - easy to use API for writing RFID enabled appliaction
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 my $debug = 0;
 
@@ -132,7 +132,7 @@ All blocks are under key which is tag UID with array of blocks returned from rea
 
   $hash = { 'E000000123456789' => [ 'blk1', 'blk2', ... ] };
 
-L<RFID::Biblio::3M810> sends tag UID with data payload, so we might expect
+L<RFID::Biblio::Reader::3M810> sends tag UID with data payload, so we might expect
 to receive response from other tags from protocol specification, 
 
 =head2 write_blocks
@@ -205,15 +205,15 @@ Support for different RFID readers is implemented in subclasses:
 
 =head2 3M 810
 
-L<RFID::Biblio::3M810>
+L<RFID::Biblio::Reader::3M810>
 
 =head2 CPR-M02
 
-L<RFID::Biblio::CPRM02>
+L<RFID::Biblio::Reader::CPRM02>
 
 =head2 librfid
 
-L<RFID::Biblio::librfid>
+L<RFID::Biblio::Reader::librfid>
 
 =head1 AUTHOR
 

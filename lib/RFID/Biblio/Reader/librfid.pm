@@ -1,4 +1,4 @@
-package RFID::Biblio::librfid;
+package RFID::Biblio::Reader::librfid;
 
 use warnings;
 use strict;
@@ -10,7 +10,7 @@ use Data::Dump qw(dump);
 
 =head1 NAME
 
-RFID::Biblio::librfid - execute librfid-tool
+RFID::Biblio::Reader::librfid - execute librfid-tool
 
 =head2 DESCRIPTION
 

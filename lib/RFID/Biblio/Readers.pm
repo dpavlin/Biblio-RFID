@@ -153,9 +153,9 @@ __END__
 
 =head2 RFID reader implementations
 
-L<RFID::Biblio::3M810>
+L<RFID::Biblio::Reader::3M810>
 
-L<RFID::Biblio::CPRM02>
+L<RFID::Biblio::Reader::CPRM02>
 
-L<RFID::Biblio::librfid>
+L<RFID::Biblio::Reader::librfid>
 

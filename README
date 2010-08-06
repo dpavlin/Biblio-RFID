@@ -15,9 +15,9 @@ form-fill functionality.
 
 Currently supported readers:
 
- * 3M 810  - RFID::Biblio::3M810
- * CPR-M02 - RFID::Biblio::CPRM02
- * OpenPCD, The Omnikey CardMan 5121 and 5321 - RFID::Biblio::librfid
+ * 3M 810  - RFID::Biblio::Reader::3M810
+ * CPR-M02 - RFID::Biblio::Reader::CPRM02
+ * OpenPCD, The Omnikey CardMan 5121 and 5321 - RFID::Biblio::Reader::librfid
 
 For status of each implementation see pod documentation inside them.
 

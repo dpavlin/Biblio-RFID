@@ -1,8 +1,8 @@
-package RFID::Biblio::3M810;
+package RFID::Biblio::Reader::3M810;
 
 =head1 NAME
 
-RFID::Biblio::3M810 - support for 3M 810 RFID reader
+RFID::Biblio::Reader::3M810 - support for 3M 810 RFID reader
 
 =head1 DESCRIPTION
 
