@@ -56,6 +56,9 @@ C<examples/koha-rfid.js> is jQuery based JavaScript code which can be inserted
 in Koha Library System to provide overlay with tags in range and
 check-in/check-out form-fill functionality.
 
+Applications can use L<RFID::Biblio::RFID501> which is some kind of
+semi-standard 3M layout or blocks on RFID tags.
+
 =for readme stop
 
 =head1 EXPORT

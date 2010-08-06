@@ -29,6 +29,9 @@ DESCRIPTION
     inserted in Koha Library System to provide overlay with tags in range
     and check-in/check-out form-fill functionality.
 
+    Applications can use RFID::Biblio::RFID501 which is some kind of
+    semi-standard 3M layout or blocks on RFID tags.
+
 HARDWARE SUPPORT
   3M 810
     RFID::Biblio::Reader::3M810
