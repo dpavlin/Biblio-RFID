@@ -66,6 +66,7 @@ sub tags {
 
 		foreach my $tag ( grep { $self->{inventory}->{$_} == 0 } keys %{ $self->{inventory} } ) {
 			$triggers->{leave}->( $self, $tag ) if $triggers->{leave};
+			$self->_invalidate_tag( $tag );
 		}
 
 	}
