@@ -23,9 +23,7 @@ sub new {
 	my $self = {@_};
 	bless $self, $class;
 
-	$self->port;
-
-	$self->init && return $self;
+	$self->port && $self->init && return $self;
 }
 
 
@@ -49,12 +47,15 @@ sub port {
 		return;
 	}
 
-	$self->{port} = Device::SerialPort->new( $settings->{device} )
-	|| die "can't open serial port: $!\n";
+	if ( $self->{port} = Device::SerialPort->new( $settings->{device} ) ) {
+		$self->{port}->$_( $settings->{$_} )
+		foreach ( qw/handshake baudrate databits parity stopbits/ );
+	} else {
+		warn "can't open serial port: $!\n";
+		$self->{port} = 0;
+	}
 
-	$self->{port}->$_( $settings->{$_} )
-	foreach ( qw/handshake baudrate databits parity stopbits/ );
-
+	$self->{port};
 }
 
 1
