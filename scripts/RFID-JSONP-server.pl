@@ -34,7 +34,6 @@ use lib 'lib';
 use RFID::Biblio::RFID501;
 use RFID::Biblio::Reader;
 my $rfid = RFID::Biblio::Reader->new( shift @ARGV );
-warn "using readers: ",dump( $rfid->_available );
 
 my $index_html;
 {
@@ -95,13 +94,12 @@ sub http_server {
 					close($fh);
 				}
 			} elsif ( $method =~ m{/scan} ) {
-				my $tags = $rfid->scan || {};
+				my @tags = $rfid->tags;
 				my $json = { time => time() };
-				foreach my $tag ( keys %$tags ) {
-					my $hash = RFID::Biblio::RFID501->to_hash( $tags->{$tag} );
+				foreach my $tag ( @tags ) {
+					my $hash = RFID::Biblio::RFID501->to_hash( $rfid->blocks( $tag ) );
 					$hash->{sid}  = $tag;
-					$hash->{security} = uc unpack 'H*', $rfid->read_afi( $tag )
-						if $rfid->can('read_afi');
+					$hash->{security} = uc unpack 'H*', $rfid->afi( $tag );
 					push @{ $json->{tags} }, $hash;
 				};
 				warn "#### ", encode_json($json);
