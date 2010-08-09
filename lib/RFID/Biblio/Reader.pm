@@ -77,8 +77,6 @@ sub tags {
 
 		}
 	
-warn "XXX ## _tags ",dump( $self->{_tags} );
-
 		foreach my $tag ( grep { $self->{_tags}->{$_}->{time} == 0 } keys %{ $self->{_tags} } ) {
 			$triggers->{leave}->( $self, $tag ) if $triggers->{leave};
 			$self->_invalidate_tag( $tag );
