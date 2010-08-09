@@ -37,15 +37,15 @@ do {
 	my @visible = $rfid->tags(
 		enter => sub {
 			my $tag = shift;
-			print localtime." enter $tag ", tag($tag);
+			print localtime()." enter $tag ", tag($tag);
 
 		},
 		leave => sub {
 			my $tag = shift;
-			print localtime." leave $tag ", tag($tag);
+			print localtime()." leave $tag ", tag($tag);
 		},
 	);
 
-	warn localtime." visible: ",join(' ',@visible),"\n";
+	warn localtime()." visible: ",join(' ',@visible),"\n";
 
 } while $loop;
