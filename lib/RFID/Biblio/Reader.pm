@@ -47,7 +47,7 @@ sub tags {
 	my $triggers = {@_};
 
 	$self->{_tags} ||= {};
-	$self->{_tags}->{$_}->{inventory} = 0 foreach keys %{$self->{_tags}};
+	$self->{_tags}->{$_}->{time} = 0 foreach keys %{$self->{_tags}};
 	my $t = time;
 
 	foreach my $rfid ( @{ $self->{_readers} } ) {
@@ -57,26 +57,29 @@ sub tags {
 		foreach my $tag ( @tags ) {
 
 			if ( ! exists $self->{_tags}->{$tag} ) {
-				if ( my $blocks = $rfid->read_blocks($tag) ) {
-					$self->{blocks}->{$tag} = $blocks->{$tag} || die "no $tag in ",dump($blocks);
-				} else {
-					$self->_invalidate_tag( $tag );
-					next;
-				}
-				if ( my $afi = $rfid->read_afi($tag) ) {
+				eval {
+					my $blocks = $rfid->read_blocks($tag);
+					$self->{_tags}->{$tag}->{blocks} = $blocks->{$tag} || die "no $tag in ",dump($blocks);
+					my $afi = $rfid->read_afi($tag);
 					$self->{_tags}->{$tag}->{afi} = $afi;
-				} else {
+
+				};
+				if ( $@ ) {
+					warn "ERROR reading $tag: $@\n";
 					$self->_invalidate_tag( $tag );
 					next;
 				}
+
+				$triggers->{enter}->( $self, $tag ) if $triggers->{enter};
 			}
 
-			$triggers->{enter}->( $self, $tag ) if ! $self->{inventory}->{$tag} && $triggers->{enter};
-			$self->{_tags}->{$tag}->{intentory} = $t;
+			$self->{_tags}->{$tag}->{time} = $t;
 
 		}
+	
+warn "XXX ## _tags ",dump( $self->{_tags} );
 
-		foreach my $tag ( grep { $self->{_tags}->{$_}->{inventory} == 0 } keys %{ $self->{_tags} } ) {
+		foreach my $tag ( grep { $self->{_tags}->{$_}->{time} == 0 } keys %{ $self->{_tags} } ) {
 			$triggers->{leave}->( $self, $tag ) if $triggers->{leave};
 			$self->_invalidate_tag( $tag );
 		}
@@ -85,7 +88,7 @@ sub tags {
 
 	warn "## _tags ",dump( $self->{_tags} );
 
-	return grep { $self->{_tags}->{$_}->{inventory} } keys %{ $self->{_tags} };
+	return grep { $self->{_tags}->{$_}->{time} } keys %{ $self->{_tags} };
 }
 
 =head2 blocks
@@ -111,6 +114,8 @@ sub afi    { $_[0]->{_tags}->{$_[1]}->{ 'afi'    } || die "no afi for $_[1]"; };
 
 sub _invalidate_tag {
 	my ( $self, $tag ) = @_;
+	my @caller = caller(0);
+	warn "## _invalidate_tag caller $caller[0] $caller[1] +$caller[2]\n";
 	my $old = delete $self->{_tags}->{$tag};
 	warn "# _invalidate_tag $tag ", dump($old);
 }
