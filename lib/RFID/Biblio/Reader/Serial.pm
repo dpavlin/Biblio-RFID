@@ -23,7 +23,7 @@ sub new {
 	my $self = {@_};
 	bless $self, $class;
 
-	$self->port && $self->init && return $self;
+	$self->port && return $self;
 }
 
 
@@ -53,13 +53,21 @@ sub port {
 		next if $serial_device->{$device};
 
 		if ( my $port = Device::SerialPort->new($device) ) {
+
 			foreach my $opt ( qw/handshake baudrate databits parity stopbits/ ) {
 				$port->$opt( $settings->{$opt} );
 			}
-			warn "found ", ref($self), " $device settings ",dump $settings;
+
 			$self->{port} = $port;
-			$serial_device->{$device} = $port;
-			last;
+
+			warn "# probe by init $device ",ref($self);
+			if ( $self->init ) {
+				warn "init OK ", ref($self), " $device settings ",dump $settings;
+				$serial_device->{$device} = $port;
+				last;
+			} else {
+				$self->{port} = 0;
+			}
 		}
 	}
 
