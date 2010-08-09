@@ -43,6 +43,8 @@ sub serial_settings {{
 	handshake => "none",
 }}
 
+sub assert;
+
 my $port;
 sub init {
 	my $self = shift;
@@ -60,8 +62,25 @@ sub init {
 	$port->read_char_time(100);	 # 0.1 s char timeout
 	$port->read_const_time(500); # 0.5 s read timeout
 
-	setup();
+	$port->write( hex2bytes( 'D5 00  05   04 00 11   8C66' ) );
+	# hw-version     expect: 'D5 00  09   04 00 11   0A 05 00 02   7250'
+	my $data = $port->read( 12 );
+	return unless $data;
 
+	warn "# probe response: ",as_hex($data);
+	if ( my $rest = assert $data => 'D5 00  09   04 00 11' ) {
+		my $hw_ver = join('.', unpack('CCCC', $rest));
+		warn "# 3M 810 hardware version $hw_ver\n";
+
+		cmd(
+'13  04 01 00 02 00 03 00 04 00','FIXME: stats? rf-on?', sub { assert(shift,
+'13  00 02 01 01 03 02 02 03 00'
+		)});
+
+		return $hw_ver;
+	}
+
+	return;
 }
 
 sub checksum {
@@ -119,21 +138,6 @@ sub assert {
 	return substr($got,$len);
 }
 
-sub setup {
-
-cmd(
-'D5 00  05   04 00 11   8C66', 'hw version', sub {
-	my $data = shift;
-	my $rest = assert $data => '04 00 11';
-	my $hw_ver = join('.', unpack('CCCC', $rest));
-	warn "# 3M 810 hardware version $hw_ver\n";
-});
-
-cmd(
-'13  04 01 00 02 00 03 00 04 00','FIXME: stats? rf-on?', sub { assert(shift,
-'13  00 02 01 01 03 02 02 03 00'
-)});
-}
 
 sub inventory {
 
