@@ -155,6 +155,8 @@ sub _get_system_info {
 
 		warn "# data ",as_hex($data);
 
+		return if length($data) < 17;
+
 		$info = {
 			DSFID    => substr($data,5-2,1),
 			UID      => substr($data,6-2,8),
@@ -178,7 +180,9 @@ sub read_blocks {
 
 	my $info = _get_system_info $tag;
 
-	my $max_block = ord($info->{SIZE}) || die "no SIZE in ",dump( $info );
+	return unless $info->{SIZE};
+
+	my $max_block = ord($info->{SIZE});
 
 	my $tag_blocks;
 
@@ -240,7 +244,7 @@ sub read_afi {
 	$tag = shift if ref $tag;
 
 	my $info = _get_system_info $tag;
-	return $info->{AFI} || die "no AFI for $tag in ",dump($info);
+	return $info->{AFI} || warn "no AFI for $tag in ",dump($info);
 
 }
 
