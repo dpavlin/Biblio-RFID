@@ -142,7 +142,7 @@ sub _available {
 		my $module = "RFID::Biblio::Reader::$reader";
 		eval "use $module";
 		die $@ if $@;
-		if ( my $rfid = $module->new( device => '/dev/ttyUSB0' ) ) {
+		if ( my $rfid = $module->new ) {
 			push @rfid, $rfid;
 			warn "# added $module\n";
 		} else {

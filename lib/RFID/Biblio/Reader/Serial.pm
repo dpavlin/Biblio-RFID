@@ -33,29 +33,37 @@ sub new {
 
 =cut
 
+our $serial_device;
+
 sub port {
 	my $self = shift;
 
 	return $self->{port} if defined $self->{port};
 
 	my $settings = $self->serial_settings;
-	my $device   = $settings->{device} ||= $ENV{RFID_DEVICE};
-	warn "# settings ",dump $settings;
+	my @devices  = ( $ENV{RFID_DEVICE} );
+	@devices = glob '/dev/ttyUSB*';
 
-	if ( ! $device ) {
-		warn "# no device, serial port not opened\n";
-		return;
+	warn "# port devices ",dump(@devices);
+
+	foreach my $device ( @devices ) {
+
+		next if $serial_device->{$device};
+
+		if ( my $port = Device::SerialPort->new($device) ) {
+			foreach my $opt ( qw/handshake baudrate databits parity stopbits/ ) {
+				$port->$opt( $settings->{$opt} );
+			}
+			warn "found ", ref($self), " $device settings ",dump $settings;
+			$self->{port} = $port;
+			$serial_device->{$device} = $port;
+			last;
+		}
 	}
 
-	if ( $self->{port} = Device::SerialPort->new( $settings->{device} ) ) {
-		$self->{port}->$_( $settings->{$_} )
-		foreach ( qw/handshake baudrate databits parity stopbits/ );
-	} else {
-		warn "can't open serial port: $!\n";
-		$self->{port} = 0;
-	}
+	warn "# serial_device ",dump($serial_device);
 
-	$self->{port};
+	return $self->{port};
 }
 
 1

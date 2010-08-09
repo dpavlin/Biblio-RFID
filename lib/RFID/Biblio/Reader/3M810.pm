@@ -36,7 +36,6 @@ use Time::HiRes;
 use Digest::CRC;
 
 sub serial_settings {{
-	device    => "/dev/ttyUSB1", # FIXME comment out before shipping
 	baudrate  => "19200",
 	databits  => "8",
 	parity	  => "none",
