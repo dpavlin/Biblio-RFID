@@ -36,8 +36,8 @@ sub new {
 =head2 tags
 
   my @visible = $rfid->tags(
-		enter => sub {},
-		leave => sub {},
+		enter => sub { my $tag = shift; },
+		leave => sub { my $tag = shift; },
   );
 
 =cut
@@ -70,7 +70,7 @@ sub tags {
 					next;
 				}
 
-				$triggers->{enter}->( $self, $tag ) if $triggers->{enter};
+				$triggers->{enter}->( $tag ) if $triggers->{enter};
 			}
 
 			$self->{_tags}->{$tag}->{time} = $t;
@@ -78,7 +78,7 @@ sub tags {
 		}
 	
 		foreach my $tag ( grep { $self->{_tags}->{$_}->{time} == 0 } keys %{ $self->{_tags} } ) {
-			$triggers->{leave}->( $self, $tag ) if $triggers->{leave};
+			$triggers->{leave}->( $tag ) if $triggers->{leave};
 			$self->_invalidate_tag( $tag );
 		}
 
