@@ -4,7 +4,7 @@ use warnings;
 use strict;
 
 use base 'Exporter';
-our @EXPORT = qw( hex2bytes as_hex hex_tag );
+our @EXPORT = qw( hex2bytes as_hex hex_tag $debug );
 
 use Data::Dump qw(dump);
 
@@ -16,7 +16,7 @@ RFID::Biblio - perl tools to use different RFID readers for library use
 
 our $VERSION = '0.02';
 
-my $debug = 0;
+our $debug = 0;
 
 
 =head1 DESCRIPTION
@@ -107,6 +107,24 @@ sub as_hex {
 =cut
 
 sub hex_tag { uc(unpack('H16', shift)) }
+
+=head1 WARN
+
+We are installing L<perldoc/warn> handler to controll debug output
+based on C<$Biblio::RFID::debug> level
+
+=cut
+
+BEGIN {
+	$SIG{'__WARN__'} = sub {
+		my $msg = join(' ', @_);
+		if ( $msg =~ m/^(#+)/ ) {
+			my $l = length $1;
+			return if $l > $debug;
+		}
+		warn join(' ', @_);
+	}
+}
 
 =for readme continue
 
