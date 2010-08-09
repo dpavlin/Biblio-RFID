@@ -11,13 +11,16 @@ use RFID::Biblio::RFID501;
 
 my $loop = 0;
 my $reader;
+my $debug = 0;
 
 GetOptions(
 	'loop!'     => \$loop,
 	'reader=s', => \$reader,
+	'debug+'    => \$debug,
 ) || die $!;
 
 my $rfid = RFID::Biblio::Reader->new( $reader );
+$RFID::Biblio::debug = $debug;
 
 do {
 	my @visible = $rfid->tags;
