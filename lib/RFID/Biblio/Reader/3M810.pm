@@ -74,10 +74,6 @@ sub checksum {
 	pack('n', $crc->digest);
 }
 
-sub wait_device {
-	Time::HiRes::sleep 0.015;
-}
-
 sub cmd {
 	my ( $hex, $description, $coderef ) = @_;
 	my $bytes = hex2bytes($hex);
@@ -91,25 +87,14 @@ sub cmd {
 	warn ">> ", as_hex( $bytes ), "\t\t[$description]\n";
 	$port->write( $bytes );
 
-	wait_device;
-
 	my $r_len = $port->read(3);
 
 	while ( length($r_len) < 3 ) {
-		wait_device;
 		$r_len = $port->read( 3 - length($r_len) );
 	}
 
-	wait_device;
-
 	my $len = ord( substr($r_len,2,1) );
 	my $data = $port->read( $len );
-
-	while ( length($data) < $len ) {
-		warn "# short read ", length($data), " < $len\n";
-		wait_device;
-		$data .= $port->read( $len - length($data) );
-	}
 
 	warn "<< ", as_hex($r_len,$data),
 		' | ',
