@@ -46,8 +46,8 @@ sub tags {
 	my $self = shift;
 	my $triggers = {@_};
 
-	$self->{inventory} ||= {};
-	$self->{inventory}->{$_} = 0 foreach keys %{$self->{inventory}};
+	$self->{_tags} ||= {};
+	$self->{_tags}->{$_}->{inventory} = 0 foreach keys %{$self->{_tags}};
 	my $t = time;
 
 	foreach my $rfid ( @{ $self->{_readers} } ) {
@@ -56,24 +56,36 @@ sub tags {
 
 		foreach my $tag ( @tags ) {
 
-			$self->{blocks}->{$tag} ||= $rfid->read_blocks( $tag )->{$tag};
-			$self->{afi}->{$tag}    ||= $rfid->read_afi( $tag );
+			if ( ! exists $self->{_tags}->{$tag} ) {
+				if ( my $blocks = $rfid->read_blocks($tag) ) {
+					$self->{blocks}->{$tag} = $blocks->{$tag} || die "no $tag in ",dump($blocks);
+				} else {
+					$self->_invalidate_tag( $tag );
+					next;
+				}
+				if ( my $afi = $rfid->read_afi($tag) ) {
+					$self->{_tags}->{$tag}->{afi} = $afi;
+				} else {
+					$self->_invalidate_tag( $tag );
+					next;
+				}
+			}
 
 			$triggers->{enter}->( $self, $tag ) if ! $self->{inventory}->{$tag} && $triggers->{enter};
-			$self->{inventory}->{$tag} = $t;
+			$self->{_tags}->{$tag}->{intentory} = $t;
 
 		}
 
-		foreach my $tag ( grep { $self->{inventory}->{$_} == 0 } keys %{ $self->{inventory} } ) {
+		foreach my $tag ( grep { $self->{_tags}->{$_}->{inventory} == 0 } keys %{ $self->{_tags} } ) {
 			$triggers->{leave}->( $self, $tag ) if $triggers->{leave};
 			$self->_invalidate_tag( $tag );
 		}
 
 	}
 
-	warn "## tags ",dump($self);
+	warn "## _tags ",dump( $self->{_tags} );
 
-	return grep { $self->{inventory}->{$_} } keys %{ $self->{inventory} };
+	return grep { $self->{_tags}->{$_}->{inventory} } keys %{ $self->{_tags} };
 }
 
 =head2 blocks
@@ -86,8 +98,8 @@ sub tags {
 
 =cut
 
-sub blocks { $_[0]->{ 'blocks' }->{$_[1]} || die "no blocks for $_[1]"; };
-sub afi    { $_[0]->{ 'afi'    }->{$_[1]} || die "no afi for $_[1]"; };
+sub blocks { $_[0]->{_tags}->{$_[1]}->{ 'blocks' } || die "no blocks for $_[1]"; };
+sub afi    { $_[0]->{_tags}->{$_[1]}->{ 'afi'    } || die "no afi for $_[1]"; };
 
 =head1 PRIVATE
 
@@ -99,10 +111,8 @@ sub afi    { $_[0]->{ 'afi'    }->{$_[1]} || die "no afi for $_[1]"; };
 
 sub _invalidate_tag {
 	my ( $self, $tag ) = @_;
-	delete $self->{'blocks'}->{$tag};
-	delete $self->{'afi'}->{$tag};
-	delete $self->{'inventory'}->{$tag};
-	warn "# _invalidate_tag $tag";
+	my $old = delete $self->{_tags}->{$tag};
+	warn "# _invalidate_tag $tag ", dump($old);
 }
 
 =head2 _available
