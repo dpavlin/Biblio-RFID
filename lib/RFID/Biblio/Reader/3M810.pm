@@ -206,9 +206,9 @@ sub read_blocks {
 			} elsif ( $rest = _matched $data => 'FE 00 00 05 01' ) {
 				warn "FIXME ready? ",as_hex $rest;
 			} elsif ( $rest = _matched $data => '02 06' ) {
-				warn "ERROR ",as_hex($rest);
+				die "ERROR ",as_hex($rest);
 			} else {
-				warn "FIXME unsuported ",as_hex($rest);
+				die "FIXME unsuported ",as_hex($rest);
 			}
 	});
 
@@ -241,7 +241,7 @@ sub write_blocks {
 				my $blocks = substr($rest,8,1);
 				warn "# WRITE ",as_hex($tag), " [$blocks]\n";
 			} elsif ( $rest = _matched $data => '04 06' ) {
-				warn "ERROR ",as_hex($rest);
+				die "ERROR ",as_hex($rest);
 			} else {
 				die "UNSUPPORTED";
 			}
@@ -268,9 +268,9 @@ sub read_afi {
 			warn "# SECURITY ", hex_tag($tag), " AFI: ", as_hex($afi);
 
 		} elsif ( $rest = _matched $data => '0A 06' ) {
-			warn "ERROR reading security from $tag ", as_hex($data);
+			die "ERROR reading security from $tag ", as_hex($data);
 		} else {
-			warn "IGNORED ",as_hex($data);
+			die "IGNORED ",as_hex($data);
 		}
 	});
 	warn "## read_afi ",dump($tag, $afi);
@@ -293,11 +293,9 @@ sub write_afi {
 			die "write_afi got $tag_back expected $tag" if $tag_back ne $tag;
 			warn "# SECURITY ", hex_tag($tag), " AFI: ", as_hex($afi);
 		} elsif ( $rest = _matched $data => '0A 06' ) {
-			warn "ERROR writing AFI to $tag ", as_hex($data);
-			undef $afi;
+			die "ERROR writing AFI to $tag ", as_hex($data);
 		} else {
-			warn "IGNORED ",as_hex($data);
-			undef $afi;
+			die "IGNORED ",as_hex($data);
 		}
 	});
 	warn "## write_afi ", dump( $tag, $afi );
