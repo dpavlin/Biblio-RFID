@@ -59,22 +59,30 @@ while ( $rfid->tags ) {
 
 print_card;
 
+my $programmed;
+
 do {
 	my @visible = $rfid->tags(
 		enter => sub {
 			my $tag = shift;
-			print localtime()." enter ", tag($tag);
+			print localtime()." enter ", eval { tag($tag) };
+			return if $@;
 
-			my $card = shift @queue;
-			$rfid->write_blocks( $tag => RFID::Biblio::RFID501->from_hash({ content => $card->[0] }) );
-			$rfid->write_afi(    $tag => chr($afi) ) if $afi;
+			if ( ! $programmed->{$tag} ) {
+				my $card = shift @queue;
+				my $number = $card->[0];
+				print "PROGRAM $tag $number\n";
+				$rfid->write_blocks( $tag => RFID::Biblio::RFID501->from_hash({ content => $number }) );
+				$rfid->write_afi( $tag => chr($afi) ) if $afi;
+
+				$programmed->{$tag} = $number;
+			}
 
 		},
 		leave => sub {
 			my $tag = shift;
-			print localtime()." leave ", tag($tag);
 
-			print_card;
+			print_card if $programmed->{$tag};
 		},
 	);
 
@@ -89,6 +97,7 @@ sub print_card {
 
 	my $p = Printer::EVOLIS::Parallel->new( '/dev/usb/lp0' );
 	print "insert card ", $p->command( 'Si' ),$/;
+	sleep 1;
 	print "eject card ", $p->command( 'Ser' ),$/;
 }
 
