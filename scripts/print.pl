@@ -10,6 +10,7 @@ use RFID::Biblio::Reader;
 use RFID::Biblio::RFID501;
 use Storable;
 
+my $evolis_dir = '/home/dpavlin/klin/Printer-EVOLIS'; # FIXME
 use lib '/home/dpavlin/klin/Printer-EVOLIS/lib';
 use Printer::EVOLIS::Parallel;
 
@@ -17,11 +18,13 @@ my $loop = 1;
 my $reader = '3M';
 my $debug = 0;
 my $afi   = 0x42;
+my $test  = 0;
 
 GetOptions(
 	'loop!'     => \$loop,
 	'reader=s', => \$reader,
 	'debug+'    => \$debug,
+	'test+'     => \$test,
 ) || die $!;
 
 die "Usage: $0 print.txt\n" unless @ARGV;
@@ -100,11 +103,28 @@ do {
 
 sub print_card {
 
-	print "XXX print_card @{$queue[0]}\n";
+	if ( ! @queue ) {
+		print "QUEUE EMPTY - printing finished\n";
+		exit;
+	}
 
-	my $p = Printer::EVOLIS::Parallel->new( '/dev/usb/lp0' );
-	print "insert card ", $p->command( 'Si' ),$/;
-	sleep 1;
-	print "eject card ", $p->command( 'Ser' ),$/;
+	my @data = @{$queue[0]};
+	print "XXX print_card @data\n";
+
+	if ( $test ) {
+
+		my $p = Printer::EVOLIS::Parallel->new( '/dev/usb/lp0' );
+		print "insert card ", $p->command( 'Si' ),$/;
+		sleep 1;
+		print "eject card ", $p->command( 'Ser' ),$/;
+
+	} else {
+
+		system "$evolis_dir/scripts/inkscape-render.pl", "$evolis_dir/card/ffzg-2010.svg", @data;
+		my $nr = $data[0];
+		system "$evolis_dir/scripts/evolis-driver.pl out/$nr.front.pbm out/$nr.back.pbm > /dev/usb/lp0";
+
+	}
+
 }
 
