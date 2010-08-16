@@ -103,7 +103,7 @@ sub cmd {
 		$bytes = "\xD6" . $bytes . $checksum;
 	}
 
-	warn ">> ", as_hex( $bytes ), "\t\t[$description]\n";
+	warn ">> ", as_hex( $bytes ), "\t\t[$description]\n" if $debug;
 	$port->write( $bytes );
 
 	my $r_len = $port->read(3);
@@ -118,7 +118,7 @@ sub cmd {
 	warn "<< ", as_hex($r_len,$data),
 		' | ',
 		substr($data,-2,2) eq checksum(substr($r_len,1).substr($data,0,-2)) ? 'OK' : 'ERROR',
-		" $len bytes\n";
+		" $len bytes\n" if $debug;
 
 
 	$coderef->( $data ) if $coderef;
@@ -177,7 +177,7 @@ sub _matched {
 	my $b = hex2bytes $hex;
 	my $l = length($b);
 	if ( substr($data,0,$l) eq $b ) {
-		warn "_matched $hex [$l] in ",as_hex($data);
+		warn "_matched $hex [$l] in ",as_hex($data) if $debug;
 		return substr($data,$l);
 	}
 }
