@@ -15,6 +15,7 @@ use Printer::EVOLIS::Parallel;
 my $loop = 1;
 my $reader = '3M';
 my $debug = 0;
+my $afi   = 0x42;
 
 GetOptions(
 	'loop!'     => \$loop,
@@ -49,8 +50,6 @@ sub tag {
 		;
 }
 
-my @stack;
-
 sub print_card;
 
 while ( $rfid->tags ) {
@@ -65,16 +64,17 @@ do {
 		enter => sub {
 			my $tag = shift;
 			print localtime()." enter ", tag($tag);
-			push @stack, [ 'enter', $tag ];
-			warn dump @stack;
 
-			print_card;
+			my $card = shift @queue;
+			$rfid->write_blocks( $tag => RFID::Biblio::RFID501->from_hash({ content => $card->[0] }) );
+			$rfid->write_afi(    $tag => chr($afi) ) if $afi;
+
 		},
 		leave => sub {
 			my $tag = shift;
 			print localtime()." leave ", tag($tag);
-			push @stack, [ 'leave', $tag ];
-			warn dump @stack;
+
+			print_card;
 		},
 	);
 
@@ -85,10 +85,10 @@ do {
 
 sub print_card {
 
-	print "XXX print_card\n";
+	print "XXX print_card @{$queue[0]}\n";
 
 	my $p = Printer::EVOLIS::Parallel->new( '/dev/usb/lp0' );
-	print "insert card ", $p->command( 'Si' );
-	print "eject card ", $p->command( 'Ser' );
+	print "insert card ", $p->command( 'Si' ),$/;
+	print "eject card ", $p->command( 'Ser' ),$/;
 }
 
