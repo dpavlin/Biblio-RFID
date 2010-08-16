@@ -7,6 +7,7 @@ use Data::Dump qw(dump);
 use Time::HiRes;
 use lib 'lib';
 use RFID::Biblio;
+use Carp qw(confess);
 
 =head1 NAME
 
@@ -99,8 +100,8 @@ sub tags {
 
 =cut
 
-sub blocks { $_[0]->{_tags}->{$_[1]}->{ 'blocks' } || die "no blocks for $_[1]"; };
-sub afi    { $_[0]->{_tags}->{$_[1]}->{ 'afi'    } || die "no afi for $_[1]"; };
+sub blocks { $_[0]->{_tags}->{$_[1]}->{ 'blocks' } || confess "no blocks for $_[1]"; };
+sub afi    { $_[0]->{_tags}->{$_[1]}->{ 'afi'    } || confess "no afi for $_[1]"; };
 
 =head1 PRIVATE
 
