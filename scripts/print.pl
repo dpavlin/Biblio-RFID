@@ -8,6 +8,7 @@ use Getopt::Long;
 use lib 'lib';
 use RFID::Biblio::Reader;
 use RFID::Biblio::RFID501;
+use Storable;
 
 use lib '/home/dpavlin/klin/Printer-EVOLIS/lib';
 use Printer::EVOLIS::Parallel;
@@ -59,7 +60,12 @@ while ( $rfid->tags ) {
 
 print_card;
 
+my $persistant_path = '/tmp/programmed.storable';
 my $programmed;
+if ( -e $persistant_path ) {
+	$programmed = retrieve($persistant_path);
+	warn "# loaded ", scalar keys %$programmed, " programmed cards\n";
+}
 
 do {
 	my @visible = $rfid->tags(
@@ -76,6 +82,7 @@ do {
 				$rfid->write_afi( $tag => chr($afi) ) if $afi;
 
 				$programmed->{$tag} = $number;
+				store $programmed, $persistant_path;
 			}
 
 		},
