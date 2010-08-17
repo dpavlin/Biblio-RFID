@@ -29,13 +29,25 @@ GetOptions(
 
 die "Usage: $0 print.txt\n" unless @ARGV;
 
+my $persistant_path = '/tmp/programmed.storable';
+my $programmed;
+my $numbers;
+if ( -e $persistant_path ) {
+	$programmed = retrieve($persistant_path);
+	warn "# loaded ", scalar keys %$programmed, " programmed cards\n";
+	foreach my $tag ( keys %$programmed ) {
+		$numbers->{ $programmed->{$tag} } = $tag;
+	}
+}
+
 my @queue;
 my @done;
-warn "# reading tab-delimited input\n";
+warn "# reading tab-delimited input: number login\@domain name surname\n";
 while(<>) {
 	chomp;
 	my @a = split(/\t/,$_);
-	push @queue, [ @a ];
+	die "invalid: @a in line $_" if $a[0] !~ m/\d{12}/ && $a[1] !~ m/\@/;
+	push @queue, [ @a ] if ! $numbers->{ $a[0] };
 }
 
 print "# queue ", dump @queue;
@@ -62,13 +74,6 @@ while ( $rfid->tags ) {
 }
 
 print_card;
-
-my $persistant_path = '/tmp/programmed.storable';
-my $programmed;
-if ( -e $persistant_path ) {
-	$programmed = retrieve($persistant_path);
-	warn "# loaded ", scalar keys %$programmed, " programmed cards\n";
-}
 
 do {
 	my @visible = $rfid->tags(
