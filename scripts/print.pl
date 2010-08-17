@@ -20,6 +20,9 @@ my $debug = 0;
 my $afi   = 0x42;
 my $test  = 0;
 
+my $log_print = 'log.print';
+mkdir $log_print unless -d $log_print;
+
 GetOptions(
 	'loop!'     => \$loop,
 	'reader=s', => \$reader,
@@ -66,7 +69,16 @@ sub tag {
 		;
 }
 
+sub iso_date {
+	my @t = localtime(time);
+	return sprintf "%04d-%02d-%02dT%02d:%02d:%02d", $t[5]+1900,$t[4]+1,$t[3],$t[2],$t[1],$t[0];
+}
+
 sub print_card;
+
+my $log_path = "$log_print/" . iso_date . ".txt";
+die "$log_path exists" if -e $log_path;
+open(my $log, '>', $log_path) || die "$log_path: $!";
 
 while ( $rfid->tags ) {
 	print "ERROR: remove all tags from output printer tray\n";
@@ -91,6 +103,8 @@ do {
 
 				$programmed->{$tag} = $number;
 				store $programmed, $persistant_path;
+
+				print $log iso_date, ",$tag,$number\n";
 			}
 
 		},
@@ -110,6 +124,8 @@ sub print_card {
 
 	if ( ! @queue ) {
 		print "QUEUE EMPTY - printing finished\n";
+		close($log);
+		print "$log_path ", -s $log_path, " bytes created\n";
 		exit;
 	}
 
