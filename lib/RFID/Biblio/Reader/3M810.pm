@@ -56,8 +56,10 @@ sub init {
 
 	# drain on startup
 	my ( $count, $str ) = $port->read(3);
-	my $data = $port->read( ord(substr($str,2,1)) );
-	warn "drain ",as_hex( $str, $data ),"\n";
+	if ( $count ) {
+		my $data = $port->read( ord(substr($str,2,1)) );
+		warn "drain ",as_hex( $str, $data ),"\n";
+	}
 
 	$port->read_char_time(100);	 # 0.1 s char timeout
 	$port->read_const_time(500); # 0.5 s read timeout
