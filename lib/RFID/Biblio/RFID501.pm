@@ -152,6 +152,8 @@ sub from_hash {
 
 	warn "## from_hash ",dump($hash);
 
+	$hash->{$_} ||= 0 foreach ( qw( set total type branch library ) );
+
 	return pack('C4Z16Nl>l',
 		0x04,
 		( $hash->{set} << 4 ) | ( $hash->{total} & 0x0f ),
