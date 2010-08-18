@@ -48,4 +48,6 @@ do {
 
 	warn localtime()." visible: ",join(' ',@visible),"\n";
 
+	sleep 1;
+
 } while $loop;
