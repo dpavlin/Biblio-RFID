@@ -17,7 +17,7 @@ use Printer::EVOLIS::Parallel;
 my $loop = 1;
 my $reader = '3M';
 my $debug = 0;
-my $afi   = 0x42;
+my $afi   = 0x00; # XXX
 my $test  = 0;
 
 my $log_print = 'log.print';
@@ -99,7 +99,7 @@ do {
 				my $number = $card->[0];
 				print "PROGRAM $tag $number\n";
 				$rfid->write_blocks( $tag => RFID::Biblio::RFID501->from_hash({ content => $number }) );
-				$rfid->write_afi( $tag => chr($afi) ) if $afi;
+				$rfid->write_afi( $tag => chr($afi) );
 
 				$programmed->{$tag} = $number;
 				store $programmed, $persistant_path;
