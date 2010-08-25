@@ -1,16 +1,16 @@
-package RFID::Biblio::Reader::3M810;
+package Biblio::RFID::Reader::3M810;
 
 =head1 NAME
 
-RFID::Biblio::Reader::3M810 - support for 3M 810 RFID reader
+Biblio::RFID::Reader::3M810 - support for 3M 810 RFID reader
 
 =head1 DESCRIPTION
 
-This module uses L<RFID::Biblio::Reader::Serial> over USB/serial adapter
+This module uses L<Biblio::RFID::Reader::Serial> over USB/serial adapter
 with 3M 810 RFID reader, often used in library applications.
 
 This is most mature implementation which supports full API defined
-in L<RFID::Biblio::Reader::API>. This include scanning for all tags in reader
+in L<Biblio::RFID::Reader::API>. This include scanning for all tags in reader
 range, reading and writing of data, and AFI security manipulation.
 
 This implementation is developed using Portmon on Windows to capture serial traffic
@@ -27,8 +27,8 @@ this reader is available at L<http://blog.rot13.org/rfid/>
 use warnings;
 use strict;
 
-use base 'RFID::Biblio::Reader::Serial';
-use RFID::Biblio;
+use base 'Biblio::RFID::Reader::Serial';
+use Biblio::RFID;
 
 use Data::Dump qw(dump);
 use Carp qw(confess);
@@ -310,4 +310,4 @@ __END__
 
 =head1 SEE ALSO
 
-L<RFID::Biblio::Reader::API>
+L<Biblio::RFID::Reader::API>

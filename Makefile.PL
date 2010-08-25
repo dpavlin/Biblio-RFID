@@ -1,6 +1,6 @@
 use inc::Module::Install;
 
-name     'RFID-Biblio';
+name     'Biblio-RFID';
 all_from 'lib/RFID/Biblio.pm';
 author   q{Dobrica Pavlinusic <dpavlin@rot13.org>};
 license  'gpl';

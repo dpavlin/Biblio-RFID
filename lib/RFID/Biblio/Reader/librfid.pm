@@ -1,16 +1,16 @@
-package RFID::Biblio::Reader::librfid;
+package Biblio::RFID::Reader::librfid;
 
 use warnings;
 use strict;
 
-use base 'RFID::Biblio::Reader::API';
-use RFID::Biblio;
+use base 'Biblio::RFID::Reader::API';
+use Biblio::RFID;
 
 use Data::Dump qw(dump);
 
 =head1 NAME
 
-RFID::Biblio::Reader::librfid - execute librfid-tool
+Biblio::RFID::Reader::librfid - execute librfid-tool
 
 =head1 DESCRIPTION
 
@@ -19,8 +19,8 @@ This is wrapper around C<librfid-tool> from
 L<http://openmrtd.org/projects/librfid/>
 
 Due to limitation of L<librfid-tool> only
-L<RFID::Biblio::Reader::API/inventory> and
-L<RFID::Biblio::Reader::API/read_blocks> is supported.
+L<Biblio::RFID::Reader::API/inventory> and
+L<Biblio::RFID::Reader::API/read_blocks> is supported.
 
 However, this code might provide template for integration
 with any command-line utilities for different RFID readers.

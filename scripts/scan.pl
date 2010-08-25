@@ -6,8 +6,8 @@ use strict;
 use Data::Dump qw(dump);
 use Getopt::Long;
 use lib 'lib';
-use RFID::Biblio::Reader;
-use RFID::Biblio::RFID501;
+use Biblio::RFID::Reader;
+use Biblio::RFID::RFID501;
 
 my $loop = 0;
 my $reader;
@@ -19,8 +19,8 @@ GetOptions(
 	'debug+'    => \$debug,
 ) || die $!;
 
-my $rfid = RFID::Biblio::Reader->new( $reader );
-$RFID::Biblio::debug = $debug;
+my $rfid = Biblio::RFID::Reader->new( $reader );
+$Biblio::RFID::debug = $debug;
 
 sub tag {
 	my $tag = shift;
@@ -28,7 +28,7 @@ sub tag {
 		, " AFI: "
 		, uc unpack('H2', $rfid->afi($tag))
 		, " "
-		, dump( RFID::Biblio::RFID501->to_hash( $rfid->blocks($tag) ) )
+		, dump( Biblio::RFID::RFID501->to_hash( $rfid->blocks($tag) ) )
 		, $/
 		;
 }

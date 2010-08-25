@@ -6,8 +6,8 @@ use strict;
 use Data::Dump qw(dump);
 use Getopt::Long;
 use lib 'lib';
-use RFID::Biblio::Reader;
-use RFID::Biblio::RFID501;
+use Biblio::RFID::Reader;
+use Biblio::RFID::RFID501;
 use Storable;
 
 my $evolis_dir = '/home/dpavlin/klin/Printer-EVOLIS'; # FIXME
@@ -55,8 +55,8 @@ while(<>) {
 
 print "# queue ", dump @queue;
 
-my $rfid = RFID::Biblio::Reader->new( $reader );
-$RFID::Biblio::debug = $debug;
+my $rfid = Biblio::RFID::Reader->new( $reader );
+$Biblio::RFID::debug = $debug;
 
 sub tag {
 	my $tag = shift;
@@ -64,7 +64,7 @@ sub tag {
 		, " AFI: "
 		, uc unpack('H2', $rfid->afi($tag))
 		, " "
-		, dump( RFID::Biblio::RFID501->to_hash( $rfid->blocks($tag) ) )
+		, dump( Biblio::RFID::RFID501->to_hash( $rfid->blocks($tag) ) )
 		, $/
 		;
 }
@@ -98,8 +98,8 @@ do {
 				my $card = shift @queue;
 				my $number = $card->[0];
 				print "PROGRAM $tag $number\n";
-				$rfid->write_blocks( $tag => RFID::Biblio::RFID501->from_hash({ content => $number }) );
-				$rfid->write_afi( $tag => chr($afi) );
+				$rfid->write_blocks( $tag => Biblio::RFID::RFID501->from_hash({ content => $number }) );
+				$rfid->write_afi( $tag => chr($afi) ) if $afi;
 
 				$programmed->{$tag} = $number;
 				store $programmed, $persistant_path;

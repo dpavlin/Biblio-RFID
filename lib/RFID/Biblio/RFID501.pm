@@ -1,4 +1,4 @@
-package RFID::Biblio::RFID501;
+package Biblio::RFID::RFID501;
 
 use warnings;
 use strict;
@@ -7,7 +7,7 @@ use Data::Dump qw(dump);
 
 =head1 NAME
 
-RFID::Biblio::RFID501 - RFID Standard for Libraries
+Biblio::RFID::RFID501 - RFID Standard for Libraries
 
 =head1 DESCRIPTION
 
@@ -81,19 +81,19 @@ unsecured (door will ignore it)
 
 =head2 to_hash
 
-  my $hash = RFID::Biblio::Decode::RFID501->to_hash( $bytes );
+  my $hash = Biblio::RFID::Decode::RFID501->to_hash( $bytes );
 
-  my $hash = RFID::Biblio::Decode::RFID501->to_hash( [ 'blk1', 'blk2', ... , 'blk7' ] );
+  my $hash = Biblio::RFID::Decode::RFID501->to_hash( [ 'blk1', 'blk2', ... , 'blk7' ] );
 
 =head2 from_hash
 
-  my $blocks = RFID::Biblio::Decode::RFID->from_hash({ content => "1301234567" });
+  my $blocks = Biblio::RFID::Decode::RFID->from_hash({ content => "1301234567" });
 
 =head2 blank_3m
 
 =head2 blank
 
-  my $blocks = RFID::Biblio::Decode::RFID->blank;
+  my $blocks = Biblio::RFID::Decode::RFID->blank;
 
 =cut
 

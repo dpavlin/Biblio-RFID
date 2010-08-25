@@ -1,4 +1,4 @@
-package RFID::Biblio::Reader::Serial;
+package Biblio::RFID::Reader::Serial;
 
 use warnings;
 use strict;
@@ -8,7 +8,7 @@ use Data::Dump qw(dump);
 
 =head1 NAME
 
-RFID::Biblio::Reader::Serial - base class for serial RFID readers
+Biblio::RFID::Reader::Serial - base class for serial RFID readers
 
 =head1 METHODS
 
@@ -81,9 +81,9 @@ __END__
 
 =head1 SEE ALSO
 
-L<RFID::Biblio::Reader::3M810>
+L<Biblio::RFID::Reader::3M810>
 
-L<RFID::Biblio::Reader::CPRM01>
+L<Biblio::RFID::Reader::CPRM01>
 
-L<RFID::Biblio::Reader::API>
+L<Biblio::RFID::Reader::API>
 

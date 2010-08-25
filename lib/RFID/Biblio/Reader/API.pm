@@ -1,11 +1,11 @@
-package RFID::Biblio::Reader::API;
+package Biblio::RFID::Reader::API;
 
 use warnings;
 use strict;
 
 =head1 NAME
 
-RFID::Biblio::Reader::API - low-level RFID reader documentation
+Biblio::RFID::Reader::API - low-level RFID reader documentation
 
 =cut
 
@@ -29,7 +29,7 @@ All blocks are under key which is tag UID with array of blocks returned from rea
 
   $hash = { 'E000000123456789' => [ 'blk1', 'blk2', ... ] };
 
-L<RFID::Biblio::Reader::3M810> sends tag UID with data payload, so we might expect
+L<Biblio::RFID::Reader::3M810> sends tag UID with data payload, so we might expect
 to receive response from other tags from protocol specification, 
 
 =head2 write_blocks
@@ -53,7 +53,7 @@ to receive response from other tags from protocol specification,
 
 Just calls C<init> in reader implementation so this class
 can be used as simple stub base class like
-L<RFID::Biblio::Reader::librfid> does
+L<Biblio::RFID::Reader::librfid> does
 
 =cut
 

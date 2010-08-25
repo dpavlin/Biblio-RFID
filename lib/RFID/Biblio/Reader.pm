@@ -1,4 +1,4 @@
-package RFID::Biblio::Reader;
+package Biblio::RFID::Reader;
 
 use warnings;
 use strict;
@@ -6,23 +6,23 @@ use strict;
 use Data::Dump qw(dump);
 use Time::HiRes;
 use lib 'lib';
-use RFID::Biblio;
+use Biblio::RFID;
 use Carp qw(confess);
 
 =head1 NAME
 
-RFID::Biblio::Reader - simple way to write RFID applications in perl
+Biblio::RFID::Reader - simple way to write RFID applications in perl
 
 =head1 DESCRIPTION
 
 This module will probe all available readers and use calls from
-L<RFID::Biblio::Reader::API> to invoke correct reader.
+L<Biblio::RFID::Reader::API> to invoke correct reader.
 
 =head1 FUNCTIONS
 
 =head2 new
 
-  my $rfid = RFID::Biblio::Reader->new( 'optional reader filter' );
+  my $rfid = Biblio::RFID::Reader->new( 'optional reader filter' );
 
 =cut
 
@@ -123,7 +123,7 @@ sub _invalidate_tag {
 
 Probe each RFID reader supported and returns succefull ones
 
-  my $rfid_readers = RFID::Biblio::Reader->_available( $regex_filter );
+  my $rfid_readers = Biblio::RFID::Reader->_available( $regex_filter );
 
 =cut
 
@@ -140,7 +140,7 @@ sub _available {
 
 	foreach my $reader ( @readers ) {
 		next if $filter && $reader !~ /$filter/i;
-		my $module = "RFID::Biblio::Reader::$reader";
+		my $module = "Biblio::RFID::Reader::$reader";
 		eval "use $module";
 		die $@ if $@;
 		if ( my $rfid = $module->new ) {
@@ -189,9 +189,9 @@ __END__
 
 =head2 RFID reader implementations
 
-L<RFID::Biblio::Reader::3M810>
+L<Biblio::RFID::Reader::3M810>
 
-L<RFID::Biblio::Reader::CPRM02>
+L<Biblio::RFID::Reader::CPRM02>
 
-L<RFID::Biblio::Reader::librfid>
+L<Biblio::RFID::Reader::librfid>
 
