@@ -1,26 +1,26 @@
 NAME
-    RFID::Biblio - perl tools to use different RFID readers for library use
+    Biblio::RFID - perl tools to use different RFID readers for library use
 
 DESCRIPTION
     Main idea is to develop simple API to reader, and than provide useful
     abstractions on top of it to quickly write applications to respond on
-    tags which come in range of RFID reader using RFID::Biblio::Reader.
+    tags which come in range of RFID reader using Biblio::RFID::Reader.
 
     Writing support for new RFID readers should be easy.
-    RFID::Biblio::Reader::API provides documentation on writing support for
+    Biblio::RFID::Reader::API provides documentation on writing support for
     different readers.
 
-    Currently, two serial RFID readers based on RFID::Biblio::Reader::Serial
+    Currently, two serial RFID readers based on Biblio::RFID::Reader::Serial
     are implemented:
 
-    *   RFID::Biblio::Reader::3M810
+    *   Biblio::RFID::Reader::3M810
 
-    *   RFID::Biblio::Reader::CPRM02
+    *   Biblio::RFID::Reader::CPRM02
 
     There is also simple read-only reader using shell commands in
-    RFID::Biblio::Reader::librfid.
+    Biblio::RFID::Reader::librfid.
 
-    For implementing application take a look at RFID::Biblio::Reader
+    For implementing application take a look at Biblio::RFID::Reader
 
     `scripts/RFID-JSONP-server.pl' is example of such application. It's
     local interface to RFID reader and JSONP REST server.
@@ -29,18 +29,18 @@ DESCRIPTION
     inserted in Koha Library System to provide overlay with tags in range
     and check-in/check-out form-fill functionality.
 
-    Applications can use RFID::Biblio::RFID501 which is some kind of
+    Applications can use Biblio::RFID::RFID501 which is some kind of
     semi-standard 3M layout or blocks on RFID tags.
 
 HARDWARE SUPPORT
   3M 810
-    RFID::Biblio::Reader::3M810
+    Biblio::RFID::Reader::3M810
 
   CPR-M02
-    RFID::Biblio::Reader::CPRM02
+    Biblio::RFID::Reader::CPRM02
 
   librfid
-    RFID::Biblio::Reader::librfid
+    Biblio::RFID::Reader::librfid
 
 AUTHOR
     Dobrica Pavlinusic, `<dpavlin at rot13.org>'
@@ -50,30 +50,30 @@ AUTHOR
 BUGS
     Please report any bugs or feature requests to `bug-rfid-biblio at
     rt.cpan.org', or through the web interface at
-    http://rt.cpan.org/NoAuth/ReportBug.html?Queue=RFID-Biblio. I will be
+    http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Biblio-RFID. I will be
     notified, and then you'll automatically be notified of progress on your
     bug as I make changes.
 
 SUPPORT
     You can find documentation for this module with the perldoc command.
 
-        perldoc RFID::Biblio
-        perldoc RFID::Biblio::Reader
-        perldoc RFID::Biblio::Reader::API
+        perldoc Biblio::RFID
+        perldoc Biblio::RFID::Reader
+        perldoc Biblio::RFID::Reader::API
 
     You can also look for information at:
 
     * RT: CPAN's request tracker
-        http://rt.cpan.org/NoAuth/Bugs.html?Dist=RFID-Biblio
+        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Biblio-RFID
 
     * AnnoCPAN: Annotated CPAN documentation
-        http://annocpan.org/dist/RFID-Biblio
+        http://annocpan.org/dist/Biblio-RFID
 
     * CPAN Ratings
-        http://cpanratings.perl.org/d/RFID-Biblio
+        http://cpanratings.perl.org/d/Biblio-RFID
 
     * Search CPAN
-        http://search.cpan.org/dist/RFID-Biblio/
+        http://search.cpan.org/dist/Biblio-RFID/
 
 ACKNOWLEDGEMENTS
 LICENSE AND COPYRIGHT

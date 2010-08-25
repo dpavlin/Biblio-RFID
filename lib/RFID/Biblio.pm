@@ -1,4 +1,4 @@
-package RFID::Biblio;
+package Biblio::RFID;
 
 use warnings;
 use strict;
@@ -10,7 +10,7 @@ use Data::Dump qw(dump);
 
 =head1 NAME
 
-RFID::Biblio - perl tools to use different RFID readers for library use 
+Biblio::RFID - perl tools to use different RFID readers for library use 
 
 =cut
 
@@ -23,31 +23,31 @@ our $debug = 0;
 
 Main idea is to develop simple API to reader, and than provide useful
 abstractions on top of it to quickly write applications to respond on
-tags which come in range of RFID reader using L<RFID::Biblio::Reader>.
+tags which come in range of RFID reader using L<Biblio::RFID::Reader>.
 
 Writing support for new RFID readers should be easy.
-L<RFID::Biblio::Reader::API> provides documentation on writing support
+L<Biblio::RFID::Reader::API> provides documentation on writing support
 for different readers.
 
-Currently, two serial RFID readers based on L<RFID::Biblio::Reader::Serial>
+Currently, two serial RFID readers based on L<Biblio::RFID::Reader::Serial>
 are implemented:
 
 =over 4
 
 =item *
 
-L<RFID::Biblio::Reader::3M810>
+L<Biblio::RFID::Reader::3M810>
 
 =item *
 
-L<RFID::Biblio::Reader::CPRM02>
+L<Biblio::RFID::Reader::CPRM02>
 
 =back
 
 There is also simple read-only reader using shell commands in
-L<RFID::Biblio::Reader::librfid>.
+L<Biblio::RFID::Reader::librfid>.
 
-For implementing application take a look at L<RFID::Biblio::Reader>
+For implementing application take a look at L<Biblio::RFID::Reader>
 
 C<scripts/RFID-JSONP-server.pl> is example of such application. It's local
 interface to RFID reader and JSONP REST server.
@@ -56,7 +56,7 @@ C<examples/koha-rfid.js> is jQuery based JavaScript code which can be inserted
 in Koha Library System to provide overlay with tags in range and
 check-in/check-out form-fill functionality.
 
-Applications can use L<RFID::Biblio::RFID501> which is some kind of
+Applications can use L<Biblio::RFID::RFID501> which is some kind of
 semi-standard 3M layout or blocks on RFID tags.
 
 =for readme stop
@@ -132,15 +132,15 @@ BEGIN {
 
 =head2 3M 810
 
-L<RFID::Biblio::Reader::3M810>
+L<Biblio::RFID::Reader::3M810>
 
 =head2 CPR-M02
 
-L<RFID::Biblio::Reader::CPRM02>
+L<Biblio::RFID::Reader::CPRM02>
 
 =head2 librfid
 
-L<RFID::Biblio::Reader::librfid>
+L<Biblio::RFID::Reader::librfid>
 
 
 =head1 AUTHOR
@@ -152,7 +152,7 @@ L<http://blog.rot13.org/>
 =head1 BUGS
 
 Please report any bugs or feature requests to C<bug-rfid-biblio at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=RFID-Biblio>.  I will be notified, and then you'll
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Biblio-RFID>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
 
 
@@ -162,9 +162,9 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc RFID::Biblio
-    perldoc RFID::Biblio::Reader
-    perldoc RFID::Biblio::Reader::API
+    perldoc Biblio::RFID
+    perldoc Biblio::RFID::Reader
+    perldoc Biblio::RFID::Reader::API
 
 
 You can also look for information at:
@@ -173,19 +173,19 @@ You can also look for information at:
 
 =item * RT: CPAN's request tracker
 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=RFID-Biblio>
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Biblio-RFID>
 
 =item * AnnoCPAN: Annotated CPAN documentation
 
-L<http://annocpan.org/dist/RFID-Biblio>
+L<http://annocpan.org/dist/Biblio-RFID>
 
 =item * CPAN Ratings
 
-L<http://cpanratings.perl.org/d/RFID-Biblio>
+L<http://cpanratings.perl.org/d/Biblio-RFID>
 
 =item * Search CPAN
 
-L<http://search.cpan.org/dist/RFID-Biblio/>
+L<http://search.cpan.org/dist/Biblio-RFID/>
 
 =back
 
@@ -214,4 +214,4 @@ if not, write to the Free Software Foundation, Inc.,
 
 =cut
 
-1; # End of RFID::Biblio
+1; # End of Biblio::RFID

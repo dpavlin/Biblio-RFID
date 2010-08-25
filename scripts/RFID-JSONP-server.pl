@@ -31,9 +31,9 @@ GetOptions(
 ) || die $!;
 
 use lib 'lib';
-use RFID::Biblio::RFID501;
-use RFID::Biblio::Reader;
-my $rfid = RFID::Biblio::Reader->new( shift @ARGV );
+use Biblio::RFID::RFID501;
+use Biblio::RFID::Reader;
+my $rfid = Biblio::RFID::Reader->new( shift @ARGV );
 
 my $index_html;
 {
@@ -97,7 +97,7 @@ sub http_server {
 				my @tags = $rfid->tags;
 				my $json = { time => time() };
 				foreach my $tag ( @tags ) {
-					my $hash = RFID::Biblio::RFID501->to_hash( $rfid->blocks( $tag ) );
+					my $hash = Biblio::RFID::RFID501->to_hash( $rfid->blocks( $tag ) );
 					$hash->{sid}  = $tag;
 					$hash->{security} = uc unpack 'H*', $rfid->afi( $tag );
 					push @{ $json->{tags} }, $hash;
@@ -112,8 +112,8 @@ sub http_server {
 				foreach my $p ( keys %$param ) {
 					next unless $p =~ m/^(E[0-9A-F]{15})$/;
 					my $tag = $1;
-					my $content = RFID::Biblio::RFID501->from_hash({ content => $param->{$p} });
-					$content    = RFID::Biblio::RFID501->blank if $param->{$p} eq 'blank';
+					my $content = Biblio::RFID::RFID501->from_hash({ content => $param->{$p} });
+					$content    = Biblio::RFID::RFID501->blank if $param->{$p} eq 'blank';
 					$status = 302;
 
 					warn "PROGRAM $tag $content\n";

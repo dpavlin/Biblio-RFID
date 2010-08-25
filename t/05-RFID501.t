@@ -6,7 +6,7 @@ use Data::Dump qw(dump);
 use lib 'lib';
 
 BEGIN {
-	use_ok( 'RFID::Biblio::RFID501' );
+	use_ok( 'Biblio::RFID::RFID501' );
 }
 
 my $tags =
@@ -32,10 +32,10 @@ my $tags =
 
 foreach my $tag ( @$tags ) {
 
-	ok( $hash = RFID::Biblio::RFID501->to_hash( $tag ), 'to_hash' );
+	ok( $hash = Biblio::RFID::RFID501->to_hash( $tag ), 'to_hash' );
 	diag dump $hash;
 
-	ok( $bytes = RFID::Biblio::RFID501->from_hash( $hash ), 'from_hash' );
+	ok( $bytes = Biblio::RFID::RFID501->from_hash( $hash ), 'from_hash' );
 	my $orig = join('', @$tag);
 	cmp_ok( $bytes, 'eq', $orig, 'roundtrip' );
 
@@ -43,6 +43,6 @@ foreach my $tag ( @$tags ) {
 
 }
 
-ok( my $bytes = RFID::Biblio::RFID501->blank, 'blank' );
+ok( my $bytes = Biblio::RFID::RFID501->blank, 'blank' );
 diag dump $bytes;
 

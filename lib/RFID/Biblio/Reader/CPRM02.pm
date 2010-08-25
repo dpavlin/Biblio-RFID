@@ -1,8 +1,8 @@
-package RFID::Biblio::Reader::CPRM02;
+package Biblio::RFID::Reader::CPRM02;
 
 =head1 NAME
 
-RFID::Biblio::Reader::CPRM02 - support for CPR-M02 RFID reader
+Biblio::RFID::Reader::CPRM02 - support for CPR-M02 RFID reader
 
 =head1 DESCRIPTION
 
@@ -14,8 +14,8 @@ reader as described in document C<H20800-16e-ID-B.pdf>
 use warnings;
 use strict;
 
-use base 'RFID::Biblio::Reader::Serial';
-use RFID::Biblio;
+use base 'Biblio::RFID::Reader::Serial';
+use Biblio::RFID;
 
 use Time::HiRes;
 use Data::Dump qw(dump);
