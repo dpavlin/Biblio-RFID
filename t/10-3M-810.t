@@ -11,8 +11,8 @@ BEGIN {
 
 ok( my $o = Biblio::RFID::Reader::3M810->new( device => '/dev/ttyUSB0' ), 'new' );
 
-ok( my @tags = $o->inventory, 'inventory' );
-diag dump @tags;
+my @tags = $o->inventory;
+diag 'inventory ',join(' ',@tags);
 
 my $old_afi;
 
