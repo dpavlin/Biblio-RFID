@@ -16,8 +16,6 @@ inc/Module/Install/Repository.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
 lib/RFID/Biblio.pm
-lib/RFID/Biblio/.3M810.pm.swo
-lib/RFID/Biblio/3M810.pm.new
 lib/RFID/Biblio/Reader.pm
 lib/RFID/Biblio/Reader/3M810.pm
 lib/RFID/Biblio/Reader/API.pm
@@ -31,9 +29,6 @@ MANIFEST
 MANIFEST.SKIP
 META.yml
 README
-scripts/.3m-810.pl.swp
-scripts/3m-810.pl
-scripts/cpr-m02.pl
 scripts/print.pl
 scripts/program.pl
 scripts/RFID-JSONP-server.pl
