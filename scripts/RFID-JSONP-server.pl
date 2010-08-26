@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-=head1 RFID-JSONP-server
+=head1 NAME
 
-This is simpliest possible JSONP server which provides local web interface to RFID readers
+RFID-JSONP-server - simpliest possible JSONP server which provides local web interface to RFID readers
 
-Usage:
+=head1 USAGE
 
-  ./scripts/RFID-JSONP-server.pl
+  ./scripts/RFID-JSONP-server.pl [--debug] [--listen=127.0.0.1:9000] [--reader=filter]
 
 =cut
 
