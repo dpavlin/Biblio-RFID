@@ -32,16 +32,20 @@ GetOptions(
 
 die "Usage: $0 print.txt\n" unless @ARGV;
 
-my $persistant_path = '/tmp/programmed.storable';
 my $programmed;
 my $numbers;
-if ( -e $persistant_path ) {
-	$programmed = retrieve($persistant_path);
-	warn "# loaded ", scalar keys %$programmed, " programmed cards\n";
-	foreach my $tag ( keys %$programmed ) {
-		$numbers->{ $programmed->{$tag} } = $tag;
+foreach my $log_path ( glob( "$log_print/*.txt" ) ) {
+	warn "# loading $log_path";
+	open( my $in, '<', $log_path ) || die $!;
+	while(<$in>) {
+		chomp;
+		my ( $date, $sid, $nr ) = split(/,/,$_,3);
+		$programmed->{ $sid } = $nr;
+		$numbers->{ $nr } = $sid;	
 	}
 }
+
+warn "# ", scalar keys %$numbers, " programmed cards found\n";
 
 my @queue;
 my @done;
@@ -105,7 +109,6 @@ do {
 				$rfid->write_afi( $tag => chr($afi) ) if $afi;
 
 				$programmed->{$tag} = $number;
-				store $programmed, $persistant_path;
 
 				print $log iso_date, ",$tag,$number\n";
 			}
@@ -123,6 +126,13 @@ do {
 	sleep 1;
 } while $loop;
 
+sub _counters {
+	my $p = shift;
+	my $counters;
+	$counters->{$_} = $p->command("Rco;$_") foreach ( qw/p c a m n l b e f i k s/ );
+	return $counters;
+}
+
 sub print_card {
 
 	if ( ! @queue ) {
@@ -133,11 +143,15 @@ sub print_card {
 	}
 
 	my @data = @{$queue[0]};
-	print "XXX print_card @data\n";
+	my $nr = $data[0];
+	print "PRINT @data\n";
+
+	my $p = Printer::EVOLIS::Parallel->new( '/dev/usb/lp0' );
+
+	my $before = _counters $p;
 
 	if ( $test ) {
 
-		my $p = Printer::EVOLIS::Parallel->new( '/dev/usb/lp0' );
 		print "insert card ", $p->command( 'Si' ),$/;
 		sleep 1;
 		print "eject card ", $p->command( 'Ser' ),$/;
@@ -145,10 +159,19 @@ sub print_card {
 	} else {
 
 		system "$evolis_dir/scripts/inkscape-render.pl", "$evolis_dir/card/ffzg-2010.svg", @data;
-		my $nr = $data[0];
 		system "$evolis_dir/scripts/evolis-driver.pl out/$nr.front.pbm out/$nr.back.pbm > /dev/usb/lp0";
 
 	}
+
+	my $after = _counters $p;
+
+	if ( $before->{p} = $after->{p} - 2 ) {
+		print "OK printerd card $nr\n";
+	} else {
+		die "ERROR printing card $nr\n";
+	}
+
+	warn "# counters ", dump( $before, $after );
 
 }
 
