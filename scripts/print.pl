@@ -53,6 +53,9 @@ while(<>) {
 	push @queue, [ @a ] if ! $numbers->{ $a[0] };
 }
 
+# sort by card number
+@queue = sort { $a->[0] <=> $b->[0] } @queue;
+
 print "# queue ", dump @queue;
 
 my $rfid = Biblio::RFID::Reader->new( $reader );
