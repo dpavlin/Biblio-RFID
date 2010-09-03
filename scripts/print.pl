@@ -89,7 +89,7 @@ die "$log_path exists" if -e $log_path;
 
 sub write_log {
 	my ( $tag, $number ) = @_;
-	open(my $log, '>', $log_path) || die "$log_path: $!";
+	open(my $log, '>>', $log_path) || die "$log_path: $!";
 	my $date = iso_date;
 	print $log "$date,$tag,$number\n";
 	close($log);
