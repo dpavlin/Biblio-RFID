@@ -105,12 +105,20 @@ do {
 				my $card = shift @queue;
 				my $number = $card->[0];
 				print "PROGRAM $tag $number\n";
-				$rfid->write_blocks( $tag => Biblio::RFID::RFID501->from_hash({ content => $number }) );
-				$rfid->write_afi( $tag => chr($afi) ) if $afi;
 
-				$programmed->{$tag} = $number;
+				while ( 1 ) {
+					eval {
+						$rfid->write_blocks( $tag => Biblio::RFID::RFID501->from_hash({ content => $number }) );
+						$rfid->write_afi( $tag => chr($afi) ) if $afi;
+					};
+					last unless $!;
+					warn "RETRY PROGRAM $tag $number\n";
+					sleep 1;
+				}
 
 				print $log iso_date, ",$tag,$number\n";
+				$programmed->{$tag} = $number;
+
 			}
 
 		},
