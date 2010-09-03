@@ -82,10 +82,19 @@ sub iso_date {
 }
 
 sub print_card;
+sub render_card;
 
 my $log_path = "$log_print/" . iso_date . ".txt";
 die "$log_path exists" if -e $log_path;
-open(my $log, '>', $log_path) || die "$log_path: $!";
+
+sub write_log {
+	my ( $tag, $number ) = @_;
+	open(my $log, '>', $log_path) || die "$log_path: $!";
+	my $date = iso_date;
+	print $log "$date,$tag,$number\n";
+	close($log);
+	print "LOG $date $tag $number\n";
+}
 
 while ( $rfid->tags ) {
 	print "ERROR: remove all tags from output printer tray\n";
@@ -116,7 +125,7 @@ do {
 					sleep 1;
 				}
 
-				print $log iso_date, ",$tag,$number\n";
+				write_log $tag => $number;
 				$programmed->{$tag} = $number;
 
 				render_card; # pre-render next one
@@ -157,7 +166,6 @@ sub print_card {
 
 	if ( ! @queue ) {
 		print "QUEUE EMPTY - printing finished\n";
-		close($log);
 		print "$log_path ", -s $log_path, " bytes created\n";
 		exit;
 	}
