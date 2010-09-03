@@ -119,6 +119,7 @@ do {
 				print $log iso_date, ",$tag,$number\n";
 				$programmed->{$tag} = $number;
 
+				render_card; # pre-render next one
 			}
 
 		},
@@ -139,6 +140,17 @@ sub _counters {
 	my $counters;
 	$counters->{$_} = $p->command("Rco;$_") foreach ( qw/p c a m n l b e f i k s/ );
 	return $counters;
+}
+
+sub render_card {
+	return unless @queue;
+	my @data = @{$queue[0]};
+	my $nr = $data[0];
+
+	if ( ! ( -e "out/$nr.front.pbm" && -e "out/$nr.front.pbm" ) ) {
+		print "RENDER @data\n";
+		system "$evolis_dir/scripts/inkscape-render.pl", "$evolis_dir/card/ffzg-2010.svg", @data;
+	}
 }
 
 sub print_card {
@@ -166,7 +178,7 @@ sub print_card {
 
 	} else {
 
-		system "$evolis_dir/scripts/inkscape-render.pl", "$evolis_dir/card/ffzg-2010.svg", @data;
+		render_card;
 		system "$evolis_dir/scripts/evolis-driver.pl out/$nr.front.pbm out/$nr.back.pbm > /dev/usb/lp0";
 
 	}
