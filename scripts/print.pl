@@ -58,7 +58,7 @@ while(<>) {
 }
 
 # sort by card number
-@queue = sort { $a->[0] <=> $b->[0] } @queue;
+@queue = sort { $b->[0] <=> $a->[0] } @queue;
 
 print "# queue ", dump @queue;
 
