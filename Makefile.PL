@@ -9,6 +9,7 @@ requires 'Carp';
 requires 'Data::Dump';
 requires 'Device::SerialPort';
 requires 'Time::HiRes';
+requires 'Digest::CRC';
 
 build_requires 'Test::More';
 
