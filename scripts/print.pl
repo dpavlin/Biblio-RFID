@@ -54,7 +54,7 @@ while(<>) {
 	chomp;
 	my @a = split(/\t/,$_);
 	die "invalid: @a in line $_" if $a[0] !~ m/\d{12}/ && $a[1] !~ m/\@/;
-	push @queue, [ @a ] if ! $numbers->{ $a[0] };
+	push @queue, [ @a ] if ! $numbers->{ $a[0] } || $ENV{REPRINT};
 }
 
 # sort by card number
@@ -156,7 +156,12 @@ sub render_card {
 	my @data = @{$queue[0]};
 	my $nr = $data[0];
 
-	if ( ! ( -e "out/$nr.front.pbm" && -e "out/$nr.front.pbm" ) ) {
+	if ( $ENV{REPRINT} ) {
+		unlink $_ foreach glob("out/$nr.*");
+		warn "REPRINT: $nr";
+	}
+
+	if ( ! ( -e "out/$nr.front.pbm" && -e "out/$nr.back.pbm" ) ) {
 		print "RENDER @data\n";
 		system "$evolis_dir/scripts/inkscape-render.pl", "$evolis_dir/card/ffzg-2010.svg", @data;
 	}
