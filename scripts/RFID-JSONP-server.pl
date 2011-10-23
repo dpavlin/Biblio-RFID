@@ -205,7 +205,7 @@ function got_visible_tags(data,textStatus) {
 			console.debug( i, tag );
 			html += '<li><tt class=' + tag.security + '>' + tag.sid;
 			if ( tag.content ) {
-				html += ' <a href="https://koha-dev.rot13.org:8443/cgi-bin/koha/members/member.pl?member=' + tag.content + '" title="lookup in Koha" target="koha-lookup">' + tag.content + '</a>';
+				html += ' <a href="http://ffzg.koha-dev.rot13.org:8080/cgi-bin/koha/members/member.pl?member=' + tag.content + '" title="lookup in Koha" target="koha-lookup">' + tag.content + '</a>';
 				html += '</tt>';
 				html += '<form method=get action=program style="display:inline">'
 					+ '<input type=hidden name='+tag.sid+' value="blank">'
