@@ -48,10 +48,15 @@ function rfid_scan(data,textStatus) {
 //	console.debug( 'rfid_scan', data, textStatus );
 
 	var span = $('span#rfid');
-	if ( span.size() == 0 ) {
-		$('ul#i18nMenu').append('<li><span id=rfid>RFID reader found<span>');
-		span = $('span#rfid');
-	}
+
+	if ( span.size() == 0 ) // insert last in language bar on bottom
+		span = $('ul#i18nMenu').append('<li><span id=rfid>RFID reader found<span>');
+
+	if ( span.size() == 0 ) // or before login on top
+		span = $('div#login').prepend('<span id=rfid>RFID reader found</span>');
+
+	span = $('span#rfid');
+
 
 	if ( data.tags ) {
 		if ( data.tags.length === 1 ) {
