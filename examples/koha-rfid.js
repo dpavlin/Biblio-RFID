@@ -68,7 +68,11 @@ function rfid_scan(data,textStatus) {
 				var circulation = url.substr(-14,14) == 'circulation.pl';
 				var returns = url.substr(-10,10) == 'returns.pl';
 
-				if ( t.content.substr(0,3) == '130' ) {
+				if ( t.content.length == 0 ) { // empty tag
+
+					span.text( t.sid + ' empty' ).css('color', 'red' );
+
+				} else if ( t.content.substr(0,3) == '130' ) { // books
 
 					if ( circulation )
 						 rfid_secure( t.content, t.sid, 'D7' );
