@@ -35,7 +35,7 @@ C<examples/usbreset.c>
 
 sub serial_settings {} # don't open serial
 
-our $bin = '/rest/cvs/librfid/utils/librfid-tool';
+our $bin = '/usr/local/bin/librfid-tool';
 
 sub init {
 	my $self = shift;
