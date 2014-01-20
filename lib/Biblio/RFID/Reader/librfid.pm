@@ -35,21 +35,10 @@ C<examples/usbreset.c>
 
 sub serial_settings {} # don't open serial
 
-our $bin = '/usr/local/bin/librfid-tool';
-
-sub init {
-	my $self = shift;
-	if ( -e $bin ) {
-		warn "# using $bin";
-		return 1;
-	} else {
-		warn "# no $bin found\n";
-		return 0;
-	}
-}
+sub init { 1 }
 
 sub _grep_tool {
-	my ( $param, $coderef ) = @_;
+	my ( $bin, $param, $coderef, $path ) = @_;
 
 	warn "# _grep_tool $bin $param\n";
 	open(my $s, '-|', "$bin $param") || die $!;
@@ -73,7 +62,7 @@ sub _grep_tool {
 sub inventory {
 
 	my @tags; 
-	_grep_tool '--scan' => sub {
+	_grep_tool 'librfid-tool', '--scan' => sub {
 		my $sid = shift;
 		push @tags, $sid if $sid;
 	};
@@ -85,7 +74,7 @@ sub read_blocks {
 
 	my $sid;
 	my $blocks;
-	_grep_tool '--read -1' => sub {
+	_grep_tool 'librfid-tool', '--read -1' => sub {
 		$sid ||= shift;
 		$blocks->{$sid}->[$1] = hex2bytes($2)
 		if m/block\[\s*(\d+):.+data.+:\s*(.+)/;
