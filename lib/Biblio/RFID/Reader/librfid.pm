@@ -42,44 +42,80 @@ sub _grep_tool {
 
 	warn "# _grep_tool $bin $param\n";
 	open(my $s, '-|', "$bin $param") || die $!;
+
+	my $sid;
+	my $iso;
+
 	while(<$s>) {
 		chomp;
 		warn "## $_\n";
 
-		my $sid;
-		if ( m/success.+:\s+(.+)/ ) {
-			$sid = $1;
+		if ( m/Layer 2 success.+\(([^\)]+)\).*:\s+(.+)/ ) {
+			( $sid, $iso ) = ( $2, $1 );
 			$sid =~ s/\s*'\s*//g;
-			$sid = uc join('', reverse split(/\s+/, $sid));
+			my @sid = split(/\s+/, $sid);
+			@sid = reverse @sid if $iso =~ m/15693/;
+			$sid = uc join('', @sid);
+			warn "## sid=[$sid] iso=[$iso]\n";
 		}
-
-		$coderef->( $sid );
+		$coderef->( $sid, $iso );
 	}
 
 
 }
 
+my $sid_iso;
+
 sub inventory {
 
 	my @tags; 
 	_grep_tool 'librfid-tool', '--scan' => sub {
-		my $sid = shift;
-		push @tags, $sid if $sid;
+		my ( $sid, $iso ) = @_;
+		if ( $sid ) {
+			push @tags, $sid unless defined $sid_iso->{$sid};
+			$sid_iso->{$sid} = $iso;
+		}
 	};
 	warn "# invetory ",dump(@tags);
 	return @tags;
 }
 
+our $mifare_keys;
+sub read_mifare_keys {
+	my $key_path = $0;
+	$key_path =~ s{/[^/]+$}{/};
+	$key_path .= "mifare_keys.pl";
+	warn "# $key_path";
+	if ( -e $key_path ) {
+		require $key_path;
+		warn "# mifare keys for sectors ", join(' ', keys %$mifare_keys), " loaded\n";
+	}
+}
+
 sub read_blocks {
+	my ( $self, $sid ) = @_;
 
-	my $sid;
+	my $iso = $sid_iso->{$sid};
 	my $blocks;
-	_grep_tool 'librfid-tool', '--read -1' => sub {
-		$sid ||= shift;
-		$blocks->{$sid}->[$1] = hex2bytes($2)
-		if m/block\[\s*(\d+):.+data.+:\s*(.+)/;
 
-	};
+	if ( $iso =~ m/15693/ ) {
+		_grep_tool 'librfid-tool', '--read -1' => sub {
+			$sid ||= shift;
+			$blocks->{$sid}->[$1] = hex2bytes($2)
+			if m/block\[\s*(\d+):.+data.+:\s*(.+)/;
+
+		};
+	} else {
+		read_mifare_keys unless $mifare_keys;
+
+		foreach my $sector ( keys %$mifare_keys ) {
+			my $key = lc $mifare_keys->{$sector};
+			_grep_tool 'mifare-tool', "-k $key -r $sector" => sub {
+				$blocks->{$sid}->[$sector] = hex2bytes($1)
+				if m/data=\s*(.+)/;
+			};
+		}
+	}
 	warn "# read_blocks ",dump($blocks);
 	return $blocks;
 }
