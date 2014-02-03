@@ -41,7 +41,7 @@ sub _grep_tool {
 	my ( $bin, $param, $coderef, $path ) = @_;
 
 	warn "# _grep_tool $bin $param\n";
-	open(my $s, '-|', "$bin $param") || die $!;
+	open(my $s, '-|', "$bin $param 2>/dev/null") || die $!;
 
 	my $sid;
 	my $iso;
