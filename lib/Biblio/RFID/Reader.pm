@@ -63,6 +63,7 @@ sub tags {
 					$self->{_tags}->{$tag}->{blocks} = $blocks->{$tag} || die "no $tag in ",dump($blocks);
 					my $afi = $rfid->read_afi($tag);
 					$self->{_tags}->{$tag}->{afi} = $afi;
+					$self->{_tags}->{$tag}->{type} = $rfid->tag_type( $tag );
 
 				};
 				if ( $@ ) {
@@ -102,6 +103,21 @@ sub tags {
 
 sub blocks { $_[0]->{_tags}->{$_[1]}->{ 'blocks' } || confess "no blocks for $_[1]"; };
 sub afi    { $_[0]->{_tags}->{$_[1]}->{ 'afi'    } || confess "no afi for $_[1]"; };
+
+=head2 to_hash
+
+  $self->to_hash( $tag );
+
+=cut
+
+sub to_hash {
+	my ( $self, $tag ) = @_;
+	return unless exists $self->{_tags}->{$tag};
+	my $type = $self->{_tags}->{$tag}->{type} || confess "can't find type for tag $tag ",dump( $self->{_tags} );
+	my $decode = 'Biblio::RFID::' . $type;
+	return $decode->to_hash( $self->blocks( $tag ) );
+}
+
 
 =head1 PRIVATE
 

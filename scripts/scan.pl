@@ -7,7 +7,6 @@ use Data::Dump qw(dump);
 use Getopt::Long;
 use lib 'lib';
 use Biblio::RFID::Reader;
-use Biblio::RFID::RFID501;
 
 my $loop = 0;
 my $reader;
@@ -30,7 +29,7 @@ sub tag {
 		, " AFI: "
 		, uc unpack('H2', $rfid->afi($tag))
 		, " "
-		, dump( Biblio::RFID::RFID501->to_hash( $rfid->blocks($tag) ) )
+		, dump( $rfid->to_hash( $tag ) )
 		, $/
 		;
 }
@@ -45,7 +44,7 @@ sub iso_date {
 sub log_tag {
 	my $tag = shift;
 	return if $saved->{tag} or ! $log;
-	my $hash = Biblio::RFID::RFID501->to_hash( $rfid->blocks($tag) );
+	my $hash = $rfid->to_hash( $tag );
 	open(my $fh, '>>', $log) || die "$log: $!";
 	print $fh iso_date,",$tag,", $hash->{content}, "\n";
 	close($fh);

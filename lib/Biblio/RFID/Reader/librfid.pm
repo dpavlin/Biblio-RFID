@@ -80,6 +80,11 @@ sub inventory {
 	return @tags;
 }
 
+sub tag_type {
+	my ( $self, $tag ) = @_;
+	return $sid_iso->{$tag} =~ m/15693/ ? 'RFID501' : 'SmartX';
+}
+
 our $mifare_keys;
 sub read_mifare_keys {
 	my $key_path = $0;

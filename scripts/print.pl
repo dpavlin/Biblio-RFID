@@ -71,7 +71,7 @@ sub tag {
 		, " AFI: "
 		, uc unpack('H2', $rfid->afi($tag))
 		, " "
-		, dump( Biblio::RFID::RFID501->to_hash( $rfid->blocks($tag) ) )
+		, dump( $rfid->to_hash( $tag ) )
 		, $/
 		;
 }
