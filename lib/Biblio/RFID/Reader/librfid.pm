@@ -65,6 +65,17 @@ sub _grep_tool {
 		$coderef->( $sid, $iso );
 	}
 
+	close($s);
+	if ( $? >> 8 ) {
+		my $lsusb = `lsusb -d 076b:`;
+		if ( $lsusb =~ m/\S+\s+(\d+)\s+\S+\s+(\d+)/ ) {
+			my $cmd = "usbreset /dev/bus/usb/$1/$2";
+			warn "# $cmd\n";
+			system $cmd;
+		} else {
+			warn "can't reset device $lsusb";
+		}
+	}
 
 }
 
