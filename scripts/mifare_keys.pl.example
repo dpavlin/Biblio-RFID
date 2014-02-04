@@ -1,6 +1,5 @@
 $mifare_keys = {
 	0 => 'a0a1a2a3a4a5',
-	1 => 'a0a1a2a3a4a5',
-	2 => 'a0a1a2a3a4a5',
+	4 => 'a0a1a2a3a4a5',
 };
 1;

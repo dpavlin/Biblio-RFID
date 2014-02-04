@@ -22,6 +22,10 @@ Due to limitation of L<librfid-tool> only
 L<Biblio::RFID::Reader::API/inventory> and
 L<Biblio::RFID::Reader::API/read_blocks> is supported.
 
+This version uses modidified C<librfid-tool> which supports
+new C<-s> flag which reads sectors 0-3 with C<-k> key and
+sectors 4-7 with key from C<-s> option.
+
 However, this code might provide template for integration
 with any command-line utilities for different RFID readers.
 
@@ -113,6 +117,7 @@ sub read_blocks {
 	} else {
 		read_mifare_keys unless $mifare_keys;
 
+=for unmodified mifate-tool
 		foreach my $sector ( keys %$mifare_keys ) {
 			my $key = lc $mifare_keys->{$sector};
 			_grep_tool 'mifare-tool', "-k $key -r $sector" => sub {
@@ -120,6 +125,11 @@ sub read_blocks {
 				if m/data=\s*(.+)/;
 			};
 		}
+=cut
+		_grep_tool 'mifare-tool', "-k " . $mifare_keys->{0} . " -s " . $mifare_keys->{4} => sub {
+			$blocks->{$sid}->[$1] = hex2bytes($2)
+			if m/page=(\d+).*data=\s*(.+)/;
+		};
 	}
 	warn "# read_blocks ",dump($blocks);
 	return $blocks;
