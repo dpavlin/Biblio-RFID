@@ -76,7 +76,7 @@ sub inventory {
 	_grep_tool 'librfid-tool', '--scan' => sub {
 		my ( $sid, $iso ) = @_;
 		if ( $sid ) {
-			push @tags, $sid unless defined $sid_iso->{$sid};
+			push @tags, $sid;
 			$sid_iso->{$sid} = $iso;
 		}
 	};
