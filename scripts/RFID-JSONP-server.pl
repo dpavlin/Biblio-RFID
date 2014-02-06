@@ -99,7 +99,7 @@ sub http_server {
 				foreach my $tag ( @tags ) {
 					my $hash = $rfid->to_hash( $tag );
 					$hash->{sid}  = $tag;
-					$hash->{security} = uc unpack 'H*', $rfid->afi( $tag );
+					$hash->{security} = uc unpack 'H*', $rfid->afi( $tag ) if $hash->{tag_type} ne 'SmartX';
 					push @{ $json->{tags} }, $hash;
 				};
 				warn "#### ", encode_json($json);
