@@ -17,9 +17,12 @@ use Data::Dump qw/dump/;
 
 use JSON::XS;
 use IO::Socket::INET;
+use LWP::UserAgent;
+use URI;
 
 my $debug = 1;
 my $listen = '127.0.0.1:9000';
+$listen = ':9000';
 my $reader;
 
 use Getopt::Long;
@@ -29,6 +32,31 @@ GetOptions(
 	'listen=s', => \$listen,
 	'reader=s', => \$reader,
 ) || die $!;
+
+our $rfid_sid_cache;
+
+sub rfid_borrower {
+	my $hash = shift;
+	if ( my $json = $rfid_sid_cache->{ $hash->{sid} } ) {
+		return $json;
+	}
+	my $ua = LWP::UserAgent->new;
+	my $url = URI->new('http://ffzg.koha-dev.rot13.org:8080/cgi-bin/koha/ffzg/rfid-borrower.pl');
+	$url->query_form(
+		  RFID_SID => $hash->{sid}
+		, OIB => $hash->{OIB}
+		, JMBAG => $hash->{JMBAG}
+	);
+	warn "GET ",$url->as_string;
+	my $response = $ua->get($url);
+	if ( $response->is_success ) {
+		my $json = decode_json $response->decoded_content;
+		$rfid_sid_cache->{ $hash->{sid} } = $json;
+		return $json;
+	} else {
+		warn "ERROR ", $response->status_line;
+	}
+}
 
 use lib 'lib';
 use Biblio::RFID::RFID501;
@@ -99,7 +127,16 @@ sub http_server {
 				foreach my $tag ( @tags ) {
 					my $hash = $rfid->to_hash( $tag );
 					$hash->{sid}  = $tag;
-					$hash->{security} = uc unpack 'H*', $rfid->afi( $tag ) if $hash->{tag_type} ne 'SmartX';
+					if ( $hash->{tag_type} eq 'SmartX' ) {
+						my $borrower = rfid_borrower $hash;
+						if ( exists $borrower->{error} ) {
+							warn "ERROR ", dump($borrower);
+						} else {
+							$hash->{borrower} = $borrower->{borrower};
+						}
+					} else {
+						$hash->{security} = uc unpack 'H*', $rfid->afi( $tag );
+					}
 					push @{ $json->{tags} }, $hash;
 				};
 				warn "#### ", encode_json($json);
@@ -203,15 +240,19 @@ function got_visible_tags(data,textStatus) {
 		html = '<ul class="tags">';
 		$.each(data.tags, function(i,tag) {
 			console.debug( i, tag );
-			html += '<li><tt class=' + tag.security + '>' + tag.sid;
-			if ( tag.content ) {
-				html += ' <a href="http://ffzg.koha-dev.rot13.org:8080/cgi-bin/koha/members/member.pl?member=' + tag.content + '" title="lookup in Koha" target="koha-lookup">' + tag.content + '</a>';
+			html += '<li><tt class="' + tag.security + '">' + tag.sid;
+			var borrowernumber = tag.content || tag.borrower.cardnumber;
+
+			if ( borrowernumber ) {
+				html += ' <a href="http://ffzg.koha-dev.rot13.org:8080/cgi-bin/koha/members/member.pl?member=' + borrowernumber + '" title="lookup in Koha" target="koha-lookup">' + borrowernumber + '</a>';
 				html += '</tt>';
+/*
 				html += '<form method=get action=program style="display:inline">'
 					+ '<input type=hidden name='+tag.sid+' value="blank">'
 					+ '<input type=submit value="Blank" onclick="return confirm(\'Blank tag '+tag.sid+'\')">'
 					+ '</form>'
 				;
+*/
 			} else {
 				html += '</tt>';
 				html += ' <form method=get action=program style="display:inline">'
