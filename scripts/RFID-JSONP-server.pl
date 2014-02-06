@@ -97,7 +97,7 @@ sub http_server {
 				my @tags = $rfid->tags;
 				my $json = { time => time() };
 				foreach my $tag ( @tags ) {
-					my $hash = Biblio::RFID::RFID501->to_hash( $rfid->blocks( $tag ) );
+					my $hash = $rfid->to_hash( $tag );
 					$hash->{sid}  = $tag;
 					$hash->{security} = uc unpack 'H*', $rfid->afi( $tag );
 					push @{ $json->{tags} }, $hash;
