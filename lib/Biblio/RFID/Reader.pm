@@ -115,7 +115,9 @@ sub to_hash {
 	return unless exists $self->{_tags}->{$tag};
 	my $type = $self->{_tags}->{$tag}->{type} || confess "can't find type for tag $tag ",dump( $self->{_tags} );
 	my $decode = 'Biblio::RFID::' . $type;
-	return $decode->to_hash( $self->blocks( $tag ) );
+	my $hash = $decode->to_hash( $self->blocks( $tag ) );
+	$hash->{tag_type} = $type;
+	return $hash;
 }
 
 
