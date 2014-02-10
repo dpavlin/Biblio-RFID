@@ -304,7 +304,9 @@ sub write_afi {
 	return $afi;
 }
 
-1
+sub tag_type { 'RFID501' }
+
+1;
 
 __END__
 
