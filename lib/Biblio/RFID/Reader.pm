@@ -79,11 +79,11 @@ sub tags {
 
 		}
 	
-		foreach my $tag ( grep { $self->{_tags}->{$_}->{time} == 0 } keys %{ $self->{_tags} } ) {
-			$triggers->{leave}->( $tag ) if $triggers->{leave};
-			$self->_invalidate_tag( $tag );
-		}
+	}
 
+	foreach my $tag ( grep { $self->{_tags}->{$_}->{time} == 0 } keys %{ $self->{_tags} } ) {
+		$triggers->{leave}->( $tag ) if $triggers->{leave};
+		$self->_invalidate_tag( $tag );
 	}
 
 	warn "## _tags ",dump( $self->{_tags} );
