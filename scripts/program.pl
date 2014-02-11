@@ -12,15 +12,23 @@ use Biblio::RFID::RFID501;
 my $reader;
 my $afi;
 my $debug = 0;
+my $hash;
 
 GetOptions(
 	'reader=s', => \$reader,
 	'afi=i',    => \$afi,
 	'debug+',   => \$debug,
+	'set=i'		=> \$hash->{set},
+	'total=i',	=> \$hash->{total},
+	'type=i',	=> \$hash->{type},
+	'branch=i',	=> \$hash->{branch},
+	'library=i'	=> \$hash->{library},
 ) || die $!;
 
 my ( $sid, $content ) =  @ARGV;
-die "usage: $0 [--reader regex_filter] [--afi 214] E0_RFID_SID [barcode]\n" unless $sid && ( $content | $afi );
+die "usage: $0 [--reader regex_filter] [--afi 214] [--type 1] E0_RFID_SID [barcode]\n" unless $sid && ( $content | $afi );
+
+$hash->{content} = $content if defined $content;
 
 my $rfid = Biblio::RFID::Reader->new( $reader );
 $Biblio::RFID::debug = $debug;
@@ -29,7 +37,7 @@ foreach my $tag ( $rfid->tags ) {
 	warn "visible $tag\n";
 	next unless $tag eq $sid;
 	warn "PROGRAM $tag with $content\n";
-	$rfid->write_blocks( $tag => Biblio::RFID::RFID501->from_hash({ content => $content }) );
+	$rfid->write_blocks( $tag => Biblio::RFID::RFID501->from_hash($hash) );
 	$rfid->write_afi(    $tag => chr($afi) ) if $afi;
 }
 
