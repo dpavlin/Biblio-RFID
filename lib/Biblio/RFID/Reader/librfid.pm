@@ -44,6 +44,13 @@ sub init { 1 }
 sub _grep_tool {
 	my ( $bin, $param, $coderef, $path ) = @_;
 
+	my $timeout = 3; # s
+
+	eval {
+
+	local $SIG{ALRM} = sub { die "timeout\n" };
+	alarm $timeout;
+
 	warn "# _grep_tool $bin $param\n";
 	open(my $s, '-|', "$bin $param 2>/dev/null") || die $!;
 
@@ -65,8 +72,12 @@ sub _grep_tool {
 		$coderef->( $sid, $iso );
 	}
 
+	alarm(0);
 	close($s);
-	if ( $? >> 8 ) {
+
+	}; # eval
+
+	if ( $? >> 8 || $@ ) {
 		my $lsusb = `lsusb -d 076b:`;
 		if ( $lsusb =~ m/\S+\s+(\d+)\s+\S+\s+(\d+)/ ) {
 			my $cmd = "usbreset /dev/bus/usb/$1/$2";
