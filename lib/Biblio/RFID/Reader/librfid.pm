@@ -48,11 +48,16 @@ sub _grep_tool {
 
 	eval {
 
-	local $SIG{ALRM} = sub { die "timeout\n" };
-	alarm $timeout;
-
 	warn "# _grep_tool $bin $param\n";
-	open(my $s, '-|', "$bin $param 2>/dev/null") || die $!;
+#	$param .= ' 2>/dev/null';
+	my $pipe_pid = open(my $s, '-|', "$bin $param") || die $!;
+
+	local $SIG{ALRM} = sub {
+		warn "TIMEOUT!";
+		kill TERM => $pipe_pid;
+		die "timeout\n"
+	};
+	alarm $timeout;
 
 	my $sid;
 	my $iso;
