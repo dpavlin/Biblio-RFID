@@ -24,6 +24,7 @@ my $debug = 1;
 my $listen = '127.0.0.1:9000';
 $listen = ':9000';
 my $reader;
+my $koha_url = 'http://ffzg.koha-dev.rot13.org:8080';
 
 use Getopt::Long;
 
@@ -31,6 +32,7 @@ GetOptions(
 	'debug!'    => \$debug,
 	'listen=s', => \$listen,
 	'reader=s', => \$reader,
+	'koha=s',	=> \$koha_url,
 ) || die $!;
 
 our $rfid_sid_cache;
@@ -41,7 +43,7 @@ sub rfid_borrower {
 		return $json;
 	}
 	my $ua = LWP::UserAgent->new;
-	my $url = URI->new('http://ffzg.koha-dev.rot13.org:8080/cgi-bin/koha/ffzg/rfid-borrower.pl');
+	my $url = URI->new( $koha_url . '/cgi-bin/koha/ffzg/rfid-borrower.pl');
 	$url->query_form(
 		  RFID_SID => $hash->{sid}
 		, OIB => $hash->{OIB}
@@ -67,6 +69,7 @@ my $index_html;
 {
 	local $/ = undef;
 	$index_html = <DATA>;
+	$index_html =~ s{http://koha.example.com:8080}{$koha_url}sg;
 }
 
 my $server_url;
@@ -244,7 +247,7 @@ function got_visible_tags(data,textStatus) {
 			var borrowernumber = tag.content || tag.borrower.cardnumber;
 
 			if ( borrowernumber ) {
-				html += ' <a href="http://ffzg.koha-dev.rot13.org:8080/cgi-bin/koha/members/member.pl?member=' + borrowernumber + '" title="lookup in Koha" target="koha-lookup">' + borrowernumber + '</a>';
+				html += ' <a href="http://koha.example.com:8080/cgi-bin/koha/members/member.pl?member=' + borrowernumber + '" title="lookup in Koha" target="koha-lookup">' + borrowernumber + '</a>';
 				html += '</tt>';
 /*
 				html += '<form method=get action=program style="display:inline">'
