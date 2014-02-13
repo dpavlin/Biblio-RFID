@@ -158,6 +158,13 @@ sub read_blocks {
 			$blocks->{$sid}->[$1] = hex2bytes($2)
 			if m/page=(\d+).*data=\s*(.+)/;
 		};
+
+		my $blocks_read = 0;
+		$blocks_read += $_ foreach grep { defined $blocks->{$sid}->[$_] } ( 4 .. 6 );
+ 		if ( $blocks_read < (4 + 5 + 6) ) {
+			warn "# invalidate partial read of SmartX card\n";
+			$blocks = undef;
+		}
 	}
 	warn "# read_blocks ",dump($blocks);
 	return $blocks;
