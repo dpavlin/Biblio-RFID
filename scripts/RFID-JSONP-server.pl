@@ -244,10 +244,16 @@ function got_visible_tags(data,textStatus) {
 		$.each(data.tags, function(i,tag) {
 			console.debug( i, tag );
 			html += '<li><tt class="' + tag.security + '">' + tag.sid;
-			var borrowernumber = tag.content || tag.borrower.cardnumber;
+			var content = tag.content || tag.borrower.cardnumber;
 
-			if ( borrowernumber ) {
-				html += ' <a href="http://koha.example.com:8080/cgi-bin/koha/members/member.pl?member=' + borrowernumber + '" title="lookup in Koha" target="koha-lookup">' + borrowernumber + '</a>';
+			if ( content ) {
+				html += ' <a href="http://koha.example.com:8080/cgi-bin/koha/';
+				if ( tag.type == 1 ) { // book
+					html += 'catalogue/search.pl?q=';
+				} else {
+					html += 'members/member.pl?member=';
+				}
+				html += content + '" title="lookup in Koha" target="koha-lookup">' + content + '</a>';
 				html += '</tt>';
 /*
 				html += '<form method=get action=program style="display:inline">'
