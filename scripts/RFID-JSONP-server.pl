@@ -25,6 +25,8 @@ my $listen = '127.0.0.1:9000';
 $listen = ':9000';
 my $reader;
 my $koha_url = 'http://ffzg.koha-dev.rot13.org:8080';
+# internal URL so we can find local address of machine and vmware NAT
+my $rfid_url = 'http://rfid.koha-dev.vbz.ffzg.hr';
 
 use Getopt::Long;
 
@@ -43,7 +45,7 @@ sub rfid_borrower {
 		return $json;
 	}
 	my $ua = LWP::UserAgent->new;
-	my $url = URI->new( $koha_url . '/cgi-bin/koha/ffzg/rfid-borrower.pl');
+	my $url = URI->new( $koha_url . '/cgi-bin/koha/ffzg/rfid/borrower.pl');
 	$url->query_form(
 		  RFID_SID => $hash->{sid}
 		, OIB => $hash->{OIB}
@@ -198,6 +200,38 @@ sub http_server {
 	die "server died";
 }
 
+sub rfid_register {
+	my $ip;
+
+	foreach ( split(/\n/, `ip addr` ) ) {
+		if ( /^\d:\s(\w+):\s/ ) {
+			$ip->{last} = $1;
+		} elsif ( /^\s+inet\s((\d+)\.(\d+)\.(\d+)\.(\d+))\/(\d+)/ ) {
+			$ip->{ $ip->{last} } = $1;
+		} else {
+			warn "# SKIP [$_]\n";
+		}
+
+	}
+
+	my $ua = LWP::UserAgent->new;
+	my $url = URI->new( $rfid_url . '/register.pl');
+	$url->query_form(
+		local_ip => $ip->{eth0},
+	);
+	warn "GET ",$url->as_string;
+	my $response = $ua->get($url);
+	if ( $response->is_success ) {
+		warn "# ", $response->decoded_content;
+		my $json = decode_json $response->decoded_content;
+		warn "REGISTER: ",dump($json);
+		return $json;
+	} else {
+		warn "ERROR ", $response->status_line;
+	}
+}
+
+rfid_register;
 http_server;
 
 __DATA__
