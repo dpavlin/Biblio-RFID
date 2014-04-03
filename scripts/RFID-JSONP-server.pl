@@ -178,7 +178,7 @@ sub http_server {
 					$status = 302;
 
 					warn "SECURE $tag $data\n";
-					$rfid->write_afi( $tag => hex($data) );
+					$rfid->write_afi( $tag => chr(hex($data)) );
 				}
 
 				if ( $json ) {
