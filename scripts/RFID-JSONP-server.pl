@@ -91,6 +91,9 @@ sub http_server {
 	print "Server $0 ready at $server_url\n";
 
 	while (my $client = $server->accept()) {
+
+	    eval { # don't die inside here!
+
 		$client->autoflush(1);
 		my $request = <$client>;
 
@@ -195,6 +198,12 @@ sub http_server {
 			print $client "HTTP/1.0 500 No method\r\n\r\n";
 		}
 		close $client;
+
+	    }; # end of eval
+	    if ( $@ ) {
+		warn "ERROR: $@";
+	    }
+
 	}
 
 	die "server died";
