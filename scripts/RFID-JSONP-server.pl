@@ -141,6 +141,7 @@ sub http_server {
 							warn "ERROR ", dump($borrower);
 						} else {
 							$hash->{borrower} = $borrower->{borrower};
+							$hash->{content}  = $borrower->{borrower}->{cardnumber}; # compatibile with 3M tags
 						}
 					} else {
 						$hash->{security} = uc unpack 'H*', $rfid->afi( $tag );
