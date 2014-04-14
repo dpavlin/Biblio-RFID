@@ -135,6 +135,7 @@ sub http_server {
 				foreach my $tag ( @tags ) {
 					my $hash = $rfid->to_hash( $tag );
 					$hash->{sid}  = $tag;
+					$hash->{reader} = $rfid->from_reader( $tag );
 					if ( $hash->{tag_type} eq 'SmartX' ) {
 						my $borrower = rfid_borrower $hash;
 						if ( exists $borrower->{error} ) {
