@@ -203,6 +203,7 @@ sub http_server {
 
 	    }; # end of eval
 	    if ( $@ ) {
+		print $client "HTTP/1.0 500 Error\r\n\r\nContent-Type: text/plain\r\n$@";
 		warn "ERROR: $@";
 	    }
 
