@@ -54,7 +54,7 @@ do {
 	my @visible = $rfid->tags(
 		enter => sub {
 			my $tag = shift;
-			print iso_date," enter ", tag($tag);
+			print iso_date," reader ", $rfid->from_reader($tag), " enter ", tag($tag);
 			log_tag $tag;
 		},
 		leave => sub {

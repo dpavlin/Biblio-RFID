@@ -64,6 +64,7 @@ sub tags {
 					my $afi = $rfid->read_afi($tag);
 					$self->{_tags}->{$tag}->{afi} = $afi;
 					$self->{_tags}->{$tag}->{type} = $rfid->tag_type( $tag );
+					$self->{_tags}->{$tag}->{reader} = ref $rfid; # save reader info
 
 				};
 				if ( $@ ) {
@@ -118,6 +119,20 @@ sub to_hash {
 	my $hash = $decode->to_hash( $self->blocks( $tag ) );
 	$hash->{tag_type} = $type;
 	return $hash;
+}
+
+=head2 from_reader
+
+  my $reader = $self->from_reader( $tag );
+
+=cut
+
+sub from_reader {
+	my ( $self, $tag ) = @_;
+	return unless exists $self->{_tags}->{$tag};
+	my $reader = $self->{_tags}->{$tag}->{reader};
+	$reader =~ s/^.*:://; # strip module prefix
+	return $reader;
 }
 
 
