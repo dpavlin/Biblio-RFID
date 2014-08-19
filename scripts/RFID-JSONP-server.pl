@@ -66,6 +66,7 @@ use lib 'lib';
 use Biblio::RFID::RFID501;
 use Biblio::RFID::Reader;
 my $rfid = Biblio::RFID::Reader->new( shift @ARGV );
+$rfid->debug( $debug );
 
 my $index_html;
 {

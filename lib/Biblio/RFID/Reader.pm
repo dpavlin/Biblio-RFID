@@ -120,6 +120,17 @@ sub to_hash {
 	return $hash;
 }
 
+=head2 debug
+
+  $self->debug(1); # or more
+
+=cut
+
+sub debug {
+	my ( $self, $level ) = @_;
+	$debug = $level;
+	warn "debug level $level\n" if $level;
+}
 
 =head1 PRIVATE
 
