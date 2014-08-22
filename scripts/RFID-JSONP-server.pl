@@ -19,6 +19,8 @@ use JSON::XS;
 use IO::Socket::INET;
 use LWP::UserAgent;
 use URI;
+use POSIX qw(strftime);
+use Encode;
 
 my $debug = 1;
 my $listen = '127.0.0.1:9000';
@@ -27,6 +29,14 @@ my $reader;
 my $koha_url = 'http://ffzg.koha-dev.rot13.org:8080';
 # internal URL so we can find local address of machine and vmware NAT
 my $rfid_url = 'http://rfid.koha-dev.vbz.ffzg.hr';
+my $sip2 = {
+	server   => '10.60.0.11:6002', # must be IP!
+#	user     => 'sip2-user',
+#	password => 'sip2-passwd',
+	user     => 'sip2user',
+	password => 'viva2koha',
+	loc      => 'FFZG',
+};
 
 use Getopt::Long;
 
@@ -60,6 +70,54 @@ sub rfid_borrower {
 	} else {
 		warn "ERROR ", $response->status_line;
 	}
+}
+
+
+sub sip2_message {
+	my $send = shift;
+
+	my $sock = $sip2->{sock} || die "no sip2 socket";
+
+	local $/ = "\r";
+
+	$send .= "\r" unless $send =~ m/\r$/;
+	warn "SIP2 >>>> ",dump($send), "\n";
+	print $sock $send;
+	$sock->flush;
+	
+	my $expect = substr($send,0,2) | 0x01;
+
+	my $in = <$sock>;
+	$in =~ s/^\n//;
+	warn "SIP2 <<<< ",dump($in), "\n";
+
+	die "expected $expect" unless substr($in,0,2) != $expect;
+
+	$in =~ s/\r$//;
+
+	my $hash;
+	if ( $in =~ s/^([0-9\s]+)// ) {
+		$hash->{fixed} = $1;
+	}
+	foreach ( split(/\|/, $in ) ) {
+		my ( $f, $v ) = ( $1, $2 ) if m/([A-Z]{2})(.+)/;
+		$hash->{$f} = decode('utf-8',$v);
+	}
+
+	warn "# sip2 hash response ",dump($hash);
+
+	return $hash;
+}
+
+if ( my $server = $sip2->{server} ) {
+	my $sock = $sip2->{sock} = IO::Socket::INET->new( $server ) || die "can't connect to $server: $!";
+	warn "SIP2 server ", $sock->peerhost, ":", $sock->peerport, "\n";
+
+	# login
+	if ( sip2_message("9300CN$sip2->{user}|CO$sip2->{password}|")->{fixed} !~ m/^941/ ) {
+		die "SIP2 login failed";
+	}
+
 }
 
 use lib 'lib';
@@ -117,7 +175,8 @@ sub http_server {
 				my $size = -s $path;
 				warn "static $path $size bytes\n";
 				my $content_type = 'text/plain';
-				$content_type = 'application/javascript' if $path =~ /\.js/;
+				$content_type = 'application/javascript' if $path =~ /\.js$/;
+				$content_type = 'text/html' if $path =~ /\.html$/;
 				print $client "HTTP/1.0 200 OK\r\nContent-Type: $content_type\r\nContent-Length: $size\r\n\r\n";
 				{
 					local $/ = undef;
@@ -187,6 +246,36 @@ sub http_server {
 						$param->{callback}, "({ ok: 1 })\r\n";
 				} else {
 					print $client "HTTP/1.0 $status $method\r\nLocation: $server_url\r\n\r\n";
+				}
+
+			} elsif ( $method =~ m{/sip2/(\w+)/(.+)} ) {
+				my ( $method, $args ) = ( $1, $2 );
+				warn "SIP2: $method [$args]";
+
+				my $ts = strftime('%Y%m%d    %H%M%S', localtime());
+				my $loc      = $sip2->{loc} || die "missing sip->{loc}";
+				my $password = $sip2->{password} || die "missing sip->{password}";
+
+				my $hash;
+
+				if ( $method eq 'patron_info' ) {
+					my $patron = $args;
+					$hash = sip2_message("63000${ts}          AO$loc|AA$patron|AC$password|");
+
+				} elsif ( $method eq 'checkout' ) {
+					my ($patron,$barcode) = split(/\//, $args, 2);
+					$hash = sip2_message("11YN${ts}                  AO$loc|AA$patron|AB$barcode|AC$password|BON|BIN|");
+
+				} elsif ( $method eq 'checkin' ) {
+					my $barcode = $args;
+					$hash = sip2_message("09N${ts}${ts}AP|AO${loc}|AB$barcode|AC|BIN|");
+				} else {
+					print $client "HTTP/1.0 500 $method not implemented\r\n\r\n";
+				}
+
+				if ( $hash ) {
+					print $client "HTTP/1.0 200 OK\r\nContent-Type: application/json\r\n\r\n",
+						encode_json( $hash );
 				}
 
 			} else {

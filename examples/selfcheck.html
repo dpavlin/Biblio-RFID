@@ -1,0 +1,164 @@
+<html>
+<head>
+<meta charset="utf-8"></meta>
+<title>RFID SIP2 Selfcheck</title>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<style type="text/css">
+.status {
+	background: #ff8;
+}
+
+.da {
+	background: #fcc;
+}
+
+.d7 {
+	background: #cfc;
+}
+
+label[for=pull-reader] {
+	position: absolute;
+	top: 1em;
+	right: 1em;
+	background: #eee;
+}
+
+,page {
+	font-size: 300%;
+	border: 10px solid #ccc;
+
+}
+
+#debug {
+	position: fixed;
+	width: 20em;
+	top: 0;
+	right: 0;
+}
+
+input[type=button] {
+	padding-top: 2em;
+	display: block;
+	width: 100%;
+	height: 10em;
+}
+
+</style>
+<script type="text/javascript" src="/examples/selfcheck.js"></script>
+</head>
+<body>
+
+<div id="debug">
+
+<label for=pull-reader>
+<input id=pull-reader type=checkbox checked=1>
+active
+</label>
+
+<div id="tags">
+RFID reader not found or driver program not started.
+</div>
+
+</div>
+
+<h1>Knjižnica Filozofskog fakulteta</h1>
+
+<div class="page" id="start">
+
+<!--
+Put borrower card on a reader to borrow books
+-->
+
+Ako želite posuditi knjigu, najprije stavite iskaznicu na za to previđeno mjesto.
+
+<hr>
+
+<!--
+Select checkin button to return books.
+-->
+
+Ako želite vratiti knjigu, pristisnite ovaj gumb.
+
+<input name=checkin type=button value="Povrat" onClick="change_page('checkin')">
+</div>
+
+<div class="page" id="borrower_check">
+<!--
+Fetching borrower
+-->
+Provjera korisničnog računa...
+<p>
+Možete ukloniti iskaznicu.
+<span class="borrower_number"></span>
+</div>
+
+<div class="page" id="borrower_info">
+<!--
+Borrower:
+-->
+<h2>Informacije o članu</h2>
+<div class="borrower_name"></div>
+<!--
+<div class="borrower_email"></div>
+-->
+<div class="borrower_number"></div>
+
+<h2>Dokumenti</h2>
+
+<ul>
+<li>Posuđeno: <span class="hold_items">0</span>
+<li>Kašnjenje: <span class="overdue_items">0</span>
+<!-- Koha doesn't support charged items or fine items
+<li>Trenutno rezervacija: 0
+<li>Spremno za podizanje: 0
+-->
+</ul>
+
+<h2>Dugovanje</h2>
+
+Ostatak: 0,00 kn
+
+<h2>Poruke</h2>
+
+Greeting from Koha.
+
+<input type="button" value="OK" onClick="change_page(circulation_type)">
+
+
+</div>
+
+<div class="page" id="circulation">
+<!--
+Put books to borrow on reader pad.
+-->
+Postavite knjige na predviđeno mjesto ispred monitora.
+
+<div class="checkout">Posuđeno:</div>
+<div class="checkin">Vraćeno:</div>
+
+<ul id="books">
+</ul>
+
+Dokumenata: 0
+
+<div style="display: block">
+<input type="button" value="Završi" onClick="change_page('end')">
+<input class="checkout" type="button" value="Informacije o članu" onClick="change_page('borrower_info')">
+</div>
+
+</div>
+
+<div class="page" id="end">
+
+Hvala što ste koristili selfcheck sustav.
+
+</div>
+
+<div class="page" id="error">
+
+Greška. Odnesite knjige na pult.
+
+</div>
+
+</body>
+</html>
