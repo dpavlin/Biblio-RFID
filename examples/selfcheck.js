@@ -1,4 +1,8 @@
 
+// configure timeouts
+var end_timeout   = 3000; // ms from end page to start page
+var error_timeout = 5000; // ms from error page to start page
+
 // mock console
 if(!window.console) {
 	window.console = new function() {
@@ -38,8 +42,16 @@ function change_page(new_state) {
 		if ( state == 'start' ) {
 			start_scan();
 		}
+		if ( state == 'end' ) {
+			window.setTimeout(function(){
+				change_page('start');
+			},end_timeout);
+		}
+
 		if ( state == 'error' ) {
-			// FIXME: implement timeout and go back to start
+			window.setTimeout(function(){
+				change_page('start');
+			},error_timeout);
 		}
 	}
 }
@@ -138,7 +150,7 @@ function fill_in( where, value ) {
 
 var borrower_cardnumber;
 var circulation_type;
-var book_barcodes;
+var book_barcodes = {};
 
 function start( cardnumber ) {
 
@@ -181,7 +193,7 @@ function circulation( barcode ) {
 	if ( barcode
 			&& barcode.length == 10
 			&& barcode.substr(0,3) == 130
-			&& ! book_barcodes[barcode]
+			&& typeof book_barcodes[barcode] !== undefined
 	) { // book, not seen yet
 		$.getJSON('/sip2/'+circulation_type+'/'+borrower_cardnumber+'/'+barcode , function( data ) {
 			console.info( circulation_type, data );
