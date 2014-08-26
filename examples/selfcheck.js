@@ -2,6 +2,7 @@
 // configure timeouts
 var end_timeout   = 3000; // ms from end page to start page
 var error_timeout = 5000; // ms from error page to start page
+var tag_rescan    = 200;  // ms rescan tags every 0.2s
 
 // mock console
 if(!window.console) {
@@ -22,10 +23,13 @@ function change_page(new_state) {
 			new_state = 'circulation'; // page has different name
 			$('.checkout').hide();
 			$('.checkin').show();
+			circulation_type = 'checkin';
+			borrower_cardnumber = 0; // fake
 		} else if ( new_state == 'checkout' ) {
 			new_state = 'circulation'; // page has different name
 			$('.checkout').show();
 			$('.checkin').hide();
+			circulation_type = 'checkout';
 		}
 
 		state = new_state;
@@ -40,8 +44,12 @@ function change_page(new_state) {
 		console.info('change_page', state);
 
 		if ( state == 'start' ) {
-			start_scan();
+			circulation_type = 'checkout';
+			book_barcodes = {};
+			$('ul#books').html(''); // clear book list
+			scan_tags();
 		}
+
 		if ( state == 'end' ) {
 			window.setTimeout(function(){
 				change_page('start');
@@ -90,7 +98,7 @@ function got_visible_tags(data,textStatus) {
 				}
 
 				console.debug( 'calling', state, content );
-				window[state]( content ); // call function with barcode
+				window[state]( content, tag.sid ); // call function with barcode
 
 			}
 		});
@@ -108,33 +116,18 @@ function got_visible_tags(data,textStatus) {
 	$('#tags').html( html );
 	scan_timeout = window.setTimeout(function(){
 		scan_tags();
-	},200);	// re-scan every 200ms
+	},tag_rescan);	// re-scan every 200ms
 };
 
 function scan_tags() {
-	if ( $('input#pull-reader').attr('checked') ) {
-		console.info('scan_tags');
-		$.getJSON("/scan?callback=?", got_visible_tags);
-	}
-}
-
-function start_scan() {
-	$('input#pull-reader').attr('checked', true);
-	scan_tags();
-}
-
-function stop_scan() {
-	$('input#pull-reader').attr('checked', '');
+	console.info('scan_tags');
+	$.getJSON("/scan?callback=?", got_visible_tags);
 }
 
 $(document).ready(function() {
-		$('input#pull-reader').click( function() {
+		$('div#tags').click( function() {
 			scan_tags();
 		});
-
-		$('div#tags').click( function() {
-			$('input#pull-reader').attr('checked', false);
-		} );
 
 		change_page('start');
 });
@@ -160,15 +153,11 @@ function start( cardnumber ) {
 	}
 
 	borrower_cardnumber = cardnumber;
-	circulation_type = 'checkout';
-	book_barcodes = {};
 
 	change_page('borrower_check');
 }
 
 function borrower_check() {
-
-	stop_scan();
 
 	fill_in( 'borrower_number', borrower_cardnumber );
 
@@ -189,15 +178,15 @@ function borrower_info() {
 	// nop
 }
 
-function circulation( barcode ) {
+function circulation( barcode, sid ) {
 	if ( barcode
 			&& barcode.length == 10
 			&& barcode.substr(0,3) == 130
-			&& typeof book_barcodes[barcode] !== undefined
+			&& book_barcodes[barcode] != 1
 	) { // book, not seen yet
-		$.getJSON('/sip2/'+circulation_type+'/'+borrower_cardnumber+'/'+barcode , function( data ) {
+		$.getJSON('/sip2/'+circulation_type+'/'+borrower_cardnumber+'/'+barcode+'/'+sid , function( data ) {
 			console.info( circulation_type, data );
-			$('ul#books').append('<li>' + data['AJ'] + ' <small>' + data['AF'] + '</small></li>');
+			$('ul#books').append('<li>' + ( data['AJ'] || barcode ) + ' <small>' + data['AF'] + '</small></li>');
 			book_barcodes[ barcode ] = 1;
 			console.debug( book_barcodes );
 		}).fail( function() {

@@ -37,6 +37,10 @@ my $sip2 = {
 	password => 'viva2koha',
 	loc      => 'FFZG',
 };
+my $afi = {
+	secure   => 0xDA,
+	unsecure => 0xD7,
+};
 
 use Getopt::Long;
 
@@ -220,7 +224,7 @@ sub http_server {
 
 					warn "PROGRAM $tag $content\n";
 					$rfid->write_blocks( $tag => $content );
-					$rfid->write_afi(    $tag => chr( $param->{$p} =~ /^130/ ? 0xDA : 0xD7 ) );
+					$rfid->write_afi(    $tag => chr( $param->{$p} =~ /^130/ ? $afi->{secure} : $afi->{unsecure} ) );
 				}
 
 				print $client "HTTP/1.0 $status $method\r\nLocation: $server_url\r\n\r\n";
@@ -263,12 +267,18 @@ sub http_server {
 					$hash = sip2_message("63000${ts}          AO$loc|AA$patron|AC$password|");
 
 				} elsif ( $method eq 'checkout' ) {
-					my ($patron,$barcode) = split(/\//, $args, 2);
+					my ($patron,$barcode,$sid) = split(/\//, $args, 3);
 					$hash = sip2_message("11YN${ts}                  AO$loc|AA$patron|AB$barcode|AC$password|BON|BIN|");
+					if ( substr( $hash->{fixed}, 2, 1 ) == 1 ) {
+						$rfid->write_afi( $sid => chr( $afi->{unsecure} ) );
+					}
 
 				} elsif ( $method eq 'checkin' ) {
-					my $barcode = $args;
+					my ($patron,$barcode,$sid) = split(/\//, $args, 3);
 					$hash = sip2_message("09N${ts}${ts}AP|AO${loc}|AB$barcode|AC|BIN|");
+					if ( substr( $hash->{fixed}, 2, 1 ) == 1 ) {
+						$rfid->write_afi( $sid => chr( $afi->{secure} ) );
+					}
 				} else {
 					print $client "HTTP/1.0 500 $method not implemented\r\n\r\n";
 				}
