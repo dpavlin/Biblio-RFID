@@ -68,7 +68,6 @@ function change_page(new_state) {
 function got_visible_tags(data,textStatus) {
 	var html = 'No tags in range';
 	if ( data.tags ) {
-		scan_tags_active = false;
 		html = '<ul class="tags">';
 		$.each(data.tags, function(i,tag) {
 			console.debug( i, tag );
@@ -99,7 +98,6 @@ function got_visible_tags(data,textStatus) {
 		});
 		html += '</ul>';
 
-		scan_tags_active = true;
 	}
 
 	var arrows = Array( 8592, 8598, 8593, 8599, 8594, 8600, 8595, 8601 );
@@ -110,7 +108,7 @@ function got_visible_tags(data,textStatus) {
 		+ '</div>'
 		+ html
 		;
-	$('#tags').html( html );
+	$('#tags').html( html ); // FIXME leaks memory?
 
 	pending_jsonp--;
 };
