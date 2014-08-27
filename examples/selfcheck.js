@@ -203,7 +203,7 @@ function circulation( barcode, sid ) {
 		pending_jsonp++;
 		$.getJSON('/sip2/'+circulation_type+'/'+borrower_cardnumber+'/'+barcode+'/'+sid , function( data ) {
 			console.info( circulation_type, data );
-			$('ul#books').append('<li>' + ( data['AJ'] || barcode ) + ' <small>' + data['AF'] + '</small></li>');
+			$('ul#books').append('<li>' + ( data['AJ'] || barcode ) + ( data['AF'] ? ' <b>' + data['AF'] + '</b>' : '' ) + '</li>');
 			console.debug( book_barcodes );
 			pending_jsonp--;
 		}).fail( function() {
