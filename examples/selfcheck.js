@@ -15,6 +15,7 @@ if(!window.console) {
 
 var state;
 var scan_timeout;
+var scan_tags_active = true;
 
 function change_page(new_state) {
 	if ( state != new_state ) {
@@ -120,8 +121,12 @@ function got_visible_tags(data,textStatus) {
 };
 
 function scan_tags() {
-	console.info('scan_tags');
-	$.getJSON("/scan?callback=?", got_visible_tags);
+	if ( scan_tags_active ) {
+		console.info('scan_tags');
+		$.getJSON("/scan?callback=?", got_visible_tags);
+	} else {
+		console.debug('scan_tags disabled');
+	}
 }
 
 $(document).ready(function() {
@@ -161,6 +166,7 @@ function borrower_check() {
 
 	fill_in( 'borrower_number', borrower_cardnumber );
 
+	scan_tags_active = false;
 	$.getJSON('/sip2/patron_info/'+borrower_cardnumber)
 	.done( function( data ) {
 		console.info('patron', data);
@@ -168,8 +174,10 @@ function borrower_check() {
 		fill_in( 'borrower_email', data['BE'] );
 		fill_in( 'hold_items',    data['fixed'].substr( 2 + 14 + 3 + 18 + ( 0 * 4 ), 4 ) ) * 1;
 		fill_in( 'overdue_items', data['fixed'].substr( 2 + 14 + 3 + 18 + ( 1 * 4 ), 4 ) ) * 1;
+		scan_tags_active = true;
 		change_page('borrower_info');
 	}).fail( function(data) {
+		scan_tags_active = true;
 		change_page('error');
 	});
 }
@@ -184,13 +192,16 @@ function circulation( barcode, sid ) {
 			&& barcode.substr(0,3) == 130
 			&& book_barcodes[barcode] != 1
 	) { // book, not seen yet
+		scan_tags_active = false;
 		$.getJSON('/sip2/'+circulation_type+'/'+borrower_cardnumber+'/'+barcode+'/'+sid , function( data ) {
 			console.info( circulation_type, data );
 			$('ul#books').append('<li>' + ( data['AJ'] || barcode ) + ' <small>' + data['AF'] + '</small></li>');
 			book_barcodes[ barcode ] = 1;
 			console.debug( book_barcodes );
+			scan_tags_active = true;
 		}).fail( function() {
 			change_page('error');
+			scan_tags_active = true;
 		});
 	}
 }
