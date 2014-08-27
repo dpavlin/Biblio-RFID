@@ -213,3 +213,6 @@ function circulation( barcode, sid ) {
 	}
 }
 
+function end() {
+	// nop
+}
