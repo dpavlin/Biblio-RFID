@@ -15,7 +15,7 @@ if(!window.console) {
 
 var state;
 var scan_timeout;
-var scan_tags_active = true;
+var pending_jsonp = 0;
 
 function change_page(new_state) {
 	if ( state != new_state ) {
@@ -68,6 +68,7 @@ function change_page(new_state) {
 function got_visible_tags(data,textStatus) {
 	var html = 'No tags in range';
 	if ( data.tags ) {
+		scan_tags_active = false;
 		html = '<ul class="tags">';
 		$.each(data.tags, function(i,tag) {
 			console.debug( i, tag );
@@ -104,6 +105,8 @@ function got_visible_tags(data,textStatus) {
 			}
 		});
 		html += '</ul>';
+
+		scan_tags_active = true;
 	}
 
 	var arrows = Array( 8592, 8598, 8593, 8599, 8594, 8600, 8595, 8601 );
@@ -115,18 +118,22 @@ function got_visible_tags(data,textStatus) {
 		+ html
 		;
 	$('#tags').html( html );
-	scan_timeout = window.setTimeout(function(){
-		scan_tags();
-	},tag_rescan);	// re-scan every 200ms
+
+	pending_jsonp--;
 };
 
 function scan_tags() {
-	if ( scan_tags_active ) {
-		console.info('scan_tags');
-		$.getJSON("/scan?callback=?", got_visible_tags);
+	if ( pending_jsonp ) {
+		console.debug('scan_tags disabled ', pending_jsonp, ' requests waiting');
 	} else {
-		console.debug('scan_tags disabled');
+		console.info('scan_tags');
+		pending_jsonp++;
+		$.getJSON("/scan?callback=?", got_visible_tags);
 	}
+
+	scan_timeout = window.setTimeout(function(){
+		scan_tags();
+	},tag_rescan);	// re-scan every 200ms
 }
 
 $(document).ready(function() {
@@ -166,7 +173,7 @@ function borrower_check() {
 
 	fill_in( 'borrower_number', borrower_cardnumber );
 
-	scan_tags_active = false;
+	pending_jsonp++;
 	$.getJSON('/sip2/patron_info/'+borrower_cardnumber)
 	.done( function( data ) {
 		console.info('patron', data);
@@ -174,10 +181,10 @@ function borrower_check() {
 		fill_in( 'borrower_email', data['BE'] );
 		fill_in( 'hold_items',    data['fixed'].substr( 2 + 14 + 3 + 18 + ( 0 * 4 ), 4 ) ) * 1;
 		fill_in( 'overdue_items', data['fixed'].substr( 2 + 14 + 3 + 18 + ( 1 * 4 ), 4 ) ) * 1;
-		scan_tags_active = true;
+		pending_jsonp--;
 		change_page('borrower_info');
 	}).fail( function(data) {
-		scan_tags_active = true;
+		pending_jsonp--;
 		change_page('error');
 	});
 }
@@ -192,16 +199,16 @@ function circulation( barcode, sid ) {
 			&& barcode.substr(0,3) == 130
 			&& book_barcodes[barcode] != 1
 	) { // book, not seen yet
-		scan_tags_active = false;
+		book_barcodes[ barcode ] = 1;
+		pending_jsonp++;
 		$.getJSON('/sip2/'+circulation_type+'/'+borrower_cardnumber+'/'+barcode+'/'+sid , function( data ) {
 			console.info( circulation_type, data );
 			$('ul#books').append('<li>' + ( data['AJ'] || barcode ) + ' <small>' + data['AF'] + '</small></li>');
-			book_barcodes[ barcode ] = 1;
 			console.debug( book_barcodes );
-			scan_tags_active = true;
+			pending_jsonp--;
 		}).fail( function() {
 			change_page('error');
-			scan_tags_active = true;
+			pending_jsonp--;
 		});
 	}
 }
