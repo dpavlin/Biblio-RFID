@@ -73,20 +73,13 @@ function got_visible_tags(data,textStatus) {
 		$.each(data.tags, function(i,tag) {
 			console.debug( i, tag );
 			html += '<li><tt class="' + tag.security + '">' + tag.sid;
-			var content = tag.content
-			if (typeof content === undefined && typeof tag.borrower !== undefined) 
-				content = tag.borrower.cardnumber;
-
-			var is_book = false;
-			var is_borrower = false;
+			var content = tag.content || tag.borrower.cardnumber;
 
 			if ( content ) {
 				var link;
 				if ( content.length = 10 && content.substr(0,3) == 130 ) { // book
-					is_book = true;
 					link = 'catalogue/search.pl?q=';
 				} else if ( content.length == 12 && content.substr(0,2) == 20 ) {
-					is_borrower = true;
 					link = 'members/member.pl?member=';
 				} else {
 					html += '<b>UNKNOWN TAG</b> '+content;
