@@ -3,7 +3,20 @@
 <meta charset="utf-8"></meta>
 <title>RFID SIP2 Selfcheck</title>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<link href='http://fonts.googleapis.com/css?family=Roboto&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
 <style type="text/css">
+
+body, input {
+	font-family: 'Roboto', sans-serif;
+	background: #eee;
+	font-size: 150%;
+}
+
+body {
+	margin: 2em;
+}
+
+
 .status {
 	background: #ff8;
 }
@@ -16,10 +29,10 @@
 	background: #cfc;
 }
 
-,page {
-	font-size: 300%;
-	border: 10px solid #ccc;
-
+.page {
+	border: 2em solid #fff;
+	border-radius: 1em;
+	background: #fff;
 }
 
 #tags {
@@ -30,10 +43,10 @@
 }
 
 input[type=button] {
-	padding-top: 2em;
+	margin-top: 1em;
 	display: block;
 	width: 100%;
-	height: 10em;
+	height: 5em;
 }
 
 </style>
@@ -107,6 +120,8 @@ Greeting from Koha.
 Put books to borrow on reader pad.
 -->
 Postavite knjige na predviđeno mjesto ispred monitora.
+
+<hr>
 
 <div class="checkout">Posuđeno:</div>
 <div class="checkin">Vraćeno:</div>
