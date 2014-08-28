@@ -48,6 +48,7 @@ function change_page(new_state) {
 			circulation_type = 'checkout';
 			book_barcodes = {};
 			$('ul#books').html(''); // clear book list
+			$('#books_count').html( 0 );
 			scan_tags();
 		}
 
@@ -190,6 +191,7 @@ function circulation( barcode, sid ) {
 		$.getJSON('/sip2/'+circulation_type+'/'+borrower_cardnumber+'/'+barcode+'/'+sid , function( data ) {
 			console.info( circulation_type, data );
 			$('ul#books').append('<li>' + ( data['AJ'] || barcode ) + ( data['AF'] ? ' <b>' + data['AF'] + '</b>' : '' ) + '</li>');
+			$('#books_count').html( $('ul#books > li').length );
 			console.debug( book_barcodes );
 			pending_jsonp--;
 		}).fail( function() {
