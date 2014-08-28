@@ -155,17 +155,12 @@ function start( cardnumber ) {
 		return;
 	}
 
-	borrower_cardnumber = cardnumber;
+	borrower_cardnumber = cardnumber; // for circulation
 
-	change_page('borrower_check');
-}
-
-function borrower_check() {
-
-	fill_in( 'borrower_number', borrower_cardnumber );
+	fill_in( 'borrower_number', cardnumber );
 
 	pending_jsonp++;
-	$.getJSON('/sip2/patron_info/'+borrower_cardnumber)
+	$.getJSON('/sip2/patron_info/'+cardnumber)
 	.done( function( data ) {
 		console.info('patron', data);
 		fill_in( 'borrower_name', data['AE'] );
