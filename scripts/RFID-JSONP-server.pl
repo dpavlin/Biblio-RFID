@@ -305,19 +305,20 @@ sub rfid_register {
 
 	foreach ( split(/\n/, `ip addr` ) ) {
 		if ( /^\d:\s(\w+):\s/ ) {
-			$ip->{last} = $1;
+			$ip->{_last} = $1;
 		} elsif ( /^\s+inet\s((\d+)\.(\d+)\.(\d+)\.(\d+))\/(\d+)/ ) {
-			$ip->{ $ip->{last} } = $1;
+			$ip->{ $ip->{_last} } = $1;
 		} else {
-			warn "# SKIP [$_]\n";
+			#warn "# SKIP [$_]\n";
 		}
-
 	}
+
+	warn dump($ip);
 
 	my $ua = LWP::UserAgent->new;
 	my $url = URI->new( $rfid_url . '/register.pl');
 	$url->query_form(
-		local_ip => $ip->{eth0},
+		local_ip => $ip->{eth0} || $ip->{ (keys %$ip)[0] },
 	);
 	warn "GET ",$url->as_string;
 	my $response = $ua->get($url);
