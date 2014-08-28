@@ -154,6 +154,9 @@ sub http_server {
 	print "Server $0 ready at $server_url\n";
 
 	while (my $client = $server->accept()) {
+
+	    eval { # don't die inside here!
+
 		$client->autoflush(1);
 		my $request = <$client>;
 
@@ -196,12 +199,14 @@ sub http_server {
 				foreach my $tag ( @tags ) {
 					my $hash = $rfid->to_hash( $tag );
 					$hash->{sid}  = $tag;
+					$hash->{reader} = $rfid->from_reader( $tag );
 					if ( $hash->{tag_type} eq 'SmartX' ) {
 						my $borrower = rfid_borrower $hash;
 						if ( exists $borrower->{error} ) {
 							warn "ERROR ", dump($borrower);
 						} else {
 							$hash->{borrower} = $borrower->{borrower};
+							$hash->{content}  = $borrower->{borrower}->{cardnumber}; # compatibile with 3M tags
 						}
 					} else {
 						$hash->{security} = uc unpack 'H*', $rfid->afi( $tag );
@@ -242,7 +247,7 @@ sub http_server {
 					$status = 302;
 
 					warn "SECURE $tag $data\n";
-					$rfid->write_afi( $tag => hex($data) );
+					$rfid->write_afi( $tag => chr(hex($data)) );
 				}
 
 				if ( $json ) {
@@ -295,6 +300,13 @@ sub http_server {
 			print $client "HTTP/1.0 500 No method\r\n\r\n";
 		}
 		close $client;
+
+	    }; # end of eval
+	    if ( $@ ) {
+		print $client "HTTP/1.0 500 Error\r\n\r\nContent-Type: text/plain\r\n$@";
+		warn "ERROR: $@";
+	    }
+
 	}
 
 	die "server died";
