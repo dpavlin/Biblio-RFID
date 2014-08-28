@@ -61,7 +61,8 @@ function change_page(new_state) {
 
 		if ( state == 'error' ) {
 			window.setTimeout(function(){
-				change_page('start');
+				//change_page('start');
+				location.reload();
 			},error_timeout);
 		}
 	}
