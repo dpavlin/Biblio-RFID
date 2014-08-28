@@ -169,6 +169,8 @@ function start( cardnumber ) {
 		fill_in( 'borrower_email', data['BE'] );
 		fill_in( 'hold_items',    data['fixed'].substr( 2 + 14 + 3 + 18 + ( 0 * 4 ), 4 ) ) * 1;
 		fill_in( 'overdue_items', data['fixed'].substr( 2 + 14 + 3 + 18 + ( 1 * 4 ), 4 ) ) * 1;
+		fill_in( 'charged_items', data['fixed'].substr( 2 + 14 + 3 + 18 + ( 2 * 4 ), 4 ) ) * 1;
+		fill_in( 'fine_items',    data['fixed'].substr( 2 + 14 + 3 + 18 + ( 3 * 4 ), 4 ) ) * 1;
 		pending_jsonp--;
 		change_page('borrower_info');
 	}).fail( function(data) {
