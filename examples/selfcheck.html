@@ -49,6 +49,20 @@ input[type=button] {
 	height: 5em;
 }
 
+#timeout {
+	display: none;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin-left: -10em;
+	margin-top: -5em;
+	width: 20em;
+	height: 10em;
+	background: #ff8;
+	padding: 2em;
+	border: 0.5em solid #f00;
+}
+
 </style>
 <script type="text/javascript" src="/examples/selfcheck.js"></script>
 </head>
@@ -60,6 +74,12 @@ RFID reader not found or driver program not started.
 
 
 <h1>Knjižnica Filozofskog fakulteta</h1>
+
+<div id="timeout">
+Timeout in <span id="tick">99</span> seconds.
+<input type=button value="continue" onClick="start_timeout();">
+</div>
+
 
 <div class="page" id="start">
 

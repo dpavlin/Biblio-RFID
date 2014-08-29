@@ -17,6 +17,16 @@ var state;
 var scan_timeout;
 var pending_jsonp = 0;
 
+// timeout warning dialog
+var tick_timeout = 25; // s
+var tick_warning = 10; // s
+var tick = 0;
+
+function start_timeout() {
+	$('#timeout').hide();
+	tick = Math.round( tick_timeout * ( 1000 / tag_rescan ) );
+}
+
 function change_page(new_state) {
 	if ( state != new_state ) {
 
@@ -64,6 +74,12 @@ function change_page(new_state) {
 				//change_page('start');
 				location.reload();
 			},error_timeout);
+		}
+
+		if ( state == 'circulation' || state == 'borrower_info' ) {
+			start_timeout();
+		} else {
+			tick = 0; // timeout disabled
 		}
 	}
 }
@@ -123,6 +139,18 @@ function scan_tags() {
 		console.info('scan_tags');
 		pending_jsonp++;
 		$.getJSON("/scan?callback=?", got_visible_tags);
+	}
+
+	if ( tick > 0 ) {
+		if ( tick < tick_warning * ( 1000 / tag_rescan ) ) {
+			$('#tick').html( Math.round( tick * tag_rescan / 1000 ) );
+			$('#timeout').show();
+		}
+		tick--;
+		if ( tick == 0 ) {
+			$('#timeout').hide();
+			change_page('end');
+		}
 	}
 
 	scan_timeout = window.setTimeout(function(){
@@ -202,6 +230,7 @@ function circulation( barcode, sid ) {
 			$('#books_count').html( $('ul#books > li').length );
 			console.debug( book_barcodes );
 			pending_jsonp--;
+			start_timeout(); // reset timeout
 		}).fail( function() {
 			change_page('error');
 			pending_jsonp--;
