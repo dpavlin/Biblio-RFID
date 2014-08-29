@@ -194,7 +194,11 @@ function circulation( barcode, sid ) {
 		pending_jsonp++;
 		$.getJSON('/sip2/'+circulation_type+'/'+borrower_cardnumber+'/'+barcode+'/'+sid , function( data ) {
 			console.info( circulation_type, data );
-			$('ul#books').append('<li>' + ( data['AJ'] || barcode ) + ( data['AF'] ? ' <b>' + data['AF'] + '</b>' : '' ) + '</li>');
+
+			var color = 'red';
+			if ( data['fixed'].substr(2,1) == 1 ) color='green';
+
+			$('ul#books').append('<li style="color:'+color+'">' + ( data['AJ'] || barcode ) + ( data['AF'] ? ' <b>' + data['AF'] + '</b>' : '' ) + '</li>');
 			$('#books_count').html( $('ul#books > li').length );
 			console.debug( book_barcodes );
 			pending_jsonp--;
