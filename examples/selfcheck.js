@@ -224,9 +224,13 @@ function circulation( barcode, sid ) {
 			console.info( circulation_type, data );
 
 			var color = 'red';
-			if ( data['fixed'].substr(2,1) == 1 ) color='green';
+			var error = 'Transakcija neuspješna. Odnesite knjige na pult!';
+			if ( data['fixed'].substr(2,1) == 1 ) {
+				color='green';
+				error = '';
+			}
 
-			$('ul#books').append('<li style="color:'+color+'">' + ( data['AJ'] || barcode ) + ( data['AF'] ? ' <b>' + data['AF'] + '</b>' : '' ) + '</li>');
+			$('ul#books').append('<li style="color:'+color+'">' + ( data['AJ'] || barcode ) + ( data['AF'] ? ' <b>' + data['AF'] + '</b> ' + error : '' ) + '</li>');
 			$('#books_count').html( $('ul#books > li').length );
 			console.debug( book_barcodes );
 			pending_jsonp--;
