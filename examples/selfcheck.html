@@ -9,6 +9,11 @@
 body, input {
 	font-family: 'Roboto', sans-serif;
 	font-size: 110%;
+	/* disable selection which brings havoc on touchscreens */
+	-webkit-user-select: none;
+	-moz-user-select: -moz-none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 body {
