@@ -26,16 +26,15 @@ my $debug = 1;
 my $listen = '127.0.0.1:9000';
 $listen = ':9000';
 my $reader;
-my $koha_url = 'http://ffzg.koha-dev.rot13.org:8080';
+my $koha_url = $ENV{KOHA_URL};
+warn "$koha_url";
 # internal URL so we can find local address of machine and vmware NAT
-my $rfid_url = 'http://rfid.koha-dev.vbz.ffzg.hr';
+my $rfid_url = $ENV{RFID_URL};
 my $sip2 = {
-	server   => '10.60.0.11:6002', # must be IP!
-#	user     => 'sip2-user',
-#	password => 'sip2-passwd',
-	user     => 'sip2user',
-	password => 'viva2koha',
-	loc      => 'FFZG',
+	server   => $ENV{SIP2_SERVER}, # '10.60.0.11:6002' must be IP!
+	user     => $ENV{SIP2_USER},
+	password => $ENV{SIP2_PASSWORD},
+	loc      => $ENV{SIP2_LOC},
 };
 my $afi = {
 	secure   => 0xDA,
@@ -48,8 +47,9 @@ GetOptions(
 	'debug!'    => \$debug,
 	'listen=s', => \$listen,
 	'reader=s', => \$reader,
-	'koha=s',	=> \$koha_url,
 ) || die $!;
+
+die "need KOHA_URL, eg. http://ffzg.koha-dev.rot13.org:8080" unless $koha_url;
 
 our $rfid_sid_cache;
 
@@ -344,7 +344,7 @@ sub rfid_register {
 	}
 }
 
-rfid_register;
+rfid_register if $rfid_url;
 http_server;
 
 __DATA__
