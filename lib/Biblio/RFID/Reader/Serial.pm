@@ -29,7 +29,7 @@ sub new {
 
 =head2 port
 
-Tries to open usb serial ports C</dev/ttyUSB*>
+Tries to open usb serial ports C</dev/ttyUSB*> and serial ports C</dev/ttyS*>
 
   my $serial_obj = $self->port;
 
@@ -45,7 +45,7 @@ sub port {
 	return $self->{port} if defined $self->{port};
 
 	my $settings = $self->serial_settings;
-	my @devices  = $ENV{RFID_DEVICE} ? ( $ENV{RFID_DEVICE} ) : glob '/dev/ttyUSB*';
+	my @devices  = $ENV{RFID_DEVICE} ? ( $ENV{RFID_DEVICE} ) : glob '/dev/ttyUSB* /dev/ttyS*';
 	warn "# port devices ",dump(@devices);
 
 	foreach my $device ( @devices ) {
