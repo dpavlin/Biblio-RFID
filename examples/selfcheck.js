@@ -99,6 +99,8 @@ function got_visible_tags(data,textStatus) {
 					link = 'catalogue/search.pl?q=';
 				} else if ( content.length == 12 && content.substr(0,2) == 20 ) {
 					link = 'members/member.pl?member=';
+				} else if ( tag.tag_type == 'SmartX' ) {
+					link = 'members/member.pl?member=';
 				} else {
 					html += '<b>UNKNOWN TAG</b> '+content;
 				}
@@ -111,7 +113,7 @@ function got_visible_tags(data,textStatus) {
 				}
 
 				console.debug( 'calling', state, content );
-				window[state]( content, tag.sid ); // call function with barcode
+				window[state]( content, tag ); // call function with barcode
 
 			}
 		});
@@ -179,10 +181,10 @@ var borrower_cardnumber;
 var circulation_type;
 var book_barcodes = {};
 
-function start( cardnumber ) {
+function start( cardnumber, tag ) {
 
-	if ( cardnumber.length != 12 || cardnumber.substr(0,2) != "20" ) {
-		console.error(cardnumber, ' is not borrower card');
+	if ( tag.tag_type != 'SmartX' && ( cardnumber.length != 12 || cardnumber.substr(0,2) != "20" ) ) {
+		console.error(cardnumber, 'is not borrower card', tag);
 		return;
 	}
 
@@ -212,7 +214,7 @@ function borrower_info() {
 	// nop
 }
 
-function circulation( barcode, sid ) {
+function circulation( barcode, tag ) {
 	if ( barcode
 			&& barcode.length == 10
 			&& barcode.substr(0,3) == 130
@@ -220,7 +222,7 @@ function circulation( barcode, sid ) {
 	) { // book, not seen yet
 		book_barcodes[ barcode ] = 1;
 		pending_jsonp++;
-		$.getJSON('/sip2/'+circulation_type+'/'+borrower_cardnumber+'/'+barcode+'/'+sid , function( data ) {
+		$.getJSON('/sip2/'+circulation_type+'/'+borrower_cardnumber+'/'+barcode+'/'+tag.sid , function( data ) {
 			console.info( circulation_type, data );
 
 			var color = 'red';
