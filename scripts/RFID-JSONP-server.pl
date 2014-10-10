@@ -22,7 +22,7 @@ use URI;
 use POSIX qw(strftime);
 use Encode;
 
-my $debug = 1;
+my $debug = 0;
 my $listen = '127.0.0.1:9000';
 $listen = ':9000';
 my $reader;
