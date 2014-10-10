@@ -129,7 +129,7 @@ sub to_hash {
 
 sub debug {
 	my ( $self, $level ) = @_;
-	$debug = $level;
+	$debug = $level if $level > $debug;
 	warn "debug level $level\n" if $level;
 }
 

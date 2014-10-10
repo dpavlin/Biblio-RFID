@@ -16,7 +16,7 @@ Biblio::RFID - perl tools to use different RFID readers for library use
 
 our $VERSION = '0.04';
 
-our $debug = 0;
+our $debug = $ENV{DEBUG} || 0;
 
 
 =head1 DESCRIPTION
