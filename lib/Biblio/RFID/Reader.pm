@@ -171,7 +171,8 @@ Probe each RFID reader supported and returns succefull ones
 
 =cut
 
-my @readers = ( '3M810', 'CPRM02', 'librfid' );
+#my @readers = ( '3M810', 'CPRM02', 'librfid' );
+my @readers = ( '3M810', 'librfid' );
 
 sub _available {
 	my ( $self, $filter ) = @_;
