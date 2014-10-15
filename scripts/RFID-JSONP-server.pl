@@ -193,8 +193,16 @@ sub http_server {
 					}
 					close($fh);
 				}
-			} elsif ( $method =~ m{/scan} ) {
-				my @tags = $rfid->tags;
+			} elsif ( $method =~ m{/scan(/only/(.+))?} ) {
+				my $only = $2;
+				my @tags = $rfid->tags( reader => sub {
+					my $reader = shift;
+					return 1 unless $only;
+					if ( ref $reader =~ m/\Q$only\E/i ) {
+						return 1;
+					}
+					return 0;
+				});
 				my $json = { time => time() };
 				foreach my $tag ( @tags ) {
 					my $hash = $rfid->to_hash( $tag );

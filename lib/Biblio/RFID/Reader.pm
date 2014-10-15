@@ -39,6 +39,7 @@ sub new {
   my @visible = $rfid->tags(
 		enter => sub { my $tag = shift; },
 		leave => sub { my $tag = shift; },
+		reader => sub { my $reader = shift; ref($reader) =~ m/something/ },
   );
 
 =cut
@@ -52,6 +53,11 @@ sub tags {
 	my $t = time;
 
 	foreach my $rfid ( @{ $self->{_readers} } ) {
+
+		if ( exists $triggers->{reader} ) {
+			next unless $triggers->{reader}->($rfid);
+		}
+
 		warn "# inventory on $rfid";
 		my @tags = $rfid->inventory;
 
