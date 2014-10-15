@@ -16,6 +16,7 @@ if(!window.console) {
 var state;
 var scan_timeout;
 var pending_jsonp = 0;
+var only_reader = '';
 
 // timeout warning dialog
 var tick_timeout = 25; // s
@@ -36,11 +37,13 @@ function change_page(new_state) {
 			$('.checkin').show();
 			circulation_type = 'checkin';
 			borrower_cardnumber = 0; // fake
+			only_reader = '/only/3M';
 		} else if ( new_state == 'checkout' ) {
 			new_state = 'circulation'; // page has different name
 			$('.checkout').show();
 			$('.checkin').hide();
 			circulation_type = 'checkout';
+			only_reader = '/only/3M';
 		}
 
 		state = new_state;
@@ -59,6 +62,7 @@ function change_page(new_state) {
 			book_barcodes = {};
 			$('ul#books').html(''); // clear book list
 			$('#books_count').html( 0 );
+			only_reader = '';
 			scan_tags();
 		}
 
@@ -138,10 +142,10 @@ function scan_tags() {
 	if ( pending_jsonp ) {
 		console.debug('scan_tags disabled ', pending_jsonp, ' requests waiting');
 	} else {
-		console.info('scan_tags');
+		console.info('scan_tags', only_reader);
 		pending_jsonp++;
-		$.getJSON("/scan?callback=?", got_visible_tags).fail( function(data) {
-			console.error('scan error');
+		$.getJSON("/scan"+only_reader+"?callback=?", got_visible_tags).fail( function(data) {
+			console.error('scan error pending jsonp', pending_jsonp);
 			pending_jsonp--;
 		});
 	}

@@ -198,7 +198,7 @@ sub http_server {
 				my @tags = $rfid->tags( reader => sub {
 					my $reader = shift;
 					return 1 unless $only;
-					if ( ref $reader =~ m/\Q$only\E/i ) {
+					if ( ref($reader) =~ m/$only/i ) {
 						return 1;
 					}
 					return 0;
@@ -293,7 +293,8 @@ sub http_server {
 						$rfid->write_afi( $sid => chr( $afi->{secure} ) );
 					}
 				} else {
-					print $client "HTTP/1.0 500 $method not implemented\r\n\r\n";
+					print $client "HTTP/1.0 501 $method not implemented\r\n\r\n";
+					warn "ERROR 501 $request\n";
 				}
 
 				if ( $hash ) {
@@ -303,9 +304,11 @@ sub http_server {
 
 			} else {
 				print $client "HTTP/1.0 404 Unkown method\r\n\r\n";
+				warn "ERROR 404 $request\n";
 			}
 		} else {
 			print $client "HTTP/1.0 500 No method\r\n\r\n";
+			warn "ERROR 500 $request\n";
 		}
 		close $client;
 
