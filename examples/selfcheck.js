@@ -140,7 +140,10 @@ function scan_tags() {
 	} else {
 		console.info('scan_tags');
 		pending_jsonp++;
-		$.getJSON("/scan?callback=?", got_visible_tags);
+		$.getJSON("/scan?callback=?", got_visible_tags).fail( function(data) {
+			console.error('scan error');
+			pending_jsonp--;
+		});
 	}
 
 	if ( tick > 0 ) {
