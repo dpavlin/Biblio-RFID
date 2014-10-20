@@ -138,9 +138,13 @@ function got_visible_tags(data,textStatus) {
 	pending_jsonp--;
 };
 
+var wait_counter = 0;
+
 function scan_tags() {
 	if ( pending_jsonp ) {
-		console.debug('scan_tags disabled ', pending_jsonp, ' requests waiting');
+		wait_counter++;
+		console.debug('scan_tags disabled ', pending_jsonp, ' requests waiting counter', wait_counter);
+		if ( wait_counter > 3 ) $('#working').show();
 	} else {
 		console.info('scan_tags', only_reader);
 		pending_jsonp++;
@@ -148,6 +152,8 @@ function scan_tags() {
 			console.error('scan error pending jsonp', pending_jsonp);
 			pending_jsonp--;
 		});
+		wait_counter = 0;
+		$('#working').hide();
 	}
 
 	if ( tick > 0 ) {

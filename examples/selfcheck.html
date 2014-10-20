@@ -78,6 +78,15 @@ input[type=button] {
 	text-align: center;
 }
 
+#working {
+	display: none;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin-left: -250px; /* 500 / 2 */
+	margin-top: -187px;  /* 375 / 2 */
+}
+
 </style>
 <script type="text/javascript" src="/examples/selfcheck.js"></script>
 </head>
@@ -95,6 +104,11 @@ Timeout in <span id="tick">99</span> seconds.
 <div class="button">
 <input type=button value="continue" onClick="start_timeout();">
 </div>
+</div>
+
+
+<div id="working">
+<img src="/examples/giphy.gif">
 </div>
 
 
