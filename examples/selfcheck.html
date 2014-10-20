@@ -50,7 +50,7 @@ body {
 input[type=button] {
 	display: block;
 	float: left;
-	width: 100%;
+	width: 50%;
 	height: 6em;
 }
 
@@ -102,7 +102,7 @@ RFID reader not found or driver program not started.
 <div id="timeout">
 Timeout in <span id="tick">99</span> seconds.
 <div class="button">
-<input type=button value="continue" onClick="start_timeout();">
+<input type=button value="continue" onClick="start_timeout();" style="width:100%">
 </div>
 </div>
 
@@ -129,7 +129,7 @@ Select checkin button to return books.
 Ako želite vratiti knjigu, pristisnite gumb za povrat.
 
 <div class="button">
-<input name=checkin type=button value="Povrat" onClick="change_page('checkin')">
+<input name=checkin type=button value="Povrat" onClick="change_page('checkin')" style="background: #8f8;">
 </div>
 </div>
 
@@ -185,7 +185,7 @@ Dokumenata: <span id="books_count">0</span>
 
 <div class="button">
 <input class="checkout" type="button" value="Informacije o članu" onClick="change_page('borrower_info')">
-<input type="button" value="Završi" onClick="change_page('end')">
+<input type="button" value="Završi" onClick="change_page('end')" style="float:right; background: #f88;">
 </div>
 
 </div>
