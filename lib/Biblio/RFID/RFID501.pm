@@ -119,6 +119,10 @@ sub to_hash {
 
 	$data = join('', @$data) if ref $data eq 'ARRAY';
 
+	if ( length($data) < 24 ) {
+		die "short data from tag ", length($data), " < 24 bytes";
+	}
+
 	warn "## to_hash ",dump($data);
 
 	my ( $u1, $set_item, $u2, $type, $content, $br_lib, $custom, $zero ) = unpack('C4Z16Nl>l',$data);
