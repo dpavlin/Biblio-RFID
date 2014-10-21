@@ -62,7 +62,7 @@ function change_page(new_state) {
 			book_barcodes = {};
 			$('ul#books').html(''); // clear book list
 			$('#books_count').html( 0 );
-			only_reader = '';
+			only_reader = '/only/librfid';
 			scan_tags();
 		}
 
