@@ -285,6 +285,9 @@ sub write_afi {
 	my $afi = shift || die "no afi?";
 
 	$afi = as_hex $afi;
+	my $retry = 0;
+
+retry:
 
 	cmd(
 		"09 $tag $afi", "write_afi $tag $afi", sub {
@@ -293,13 +296,20 @@ sub write_afi {
 		if ( my $rest = _matched $data => '09 00' ) {
 			my $tag_back = hex_tag substr($rest,0,8);
 			die "write_afi got $tag_back expected $tag" if $tag_back ne $tag;
-			warn "# SECURITY ", hex_tag($tag), " AFI: ", as_hex($afi);
-		} elsif ( $rest = _matched $data => '0A 06' ) {
-			die "ERROR writing AFI to $tag ", as_hex($data);
+			warn "# SECURITY ", hex_tag($tag), " AFI: $afi";
+		} elsif ( $rest = _matched $data => '09 06' ) {
+			if ( $retry++ <= 30 ) { # FIXME lover this number?
+#				warn "ERROR writing AFI $afi to $tag retry $retry\n";
+				goto retry;
+			}
+			die "ERROR writing AFI $afi to $tag ", as_hex($data);
 		} else {
 			die "IGNORED ",as_hex($data);
 		}
 	});
+
+	warn "INFO: tag $tag AFI $afi retry: $retry\n";
+
 	warn "## write_afi ", dump( $tag, $afi );
 	return $afi;
 }
