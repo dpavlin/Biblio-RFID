@@ -232,6 +232,7 @@ function circulation( barcode, tag ) {
 			&& barcode.length == 10
 			&& barcode.substr(0,3) == 130
 			&& book_barcodes[barcode] != 1
+			&& tag.reader == '3M810'
 	) { // book, not seen yet
 		book_barcodes[ barcode ] = 1;
 		pending_jsonp++;
