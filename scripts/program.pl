@@ -39,8 +39,7 @@ $Biblio::RFID::debug = $debug;
 foreach my $tag ( $rfid->tags ) {
 	warn "visible $tag\n";
 	next unless $tag eq $sid;
-	if ( $blank ) {
-warn dump( $blank );
+	if ( grep { defined $_ } values $blank ) {
 		my $type = ( grep { $blank->{$_} } keys %$blank )[0];
 		warn "BLANK $type $tag\n";
 		$rfid->write_blocks( $tag => Biblio::RFID::RFID501->$type );
