@@ -294,8 +294,8 @@ sub write_afi {
 			my $tag_back = hex_tag substr($rest,0,8);
 			die "write_afi got $tag_back expected $tag" if $tag_back ne $tag;
 			warn "# SECURITY ", hex_tag($tag), " AFI: ", as_hex($afi);
-		} elsif ( $rest = _matched $data => '0A 06' ) {
-			die "ERROR writing AFI to $tag ", as_hex($data);
+		} elsif ( $rest = _matched $data => '09 06' ) {
+			die "ERROR writing AFI ", as_hex($afi), " to $tag ", as_hex($data);
 		} else {
 			die "IGNORED ",as_hex($data);
 		}
