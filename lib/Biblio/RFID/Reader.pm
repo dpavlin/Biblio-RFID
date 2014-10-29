@@ -55,7 +55,15 @@ sub tags {
 	foreach my $rfid ( @{ $self->{_readers} } ) {
 
 		if ( exists $triggers->{reader} ) {
-			next unless $triggers->{reader}->($rfid);
+			if ( ! $triggers->{reader}->($rfid) ) {
+				# invalidate tags from other readers
+				if ( exists $self->{_tags} ) {
+					delete  $self->{_tags}->{$_} foreach (
+						grep { $self->{_tags}->{$_}->{reader} eq ref $rfid } keys %{ $self->{_tags} }
+					);
+				}
+				next;
+			}
 		}
 
 		warn "# inventory on $rfid";
