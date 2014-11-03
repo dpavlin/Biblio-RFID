@@ -279,6 +279,16 @@ sub read_afi {
 	return $afi;
 }
 
+=head2 afi_retry
+
+This specified how many times will driver try to write afi to tag
+
+  Biblio::RFID::Reader::3M810::afi_retry = 100;
+
+=cut
+
+our $afi_retry = 100;
+
 sub write_afi {
 	my $tag = shift;
 	$tag = shift if ref $tag;
@@ -298,7 +308,7 @@ retry:
 			die "write_afi got $tag_back expected $tag" if $tag_back ne $tag;
 			warn "# SECURITY ", hex_tag($tag), " AFI: $afi";
 		} elsif ( $rest = _matched $data => '09 06' ) {
-			if ( $retry++ <= 30 ) { # FIXME lover this number?
+			if ( $retry++ <= $afi_retry ) {
 #				warn "ERROR writing AFI $afi to $tag retry $retry\n";
 				goto retry;
 			}
