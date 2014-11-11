@@ -29,24 +29,27 @@ GetOptions(
 ) || die $!;
 
 my ( $sid, $content ) =  @ARGV;
-die "usage: $0 [--reader regex_filter] [--afi 214] [--type 1] E0_RFID_SID [barcode]\n" unless $sid && ( $content | $afi | $blank );
+die "usage: $0 [--reader regex_filter] [--afi 214] [--type 1] E0_RFID_SID [barcode]\n" unless $sid && ( $content || $afi || $blank );
 
 $hash->{content} = $content if defined $content;
 
 my $rfid = Biblio::RFID::Reader->new( $reader );
 $Biblio::RFID::debug = $debug;
 
-foreach my $tag ( $rfid->tags ) {
+foreach my $tag ( $rfid->tags, $sid ) {
 	warn "visible $tag\n";
-	next unless $tag eq $sid;
-	if ( grep { defined $_ } values $blank ) {
+#	next unless $tag eq $sid;
+	if ( grep { defined $_ } values %$blank ) {
 		my $type = ( grep { $blank->{$_} } keys %$blank )[0];
 		warn "BLANK $type $tag\n";
 		$rfid->write_blocks( $tag => Biblio::RFID::RFID501->$type );
-	} else {
+	} elsif ( $content ) {
 		warn "PROGRAM $tag with $content\n";
 		$rfid->write_blocks( $tag => Biblio::RFID::RFID501->from_hash($hash) );
-		$rfid->write_afi(    $tag => chr($afi) ) if $afi;
+	}
+	if ( $afi ) {
+		warn "AFI $tag with $afi\n";
+		$rfid->write_afi( $tag => chr($afi) );
 	}
 }
 
