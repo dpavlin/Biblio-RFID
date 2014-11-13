@@ -24,7 +24,14 @@ var tick_warning = 10; // s
 var tick = 0;
 
 function beep() {
-	// FIXME
+	pending_jsonp++;
+	$.getJSON("/beep")
+	.done( function(data) {
+		pending_jsonp--;
+	})
+	.fail( function(data) {
+		pending_jsonp--;
+	});
 }
 
 function start_timeout() {

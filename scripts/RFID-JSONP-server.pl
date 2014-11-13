@@ -302,6 +302,10 @@ sub http_server {
 						encode_json( $hash );
 				}
 
+			} elsif ( $method =~ m{/beep} ) {
+				system "beep -f 800 -r 2 -l 100";
+				print $client "HTTP/1.0 200 OK\r\nContent-Type: application/json\r\n\r\n{ beep: 1 }\n";
+				print "BEEP";
 			} else {
 				print $client "HTTP/1.0 404 Unkown method\r\n\r\n";
 				warn "ERROR 404 $request\n";
