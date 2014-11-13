@@ -23,6 +23,10 @@ var tick_timeout = 25; // s
 var tick_warning = 10; // s
 var tick = 0;
 
+function beep() {
+	// FIXME
+}
+
 function start_timeout() {
 	$('#timeout').hide();
 	tick = Math.round( tick_timeout * ( 1000 / tag_rescan ) );
@@ -74,6 +78,7 @@ function change_page(new_state) {
 		}
 
 		if ( state == 'error' ) {
+			beep();
 			window.setTimeout(function(){
 				//change_page('start');
 				location.reload();
@@ -211,10 +216,18 @@ function start( cardnumber, tag ) {
 		console.info('patron', data);
 		fill_in( 'borrower_name', data['AE'] );
 		fill_in( 'borrower_email', data['BE'] );
-		fill_in( 'hold_items',    data['fixed'].substr( 2 + 14 + 3 + 18 + ( 0 * 4 ), 4 ) ) * 1;
-		fill_in( 'overdue_items', data['fixed'].substr( 2 + 14 + 3 + 18 + ( 1 * 4 ), 4 ) ) * 1;
-		fill_in( 'charged_items', data['fixed'].substr( 2 + 14 + 3 + 18 + ( 2 * 4 ), 4 ) ) * 1;
-		fill_in( 'fine_items',    data['fixed'].substr( 2 + 14 + 3 + 18 + ( 3 * 4 ), 4 ) ) * 1;
+		fill_in( 'hold_items',    data['fixed'].substr( 2 + 14 + 3 + 18 + ( 0 * 4 ), 4 ) * 1 );
+		//fill_in( 'overdue_items', data['fixed'].substr( 2 + 14 + 3 + 18 + ( 1 * 4 ), 4 ) * 1 );
+		var overdue = data['fixed'].substr( 2 + 14 + 3 + 18 + ( 1 * 4 ), 4 ) * 1;
+		if ( overdue > 0 ) {
+			overdue = '<span style="color:red">'+overdue+'</span>';
+			beep();
+		}
+		fill_in( 'overdue_items', overdue );
+		fill_in( 'charged_items', data['fixed'].substr( 2 + 14 + 3 + 18 + ( 2 * 4 ), 4 ) * 1 );
+		fill_in( 'fine_items',    data['fixed'].substr( 2 + 14 + 3 + 18 + ( 3 * 4 ), 4 ) * 1 );
+
+
 		pending_jsonp--;
 		change_page('borrower_info');
 	}).fail( function(data) {
@@ -244,9 +257,11 @@ function circulation( barcode, tag ) {
 			if ( data['fixed'].substr(2,1) == 1 ) {
 				color='green';
 				error = '';
+			} else {
+				beep();
 			}
 
-			$('ul#books').append('<li style="color:'+color+'">' + ( data['AJ'] || barcode ) + ( data['AF'] ? ' <b>' + data['AF'] + '</b> ' + error : '' ) + '</li>');
+			$('ul#books').append('<li>' + ( data['AJ'] || barcode ) + ( data['AF'] ? ' <b style="color:'+color+'">' + data['AF'] + ' ' + error : '</b>' ) + '</li>');
 			$('#books_count').html( $('ul#books > li').length );
 			console.debug( book_barcodes );
 			pending_jsonp--;
