@@ -19,6 +19,7 @@ use JSON::XS;
 use IO::Socket::INET;
 use LWP::UserAgent;
 use URI;
+use URI::Escape;
 use POSIX qw(strftime);
 use Encode;
 
@@ -302,10 +303,11 @@ sub http_server {
 						encode_json( $hash );
 				}
 
-			} elsif ( $method =~ m{/beep} ) {
+			} elsif ( $method =~ m{/beep/(.*)} ) {
+				my $error = uri_unescape($1);
 				system "beep -f 800 -r 2 -l 100";
-				print $client "HTTP/1.0 200 OK\r\nContent-Type: application/json\r\n\r\n{ beep: 1 }\n";
-				print "BEEP";
+				print $client "HTTP/1.0 200 OK\r\nContent-Type: application/json\r\n\r\n{ beep: '$error' }\n";
+				print "BEEP $error\n";
 			} else {
 				print $client "HTTP/1.0 404 Unkown method\r\n\r\n";
 				warn "ERROR 404 $request\n";

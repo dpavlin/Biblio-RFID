@@ -23,9 +23,9 @@ var tick_timeout = 25; // s
 var tick_warning = 10; // s
 var tick = 0;
 
-function beep() {
+function beep( message ) {
 	pending_jsonp++;
-	$.getJSON("/beep")
+	$.getJSON("/beep/" + message)
 	.done( function(data) {
 		pending_jsonp--;
 	})
@@ -85,7 +85,7 @@ function change_page(new_state) {
 		}
 
 		if ( state == 'error' ) {
-			beep();
+			beep( 'error page' );
 			window.setTimeout(function(){
 				//change_page('start');
 				location.reload();
@@ -228,7 +228,7 @@ function start( cardnumber, tag ) {
 		var overdue = data['fixed'].substr( 2 + 14 + 3 + 18 + ( 1 * 4 ), 4 ) * 1;
 		if ( overdue > 0 ) {
 			overdue = '<span style="color:red">'+overdue+'</span>';
-			beep();
+			beep( 'overdue: ' + overdue );
 		}
 		fill_in( 'overdue_items', overdue );
 		fill_in( 'charged_items', data['fixed'].substr( 2 + 14 + 3 + 18 + ( 2 * 4 ), 4 ) * 1 );
@@ -260,15 +260,19 @@ function circulation( barcode, tag ) {
 			console.info( circulation_type, data );
 
 			var color = 'red';
-			var error = 'Transakcija neuspješna. Odnesite knjige na pult!';
+			var message = 'Transakcija neuspješna. Odnesite knjige na pult!';
 			if ( data['fixed'].substr(2,1) == 1 ) {
 				color='green';
-				error = '';
+				message = circulation_type == 'checkout' ? 'Posuđeno' : 'Vraćeno';
 			} else {
-				beep();
+				beep( circulation_type + ': ' + data['AF'] );
 			}
 
-			$('ul#books').append('<li>' + ( data['AJ'] || barcode ) + ( data['AF'] ? ' <b style="color:'+color+'">' + data['AF'] + ' ' + error : '</b>' ) + '</li>');
+			if ( data['AF'] ) {
+				message = data['AF'] + ' ' + message;
+			}
+
+			$('ul#books').append('<li>' + ( data['AJ'] || barcode ) + ' <b style="color:'+color+'">' + message + '</b></li>');
 			$('#books_count').html( $('ul#books > li').length );
 			console.debug( book_barcodes );
 			pending_jsonp--;
