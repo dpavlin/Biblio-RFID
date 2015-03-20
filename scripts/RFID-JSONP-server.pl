@@ -98,6 +98,8 @@ sub sip2_socket {
 sub sip2_message {
 	my $send = shift;
 
+	my $retry = 0;
+
 send_again:
 	my $sock = sip2_socket || die "no sip2 socket";
 
@@ -106,8 +108,6 @@ send_again:
 	$send .= "\r" unless $send =~ m/\r$/;
 	$send .= "\n" unless $send =~ m/\n$/;
 
-
-	my $retry = 0;
 	warn "SIP2 >>>> ",dump($send), "\n";
 	print $sock $send;
 	$sock->flush;
