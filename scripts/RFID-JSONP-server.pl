@@ -78,16 +78,36 @@ sub rfid_borrower {
 }
 
 
+sub sip2_socket {
+
+	return $sip2->{sock} if exists $sip2->{sock} && $sip2->{sock}->connected;
+
+	if ( my $server = $sip2->{server} ) {
+		my $sock = $sip2->{sock} = IO::Socket::INET->new( $server ) || die "can't connect to $server: $!";
+		warn "SIP2 server ", $sock->peerhost, ":", $sock->peerport, "\n";
+
+		# login
+		if ( sip2_message("9300CN$sip2->{user}|CO$sip2->{password}|")->{fixed} !~ m/^941/ ) {
+			die "SIP2 login failed";
+		}
+
+	}
+	return $sip2->{sock};
+}
+
 sub sip2_message {
 	my $send = shift;
 
-	my $sock = $sip2->{sock} || die "no sip2 socket";
+send_again:
+	my $sock = sip2_socket || die "no sip2 socket";
 
 	local $/ = "\r";
 
 	$send .= "\r" unless $send =~ m/\r$/;
 	$send .= "\n" unless $send =~ m/\n$/;
 
+
+	my $retry = 0;
 	warn "SIP2 >>>> ",dump($send), "\n";
 	print $sock $send;
 	$sock->flush;
@@ -100,7 +120,16 @@ sub sip2_message {
 	$in =~ s/^\n//;
 	$in =~ s/\r$//;
 
-	die "empty read from SIP server" unless length $in > 1;
+	if ( ! $in ) {
+		$retry++;
+		warn "empty read from SIP server, retry: $retry\n";
+		if ( $retry < 10 ) {
+			close( $sip2->{sock} );
+			goto send_again;
+		}
+		die "aborted";
+	}
+
 
 	die "expected $expect" unless substr($in,0,2) != $expect;
 
@@ -118,16 +147,6 @@ sub sip2_message {
 	return $hash;
 }
 
-if ( my $server = $sip2->{server} ) {
-	my $sock = $sip2->{sock} = IO::Socket::INET->new( $server ) || die "can't connect to $server: $!";
-	warn "SIP2 server ", $sock->peerhost, ":", $sock->peerport, "\n";
-
-	# login
-	if ( sip2_message("9300CN$sip2->{user}|CO$sip2->{password}|")->{fixed} !~ m/^941/ ) {
-		die "SIP2 login failed";
-	}
-
-}
 
 use lib 'lib';
 use Biblio::RFID::RFID501;
