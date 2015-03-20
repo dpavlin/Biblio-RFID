@@ -86,6 +86,8 @@ sub sip2_message {
 	local $/ = "\r";
 
 	$send .= "\r" unless $send =~ m/\r$/;
+	$send .= "\n" unless $send =~ m/\n$/;
+
 	warn "SIP2 >>>> ",dump($send), "\n";
 	print $sock $send;
 	$sock->flush;
@@ -93,9 +95,10 @@ sub sip2_message {
 	my $expect = substr($send,0,2) | 0x01;
 
 	my $in = <$sock>;
+	warn "SIP2 <<<< ",dump($in), "\n";
+
 	$in =~ s/^\n//;
 	$in =~ s/\r$//;
-	warn "SIP2 <<<< ",dump($in), "\n";
 
 	die "empty read from SIP server" unless length $in > 1;
 
