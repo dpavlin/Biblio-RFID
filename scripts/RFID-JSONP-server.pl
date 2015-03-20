@@ -92,13 +92,17 @@ sub sip2_message {
 	
 	my $expect = substr($send,0,2) | 0x01;
 
-	my $in = <$sock>;
-	$in =~ s/^\n//;
-	warn "SIP2 <<<< ",dump($in), "\n";
+	my $in = '';
+	my $repeat = 1;
+	while ( $in eq '' && $repeat < 10 ) {
+		$in = <$sock>;
+		$in =~ s/^\n//;
+		$in =~ s/\r$//;
+		warn "SIP2 <<<< ",dump($in), " repeat: $repeat\n";
+		$repeat++;
+	}
 
 	die "expected $expect" unless substr($in,0,2) != $expect;
-
-	$in =~ s/\r$//;
 
 	my $hash;
 	if ( $in =~ s/^([0-9\s]+)// ) {
