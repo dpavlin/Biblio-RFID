@@ -208,9 +208,9 @@ sub read_blocks {
 			} elsif ( $rest = _matched $data => 'FE 00 00 05 01' ) {
 				warn "FIXME ready? ",as_hex $rest;
 			} elsif ( $rest = _matched $data => '02 06' ) {
-				die "ERROR ",as_hex($rest);
+				die "ERROR ",as_hex($data);
 			} else {
-				die "FIXME unsuported ",as_hex($rest);
+				die "FIXME unsuported ",as_hex($data);
 			}
 	});
 
@@ -243,9 +243,9 @@ sub write_blocks {
 				my $blocks = substr($rest,8,1);
 				warn "# WRITE ",as_hex($tag), " [$blocks]\n";
 			} elsif ( $rest = _matched $data => '04 06' ) {
-				die "ERROR ",as_hex($rest);
+				die "ERROR ",as_hex($data);
 			} else {
-				die "UNSUPPORTED";
+				die "UNSUPPORTED ", as_hex($data);
 			}
 		}
 	);
