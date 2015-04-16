@@ -7,6 +7,7 @@ use Data::Dump qw(dump);
 use Getopt::Long;
 use lib 'lib';
 use Biblio::RFID::Reader;
+use Biblio::RFID::RFID501;
 
 my $loop = 0;
 my $reader;
