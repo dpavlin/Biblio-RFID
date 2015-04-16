@@ -235,6 +235,9 @@ sub write_blocks {
 	my $hex_data = as_hex $data;
 	my $blocks   = sprintf('%02x', length($data) / 4 );
 
+	my $retry = 0;
+retry_write:
+
 	cmd(
 		"04 $tag 00 $blocks 00 $hex_data", "write_blocks $tag [$blocks] $hex_data", sub {
 			my $data = shift;
@@ -249,6 +252,16 @@ sub write_blocks {
 			}
 		}
 	);
+
+	my $verify_blocks = read_blocks($tag);
+	die "can't find data from tag $tag" unless exists $verify_blocks->{$tag};
+
+	if ( join('', @{ $verify_blocks->{$tag} }) ne $data ) {
+		$retry++;
+		warn "ERROR reading data back from tag, retry $retry\n";
+		die "ABORTED" if $retry == 10;
+		goto retry_write;
+	}
 
 }
 
