@@ -29,6 +29,10 @@ GetOptions(
 ) || die $!;
 
 my ( $sid, $content ) =  @ARGV;
+if ( $sid =~ m/.+,.+/ && ! defined $content ) {
+	( $sid, $content ) = split(/,/, $sid);
+}
+
 die "usage: $0 [--reader regex_filter] [--afi 214] [--type 1] E0_RFID_SID [barcode]\n" unless $sid && ( $content || $afi || $blank );
 
 $hash->{content} = $content if defined $content;
