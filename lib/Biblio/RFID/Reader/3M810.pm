@@ -208,9 +208,9 @@ sub read_blocks {
 			} elsif ( $rest = _matched $data => 'FE 00 00 05 01' ) {
 				warn "FIXME ready? ",as_hex $rest;
 			} elsif ( $rest = _matched $data => '02 06' ) {
-				die "ERROR ",as_hex($rest);
+				die "ERROR ",as_hex($data);
 			} else {
-				die "FIXME unsuported ",as_hex($rest);
+				die "FIXME unsuported ",as_hex($data);
 			}
 	});
 
@@ -235,6 +235,9 @@ sub write_blocks {
 	my $hex_data = as_hex $data;
 	my $blocks   = sprintf('%02x', length($data) / 4 );
 
+	my $retry = 0;
+retry_write:
+
 	cmd(
 		"04 $tag 00 $blocks 00 $hex_data", "write_blocks $tag [$blocks] $hex_data", sub {
 			my $data = shift;
@@ -243,12 +246,22 @@ sub write_blocks {
 				my $blocks = substr($rest,8,1);
 				warn "# WRITE ",as_hex($tag), " [$blocks]\n";
 			} elsif ( $rest = _matched $data => '04 06' ) {
-				die "ERROR ",as_hex($rest);
+				die "ERROR ",as_hex($data);
 			} else {
-				die "UNSUPPORTED";
+				die "UNSUPPORTED ", as_hex($data);
 			}
 		}
 	);
+
+	my $verify_blocks = read_blocks($tag);
+	die "can't find data from tag $tag" unless exists $verify_blocks->{$tag};
+
+	if ( join('', @{ $verify_blocks->{$tag} }) ne $data ) {
+		$retry++;
+		warn "ERROR reading data back from tag, retry $retry\n";
+		die "ABORTED" if $retry == 10;
+		goto retry_write;
+	}
 
 }
 
