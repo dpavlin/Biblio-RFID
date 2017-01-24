@@ -61,6 +61,29 @@ sub port {
 		return $port;
 	}
 
+	if ( my $listen = $ENV{RFID_LISTEN} ) {
+		my $server = Biblio::RFID::Reader::INET->new(
+			Proto     => 'tcp',
+			LocalAddr => $listen,
+			Listen    => SOMAXCONN,
+			Reuse     => 1
+		);
+									  
+		die "can't setup server $listen: $!" unless $server;
+
+		warn "RFID: waiting for reader connection to $listen";
+
+		my $port = $server->accept();
+		$port->autoflush(1);
+
+		warn "## LISTEN $listen ", ref($port);
+		$self->{port} = $port;
+		$self->init;
+
+		return $port;
+
+	}
+
 	my $settings = $self->serial_settings;
 	my @devices  = $ENV{RFID_DEVICE} ? ( $ENV{RFID_DEVICE} ) : glob '/dev/ttyUSB* /dev/ttyS*';
 	warn "# port devices ",dump(@devices);
