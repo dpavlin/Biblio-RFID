@@ -24,8 +24,7 @@ use POSIX qw(strftime);
 use Encode;
 
 my $debug = 0;
-my $listen = '127.0.0.1:9000';
-$listen = ':9000';
+my $listen = $ENV{HTTP_LISTEN} || 'localhost:9000';
 my $reader;
 my $koha_url = $ENV{KOHA_URL};
 warn "$koha_url";
@@ -369,8 +368,11 @@ sub rfid_register {
 
 	my $ua = LWP::UserAgent->new;
 	my $url = URI->new( $rfid_url . '/register.pl');
-	$url->query_form(
-		local_ip => $ip->{eth0} || $ip->{ (keys %$ip)[0] },
+	$url->query_form( %$ip,
+		HTTP_LISTEN => $listen,
+		RFID_LISTEN => $ENV{RFID_LISTEN},
+		KOHA_URL => $koha_url,
+		RFID_URL => $rfid_url,
 	);
 	warn "GET ",$url->as_string;
 	my $response = $ua->get($url);
