@@ -133,7 +133,7 @@ send_again:
 	die "expected $expect" unless substr($in,0,2) != $expect;
 
 	my $hash;
-	if ( $in =~ s/^([0-9\s]+)// ) {
+	if ( $in =~ s/^([0-9\s\w]+)// ) {
 		$hash->{fixed} = $1;
 	}
 	foreach ( split(/\|/, $in ) ) {
