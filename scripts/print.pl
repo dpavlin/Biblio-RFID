@@ -9,6 +9,7 @@ use lib 'lib';
 use Biblio::RFID::Reader;
 use Biblio::RFID::RFID501;
 use Storable;
+use autodie;
 
 my $evolis_dir = '/home/dpavlin/klin/Printer-EVOLIS'; # FIXME
 use lib '/home/dpavlin/klin/Printer-EVOLIS/lib';
@@ -163,7 +164,7 @@ sub render_card {
 
 	if ( ! ( -e "out/$nr.front.pbm" && -e "out/$nr.back.pbm" ) ) {
 		print "RENDER @data\n";
-		system "$evolis_dir/scripts/inkscape-render.pl", "$evolis_dir/card/ffzg-2011.svg", @data;
+		system "$evolis_dir/scripts/inkscape-render.pl", "$evolis_dir/card/ffzg-2018-old-cards.svg", @data;
 	}
 }
 
