@@ -9,8 +9,6 @@ use Data::Dump qw(dump);
 
 Biblio::RFID::SmartX - Croatian student cards format
 
-=back
-
 
 =head1 METHODS
 
