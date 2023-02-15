@@ -110,7 +110,7 @@ sub hex_tag { uc(unpack('H16', shift)) }
 
 =head1 WARN
 
-We are installing L<perldoc/warn> handler to controll debug output
+We are installing L<perldoc/warn> handler to control debug output
 based on C<$Biblio::RFID::debug> level
 
 =cut

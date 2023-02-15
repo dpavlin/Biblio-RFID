@@ -34,7 +34,7 @@ Tries to open usb serial ports C</dev/ttyUSB*> and serial ports C</dev/ttyS*>
 
   my $serial_obj = $self->port;
 
-To try just one device use C<RFID_DEVICE=/dev/ttyUSB1> enviroment variable
+To try just one device use C<RFID_DEVICE=/dev/ttyUSB1> environment variable
 
 If you want to define serial connection over TCP socket, you have to export
 enviroment variable C<RFID_TCP=hostname:port>.
