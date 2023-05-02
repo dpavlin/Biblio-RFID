@@ -157,6 +157,8 @@ sub render_card {
 	my @data = @{$queue[0]};
 	my $nr = $data[0];
 
+	warn "# render_card @data";
+
 	if ( $ENV{REPRINT} ) {
 		unlink $_ foreach glob("out/$nr.*");
 		warn "REPRINT: $nr";
@@ -164,7 +166,7 @@ sub render_card {
 
 	if ( ! ( -e "out/$nr.front.pbm" && -e "out/$nr.back.pbm" ) ) {
 		print "RENDER @data\n";
-		system "$evolis_dir/scripts/inkscape-render.pl", "$evolis_dir/card/ffzg-2018-old-cards.svg", @data;
+		system "$evolis_dir/scripts/inkscape-render.pl", "$evolis_dir/card/ffzg-2023-old-card.svg", @data;
 	}
 }
 
@@ -181,6 +183,7 @@ sub print_card {
 	print "PRINT @data\n";
 
 	my $p = Printer::EVOLIS::Parallel->new( '/dev/usb/lp0' );
+	warn "# opened /dev/usb/lp0";
 
 	my $before = _counters $p;
 
