@@ -187,6 +187,8 @@ Probe each RFID reader supported and returns succefull ones
 
 #my @readers = ( '3M810', 'CPRM02', 'librfid' );
 my @readers = ( '3M810', 'librfid' );
+@readers = split(/\s+/,$ENV{RFID_READERS}) if $ENV{RFID_READERS};
+warn "# using readers ", dump( \@readers );
 
 sub _available {
 	my ( $self, $filter ) = @_;
