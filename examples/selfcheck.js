@@ -101,6 +101,10 @@ function change_page(new_state) {
 }
 
 function got_visible_tags(data,textStatus) {
+	console.log('got_visible_tags', data,textStatus);
+	wait_counter = 0;
+	$('#working').hide();
+
 	var html = 'No tags in range';
 	if ( data.tags ) {
 		html = '<ul class="tags">';
@@ -164,17 +168,17 @@ var wait_counter = 0;
 function scan_tags() {
 	if ( pending_jsonp ) {
 		wait_counter++;
-		console.debug('scan_tags disabled ', pending_jsonp, ' requests waiting counter', wait_counter);
-		if ( wait_counter > 3 ) $('#working').show();
+		console.debug('scan_tags', 'tick', tick, 'pending_jsonp', pending_jsonp, ' wait_conter', wait_counter);
+		if ( wait_counter > 10 ) $('#working').show(); // tag_rescan = 200ms * 10 = 2s
 	} else {
-		console.info('scan_tags', only_reader);
+		console.info('scan_tags', 'tock', tick, only_reader, 'wait_counter', wait_counter, 'tick', tick);
 		pending_jsonp++;
 		$.getJSON("/scan"+only_reader+"?callback=?", got_visible_tags).fail( function(data) {
 			console.error('scan error pending jsonp', pending_jsonp);
 			pending_jsonp--;
+			wait_counter = 0;
+			$('#working').hide();
 		});
-		wait_counter = 0;
-		$('#working').hide();
 	}
 
 	if ( tick > 0 ) {
