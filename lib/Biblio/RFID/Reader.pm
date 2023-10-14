@@ -83,8 +83,16 @@ sub tags {
 				};
 				if ( $@ ) {
 					warn "ERROR reading $tag: $@\n";
-					$self->_invalidate_tag( $tag );
-					next;
+					if ( length $tag == 14 ) {
+						warn "XXX $tag probably new SmartX 2023+\n";
+						$self->{_tags}->{$tag}->{blocks} = [];
+						$self->{_tags}->{$tag}->{afi} = 0;
+						$self->{_tags}->{$tag}->{type} = 'SmartX';
+						$self->{_tags}->{$tag}->{reader} = ref $rfid; # save reader info
+					} else {
+						$self->_invalidate_tag( $tag );
+						next;
+					}
 				}
 
 				$triggers->{enter}->( $tag ) if $triggers->{enter};

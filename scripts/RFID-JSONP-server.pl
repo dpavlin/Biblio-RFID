@@ -216,6 +216,7 @@ sub http_server {
 					}
 					close($fh);
 				}
+				$rfid_sid_cache = undef if $path eq 'examples/selfcheck.html'; # invalidate on reload
 			} elsif ( $method =~ m{/scan(/only/(.+))?} ) {
 				my $only = $2;
 				my @tags = $rfid->tags( reader => sub {
@@ -235,6 +236,7 @@ sub http_server {
 						my $borrower = rfid_borrower $hash;
 						if ( exists $borrower->{error} ) {
 							warn "ERROR ", dump($borrower);
+							$hash->{error} = $borrower->{error};
 						} else {
 							$hash->{borrower} = $borrower->{borrower};
 							$hash->{content}  = $borrower->{borrower}->{cardnumber}; # compatibile with 3M tags

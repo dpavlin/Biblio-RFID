@@ -84,7 +84,7 @@ function change_page(new_state) {
 			},end_timeout);
 		}
 
-		if ( state == 'error' ) {
+		if ( state == 'error' || state == 'error-borrower' ) {
 			beep( 'error page' );
 			window.setTimeout(function(){
 				//change_page('start');
@@ -106,6 +106,12 @@ function got_visible_tags(data,textStatus) {
 		html = '<ul class="tags">';
 		$.each(data.tags, function(i,tag) {
 			console.debug( i, tag );
+
+		  if ( tag.hasOwnProperty('error') ) {
+				html += 'ERROR ' + tag.sid + ' ' + tag.error;
+				change_page('error-borrower');
+		  } else {
+
 			html += '<li><tt class="' + tag.security + '">' + tag.sid;
 			var content = tag.content || tag.borrower.cardnumber;
 
@@ -132,6 +138,9 @@ function got_visible_tags(data,textStatus) {
 				window[state]( content, tag ); // call function with barcode
 
 			}
+
+		  } // not error
+
 		});
 		html += '</ul>';
 
