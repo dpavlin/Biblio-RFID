@@ -138,7 +138,7 @@ send_again:
 	}
 	foreach ( split(/\|/, $in ) ) {
 		my ( $f, $v ) = ( $1, $2 ) if m/([A-Z]{2})(.+)/;
-		$hash->{$f} = decode('utf-8',$v);
+		$hash->{$f} = decode('utf-8',$v) if $f;
 	}
 
 	warn "# sip2 hash response ",dump($hash);
