@@ -17,6 +17,7 @@ use Data::Dump qw/dump/;
 
 use JSON::XS;
 use IO::Socket::INET;
+$ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0; # disable https cert validation
 use LWP::UserAgent;
 use URI;
 use URI::Escape;
