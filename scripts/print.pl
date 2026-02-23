@@ -166,7 +166,7 @@ sub render_card {
 
 	if ( ! ( -e "out/$nr.front.pbm" && -e "out/$nr.back.pbm" ) ) {
 		print "RENDER @data\n";
-		system "$evolis_dir/scripts/inkscape-render.pl", "$evolis_dir/card/ffzg-2023-old-card.svg", @data;
+		system "$evolis_dir/scripts/inkscape-render.pl", "$evolis_dir/card/ffzg-2026-v3-single-side.svg", @data;
 	}
 }
 
